@@ -1,1 +1,1 @@
-# history-manager
+# History Manager
