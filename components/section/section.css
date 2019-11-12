@@ -15,10 +15,14 @@
     justify-content: flex-start;
 }
 
-
 .satus-section--align-end
 {
     justify-content: flex-end;
+}
+
+.satus-section--align-center
+{
+    justify-content: center;
 }
 
 .satus-section__label

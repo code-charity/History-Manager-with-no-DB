@@ -1,3 +1,14 @@
 {
-	
+	"domain": {
+		"message": "Domain"
+	},
+	"visitCount": {
+		"message": "Visit count"
+	},
+	"title": {
+		"message": "Title"
+	},
+	"url": {
+		"message": "URL"
+	}
 }

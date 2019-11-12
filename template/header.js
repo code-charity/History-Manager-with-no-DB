@@ -10,42 +10,30 @@ const Menu = {
             type: 'section',
             class: ['satus-section--align-start'],
 
-            back: {
-                type: 'button',
-                class: ['satus-button--back'],
-                icon: '<svg viewBox="0 0 24 24" style=width:20px;height:20px><path d="M16.6 3c-.5-.5-1.3-.5-1.8 0l-8.3 8.3a1 1 0 0 0 0 1.4l8.3 8.3a1.2 1.2 0 1 0 1.8-1.7L9.4 12l7.2-7.3c.5-.4.5-1.2 0-1.7z"></path></svg>',
-                on: {
-                    click: function() {
-                        document.querySelector('.satus-main__container').close();
-                    }
-                }
-            },
-            title: {
-                type: 'text',
-                class: ['satus-header__title'],
-                innerText: 'History Manager'
+            search: {
+                type: 'textarea',
+                id: 'satus-header__search',
+                placeholder: 'Search'
             }
         },
         section_end: {
             type: 'section',
             class: ['satus-section--align-end'],
+            style: {
+                flex: 0
+            },
 
             vert: {
                 type: 'button',
                 icon: '<svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle></svg>',
 
-                onclick: function() {
-                    Satus.components.dialog({
-                        options: {
-                            scrim: false,
-                            surface_styles: {
-                                'position': 'absolute',
-                                'right': '8px',
-                                'top': '48px',
-                                'max-width': '200px',
-                                'min-width': '0px'
-                            }
-                        },
+                onclick: function(event) {
+                    event.stopPropagation();
+
+                    document.querySelector('.satus').appendChild(Satus.components.dialog({
+                        right: 8,
+                        top: 56,
+                        scrim: false,
 
                         save_as: {
                             type: 'button',
@@ -59,7 +47,7 @@ const Menu = {
                                 });
                             }
                         }
-                    });
+                    }));
                 }
             }
         }

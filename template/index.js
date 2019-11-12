@@ -6,57 +6,454 @@ Menu.main = {
     type: 'main'
 };
 
-Satus.chromium_history.get('', function(items) {
-    var results = {};
+Satus.chromium_storage.sync(function() {
+    Satus.locale(function() {
+        Satus.chromium_history.get('', function(items) {
+            var results = {};
 
-    for (var i = 0, l = items.length; i < l; i++) {
-        var item = items[i],
-            origin = item.url.split('/')[2];
+            // SORT
+            for (var i = 0, l = items.length; i < l; i++) {
+                var item = items[i],
+                    origin = item.url.split('/')[2];
 
-        if (!results.hasOwnProperty(origin)) {
-            results[origin] = {
-                visit_count: item.visitCount,
-                urls: []
-            };
-        } else {
-            results[origin].visit_count += item.visitCount;
-        }
-
-        results[origin].urls.push({
-            id: item.id,
-            url: item.url,
-            title: item.title
-        });
-    }
-
-    for (var key in results) {
-        var result = results[key];
-
-        Menu.main[key] = {
-            type: 'folder',
-            label: '[' + result.visit_count + '] ' + key
-        };
-
-        for (var i = 0, l = result.urls.length; i < l; i++) {
-            var url = result.urls[i].url;
-
-            Menu.main[key][result.urls[i].id] = {
-                type: 'section',
-                title: {
-                    type: 'text',
-                    label: result.urls[i].title
-                },
-                url: {
-                    type: 'text',
-                    label: url.substr(url.indexOf(key)).replace(key, '')
+                if (!results.hasOwnProperty(origin)) {
+                    results[origin] = {
+                        visit_count: item.visitCount,
+                        urls: []
+                    };
+                } else {
+                    results[origin].visit_count += item.visitCount;
                 }
+
+                if (item.url.substr(item.url.indexOf(origin)).replace(origin, '') === '/') {
+                    results[origin].title = item.title;
+                }
+
+                results[origin].urls.push({
+                    id: item.id,
+                    url: item.url,
+                    title: item.title,
+                    visit_count: item.visitCount
+                });
+            }
+
+            var sorted_keys = Object.keys(results).sort(function(a, b) {
+                    return results[b].visit_count - results[a].visit_count
+                }),
+                new_results = {};
+
+            for (var i = 0, l = sorted_keys.length; i < l; i++) {
+                new_results[sorted_keys[i]] = results[sorted_keys[i]];
+            }
+
+            results = new_results;
+
+            for (var key in results) {
+                results[key].urls = results[key].urls.sort(function(a, b) {
+                    return b.visit_count - a.visit_count
+                });
+            }
+
+
+            // MENU
+            console.log(results);
+
+            Menu.main.section = {
+                type: 'section',
+                class: ['satus-section--dashboard']
             };
-        }
-    }
 
-    document.querySelector('.satus').innerHTML = '';
+            Menu.main.section.by_domain = {
+                type: 'table',
+                id: 'table-domain',
+                columns: [{
+                    visit_count: {
+                        type: 'text',
+                        label: 'visitCount',
+                        on: {
+                            click: function(event) {
+                                event.preventDefault();
 
-    Satus.render(document.querySelector('.satus'), Menu);
+                                var rows = [];
+
+
+                                if (this.parentNode.parentNode.querySelector('.sort-asc') && this !== this.parentNode.parentNode.querySelector('.sort-asc')) {
+                                    this.parentNode.parentNode.querySelector('.sort-asc').classList.remove('sort-asc');
+                                }
+
+                                if (this.parentNode.parentNode.querySelector('.sort-desc') && this !== this.parentNode.parentNode.querySelector('.sort-desc')) {
+                                    this.parentNode.parentNode.querySelector('.sort-desc').classList.remove('sort-desc');
+                                }
+
+                                if (this.classList.contains('sort-desc')) {
+                                    this.classList.remove('sort-desc');
+                                    this.classList.add('sort-asc');
+                                } else if (this.classList.contains('sort-asc')) {
+                                    this.classList.remove('sort-asc');
+                                    this.classList.add('sort-desc');
+                                } else {
+                                    this.classList.add('sort-desc');
+                                }
+
+                                var sorted_keys = Object.keys(results).sort(this.classList.contains('sort-asc') ? function(a, b) {
+                                        return results[b].visit_count - results[a].visit_count
+                                    } : function(a, b) {
+                                        return results[a].visit_count - results[b].visit_count
+                                    }),
+                                    new_results = {};
+
+                                for (var i = 0, l = sorted_keys.length; i < l; i++) {
+                                    new_results[sorted_keys[i]] = results[sorted_keys[i]];
+                                }
+
+                                results = new_results;
+
+                                for (var key in results) {
+                                    var result = results[key];
+
+                                    rows.push([{
+                                        visit_count: {
+                                            type: 'text',
+                                            label: result.visit_count
+                                        }
+                                    }, {
+                                        expend: {
+                                            type: 'button',
+                                            icon: '<svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"></svg>'
+                                        }
+                                    }, {
+                                        label: {
+                                            type: 'text',
+                                            label: key,
+
+                                            on: {
+                                                click: function(event) {
+                                                    var key = this.querySelector('.label').innerText,
+                                                        result = results[this.querySelector('.label').innerText],
+                                                        rows = [];
+
+                                                    for (var i = 0, l = result.urls.length; i < l; i++) {
+                                                        var url = result.urls[i].url;
+
+                                                        rows.push([{
+                                                            visit_count: {
+                                                                type: 'text',
+                                                                label: result.urls[i].visit_count
+                                                            }
+                                                        }, {
+                                                            title: {
+                                                                type: 'text',
+                                                                label: result.urls[i].title.substr(0, 28),
+                                                                title: result.urls[i].title
+                                                            }
+                                                        }, {
+                                                            label: {
+                                                                type: 'text',
+                                                                label: url.substr(url.indexOf(key)).replace(key, '').substr(0, 24),
+                                                                title: url.substr(url.indexOf(key)).replace(key, '')
+                                                            }
+                                                        }, {
+                                                            star: {
+                                                                type: 'button',
+                                                                icon: '<svg viewBox="0 0 24 24"><path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"></svg>'
+                                                            }
+                                                        }]);
+                                                    }
+
+                                                    document.querySelector('#table-url').update(rows);
+                                                }
+                                            }
+                                        }
+                                    }]);
+                                }
+
+                                document.querySelector('#table-domain').update(rows);
+
+                                return false;
+                            }
+                        }
+                    }
+                }, {
+                    space: {
+                        type: 'text'
+                    }
+                }, {
+                    domain: {
+                        type: 'text',
+                        label: 'domain',
+                        on: {
+                            click: function(event) {
+                                event.preventDefault();
+
+                                var rows = [];
+
+                                if (this.parentNode.parentNode.querySelector('.sort-asc') && this !== this.parentNode.parentNode.querySelector('.sort-asc')) {
+                                    this.parentNode.parentNode.querySelector('.sort-asc').classList.remove('sort-asc');
+                                }
+
+                                if (this.parentNode.parentNode.querySelector('.sort-desc') && this !== this.parentNode.parentNode.querySelector('.sort-desc')) {
+                                    this.parentNode.parentNode.querySelector('.sort-desc').classList.remove('sort-desc');
+                                }
+
+                                if (this.classList.contains('sort-desc')) {
+                                    this.classList.remove('sort-desc');
+                                    this.classList.add('sort-asc');
+                                } else if (this.classList.contains('sort-asc')) {
+                                    this.classList.remove('sort-asc');
+                                    this.classList.add('sort-desc');
+                                } else {
+                                    this.classList.add('sort-desc');
+                                }
+
+                                var sorted_keys = Object.keys(results).sort(this.classList.contains('sort-asc') ? function(a, b) {
+                                        if (a < b) {
+                                            return -1;
+                                        }
+                                        if (a > b) {
+                                            return 1;
+                                        }
+
+                                        return 0;
+                                    } : function(a, b) {
+                                        if (a < b) {
+                                            return 1;
+                                        }
+                                        if (a > b) {
+                                            return -1;
+                                        }
+
+                                        return 0;
+                                    }),
+                                    new_results = {};
+
+                                for (var i = 0, l = sorted_keys.length; i < l; i++) {
+                                    new_results[sorted_keys[i]] = results[sorted_keys[i]];
+                                }
+
+                                results = new_results;
+
+                                for (var key in results) {
+                                    var result = results[key];
+
+                                    rows.push([{
+                                        visit_count: {
+                                            type: 'text',
+                                            label: result.visit_count
+                                        }
+                                    }, {
+                                        expend: {
+                                            type: 'button',
+                                            icon: '<svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"></svg>'
+                                        }
+                                    }, {
+                                        label: {
+                                            type: 'text',
+                                            label: key,
+
+                                            on: {
+                                                click: function(event) {
+                                                    var key = this.querySelector('.label').innerText,
+                                                        result = results[this.querySelector('.label').innerText],
+                                                        rows = [];
+
+                                                    for (var i = 0, l = result.urls.length; i < l; i++) {
+                                                        var url = result.urls[i].url;
+
+                                                        rows.push([{
+                                                            visit_count: {
+                                                                type: 'text',
+                                                                label: result.urls[i].visit_count
+                                                            }
+                                                        }, {
+                                                            title: {
+                                                                type: 'text',
+                                                                label: result.urls[i].title.substr(0, 28),
+                                                                title: result.urls[i].title
+                                                            }
+                                                        }, {
+                                                            label: {
+                                                                type: 'text',
+                                                                label: url.substr(url.indexOf(key)).replace(key, '').substr(0, 24),
+                                                                title: url.substr(url.indexOf(key)).replace(key, '')
+                                                            }
+                                                        }, {
+                                                            star: {
+                                                                type: 'button',
+                                                                icon: '<svg viewBox="0 0 24 24"><path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"></svg>'
+                                                            }
+                                                        }]);
+                                                    }
+
+                                                    document.querySelector('#table-url').update(rows);
+                                                }
+                                            }
+                                        }
+                                    }]);
+                                }
+
+                                document.querySelector('#table-domain').update(rows);
+
+                                return false;
+                            }
+                        }
+                    }
+                }],
+                rows: []
+            };
+
+            Menu.main.section.by_url = {
+                type: 'table',
+                id: 'table-url',
+                columns: [{
+                    visit_count: {
+                        type: 'text',
+                        label: 'visitCount'
+                    }
+                }, {
+                    visit_count: {
+                        type: 'text',
+                        label: 'title'
+                    }
+                }, {
+                    visit_count: {
+                        type: 'text',
+                        label: 'url'
+                    }
+                }, {
+                    visit_count: {
+                        type: 'text'
+                    }
+                }],
+                rows: []
+            };
+
+            Menu.main.section.search = {
+                type: 'table',
+                id: 'table-search',
+                columns: [{
+                    visit_count: {
+                        type: 'text',
+                        label: 'visitCount'
+                    }
+                }, {
+                    visit_count: {
+                        type: 'text',
+                        label: 'domain'
+                    }
+                }],
+                rows: []
+            };
+
+            var kk = 0;
+
+            for (var key in results) {
+                var result = results[key];
+
+                Menu.main.section.by_domain.rows.push([{
+                    visit_count: {
+                        type: 'text',
+                        label: result.visit_count
+                    }
+                }, {
+                    expend: {
+                        type: 'button',
+                        icon: '<svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"></svg>'
+                    }
+                }, {
+                    label: {
+                        type: 'text',
+                        label: key,
+
+                        on: {
+                            click: function(event) {
+                                var key = this.querySelector('.label').innerText,
+                                    result = results[this.querySelector('.label').innerText],
+                                    rows = [];
+
+                                for (var i = 0, l = result.urls.length; i < l; i++) {
+                                    var url = result.urls[i].url;
+
+                                    rows.push([{
+                                        visit_count: {
+                                            type: 'text',
+                                            label: result.urls[i].visit_count
+                                        }
+                                    }, {
+                                        title: {
+                                            type: 'text',
+                                            label: result.urls[i].title.substr(0, 28),
+                                            title: result.urls[i].title
+                                        }
+                                    }, {
+                                        label: {
+                                            type: 'text',
+                                            label: url.substr(url.indexOf(key)).replace(key, '').substr(0, 24),
+                                            title: url.substr(url.indexOf(key)).replace(key, '')
+                                        }
+                                    }, {
+                                        star: {
+                                            type: 'button',
+                                            icon: '<svg viewBox="0 0 24 24"><path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"></svg>'
+                                        }
+                                    }]);
+                                }
+
+                                document.querySelector('#table-url').update(rows);
+                            }
+                        }
+                    }
+                }]);
+
+                /*Menu.main.section.search.rows.push([{
+                    visit_count: {
+                        type: 'text',
+                        label: result.visit_count
+                    }
+                }, {
+                    label: {
+                        type: 'text',
+                        label: key
+                    }
+                }]);*/
+
+                if (kk === 0) {
+                    kk++;
+
+                    for (var i = 0, l = result.urls.length; i < l; i++) {
+                        var url = result.urls[i].url;
+
+                        Menu.main.section.by_url.rows.push([{
+                            visit_count: {
+                                type: 'text',
+                                label: result.urls[i].visit_count
+                            }
+                        }, {
+                            title: {
+                                type: 'text',
+                                label: result.urls[i].title.substr(0, 28),
+                                title: result.urls[i].title
+                            }
+                        }, {
+                            label: {
+                                type: 'text',
+                                label: url.substr(url.indexOf(key)).replace(key, '').substr(0, 24),
+                                title: url.substr(url.indexOf(key)).replace(key, '')
+                            }
+                        }, {
+                            star: {
+                                type: 'button',
+                                icon: '<svg viewBox="0 0 24 24"><path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"></svg>'
+                            }
+                        }]);
+                    }
+                }
+            }
+
+            document.querySelector('.satus').innerHTML = '';
+
+            Satus.render(document.querySelector('.satus'), Menu);
+        });
+    });
 });
 
 

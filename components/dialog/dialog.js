@@ -1,84 +1,52 @@
-Satus.components.dialog = function(object) {
-    var self = this,
-        dialog = document.createElement('div'),
-        dialog_scrim = document.createElement('div'),
-        dialog_surface = document.createElement('div');
+/*-----------------------------------------------------------------------------
+>>> «DIALOG» COMPONENT
+-----------------------------------------------------------------------------*/
 
-    if (!Satus.isset(object.options)) {
-        object.options = {};
-    }
+Satus.components.dialog = function(item, name) {
+    var dialog = document.createElement('div'),
+        transform_origin = ['center', 'center'];
 
     dialog.className = 'satus-dialog';
-    dialog_scrim.className = 'satus-dialog__scrim';
-    dialog_surface.className = 'satus-dialog__surface';
 
-    function close() {
-        dialog.classList.remove('satus-dialog_open');
+    if (item.top) {
+        dialog.style.top = item.top + 'px';
+        transform_origin[1] = 'top';
+    } else if (item.bottom) {
+        dialog.style.bottom = item.bottom + 'px';
+        transform_origin[1] = 'bottom';
+    }
 
-        setTimeout(function() {
+    if (item.right) {
+        dialog.style.right = item.right + 'px';
+        transform_origin[0] = 'right';
+    } else if (item.left) {
+        dialog.style.left = item.left + 'px';
+        transform_origin[0] = 'left';
+    }
+
+    dialog.style.transformOrigin = transform_origin[0] + ' ' + transform_origin[1];
+
+    function close(event) {
+        var focus = false;
+
+        for (var i = 0, l = event.path.length; i < l; i++) {
+            if (event.path[i] === dialog) {
+                focus = true;
+
+                break;
+            }
+        }
+
+        if (focus === false) {
             dialog.remove();
-        }, Number(document.defaultView.getComputedStyle(dialog, '').getPropertyValue('animation-duration').replace(/[^0-9.]/g, '') * 1000));
-    }
 
-    dialog_scrim.onclick = close;
-
-    for (let i in object) {
-        if (typeof object[i] === 'object' && object[i].hasOwnProperty('type')) {
-            if (typeof object[i].onchange === 'object') {
-                object[i].onchange.push(close);
-            } else {
-                object[i].onchange = [close];
-            }
+            window.removeEventListener('click', close);
         }
     }
 
-    Satus.render(dialog_surface, object);
+    window.addEventListener('click', close);
 
-    if (typeof object.options === 'object') {
-        if (object.options.padding === false) {
-            dialog_surface.classList.add('satus-dialog__scrim_no-padding');
-        }
+    Satus.render(dialog, item);
 
-        if (object.options.scrim_visibility === false) {
-            dialog_scrim.classList.add('satus-dialog__scrim_unvisible');
-        }
-
-        if (typeof object.options.surface_styles === 'object') {
-            var origin = ['center', 'center'];
-
-            if (typeof object.options.surface_styles.left === 'string') {
-                origin[0] = 'left';
-            }
-
-            if (typeof object.options.surface_styles.right === 'string') {
-                origin[0] = 'right';
-            }
-
-            if (typeof object.options.surface_styles.top === 'string') {
-                origin[1] = 'top';
-            }
-
-            if (typeof object.options.surface_styles.bottom === 'string') {
-                origin[1] = 'bottom';
-            }
-
-            dialog_surface.style.transformOrigin = origin[0] + ' ' + origin[1];
-
-            if (typeof object.options.surface_styles === 'object') {
-                for (var style in object.options.surface_styles) {
-                    dialog_surface.style[style] = object.options.surface_styles[style];
-                }
-            }
-        }
-    }
-
-    if (object.options.scrim !== false) {
-        dialog.appendChild(dialog_scrim);
-    }
-
-    dialog.appendChild(dialog_surface);
-
-    dialog.classList.add('satus-dialog_open');
-
-    document.querySelector('.satus').appendChild(dialog);
+    return dialog;
 };
