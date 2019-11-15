@@ -70,232 +70,17 @@ Satus.chromium_storage.sync(function() {
                     visit_count: {
                         type: 'text',
                         label: 'visitCount',
-                        on: {
-                            click: function(event) {
-                                event.preventDefault();
-
-                                var rows = [];
-
-
-                                if (this.parentNode.parentNode.querySelector('.sort-asc') && this !== this.parentNode.parentNode.querySelector('.sort-asc')) {
-                                    this.parentNode.parentNode.querySelector('.sort-asc').classList.remove('sort-asc');
-                                }
-
-                                if (this.parentNode.parentNode.querySelector('.sort-desc') && this !== this.parentNode.parentNode.querySelector('.sort-desc')) {
-                                    this.parentNode.parentNode.querySelector('.sort-desc').classList.remove('sort-desc');
-                                }
-
-                                if (this.classList.contains('sort-desc')) {
-                                    this.classList.remove('sort-desc');
-                                    this.classList.add('sort-asc');
-                                } else if (this.classList.contains('sort-asc')) {
-                                    this.classList.remove('sort-asc');
-                                    this.classList.add('sort-desc');
-                                } else {
-                                    this.classList.add('sort-desc');
-                                }
-
-                                var sorted_keys = Object.keys(results).sort(this.classList.contains('sort-asc') ? function(a, b) {
-                                        return results[b].visit_count - results[a].visit_count
-                                    } : function(a, b) {
-                                        return results[a].visit_count - results[b].visit_count
-                                    }),
-                                    new_results = {};
-
-                                for (var i = 0, l = sorted_keys.length; i < l; i++) {
-                                    new_results[sorted_keys[i]] = results[sorted_keys[i]];
-                                }
-
-                                results = new_results;
-
-                                for (var key in results) {
-                                    var result = results[key];
-
-                                    rows.push([{
-                                        visit_count: {
-                                            type: 'text',
-                                            label: result.visit_count
-                                        }
-                                    }, {
-                                        expend: {
-                                            type: 'button',
-                                            icon: '<svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"></svg>'
-                                        }
-                                    }, {
-                                        label: {
-                                            type: 'text',
-                                            label: key,
-
-                                            on: {
-                                                click: function(event) {
-                                                    var key = this.querySelector('.label').innerText,
-                                                        result = results[this.querySelector('.label').innerText],
-                                                        rows = [];
-
-                                                    for (var i = 0, l = result.urls.length; i < l; i++) {
-                                                        var url = result.urls[i].url;
-
-                                                        rows.push([{
-                                                            visit_count: {
-                                                                type: 'text',
-                                                                label: result.urls[i].visit_count
-                                                            }
-                                                        }, {
-                                                            title: {
-                                                                type: 'text',
-                                                                label: result.urls[i].title.substr(0, 28),
-                                                                title: result.urls[i].title
-                                                            }
-                                                        }, {
-                                                            label: {
-                                                                type: 'text',
-                                                                label: url.substr(url.indexOf(key)).replace(key, '').substr(0, 24),
-                                                                title: url.substr(url.indexOf(key)).replace(key, '')
-                                                            }
-                                                        }, {
-                                                            star: {
-                                                                type: 'button',
-                                                                icon: '<svg viewBox="0 0 24 24"><path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"></svg>'
-                                                            }
-                                                        }]);
-                                                    }
-
-                                                    document.querySelector('#table-url').update(rows);
-                                                }
-                                            }
-                                        }
-                                    }]);
-                                }
-
-                                document.querySelector('#table-domain').update(rows);
-
-                                return false;
-                            }
-                        }
+                        sort: 'visit_count/label'
                     }
                 }, {
-                    space: {
+                    expand: {
                         type: 'text'
                     }
                 }, {
                     domain: {
                         type: 'text',
                         label: 'domain',
-                        on: {
-                            click: function(event) {
-                                event.preventDefault();
-
-                                var rows = [];
-
-                                if (this.parentNode.parentNode.querySelector('.sort-asc') && this !== this.parentNode.parentNode.querySelector('.sort-asc')) {
-                                    this.parentNode.parentNode.querySelector('.sort-asc').classList.remove('sort-asc');
-                                }
-
-                                if (this.parentNode.parentNode.querySelector('.sort-desc') && this !== this.parentNode.parentNode.querySelector('.sort-desc')) {
-                                    this.parentNode.parentNode.querySelector('.sort-desc').classList.remove('sort-desc');
-                                }
-
-                                if (this.classList.contains('sort-desc')) {
-                                    this.classList.remove('sort-desc');
-                                    this.classList.add('sort-asc');
-                                } else if (this.classList.contains('sort-asc')) {
-                                    this.classList.remove('sort-asc');
-                                    this.classList.add('sort-desc');
-                                } else {
-                                    this.classList.add('sort-desc');
-                                }
-
-                                var sorted_keys = Object.keys(results).sort(this.classList.contains('sort-asc') ? function(a, b) {
-                                        if (a < b) {
-                                            return -1;
-                                        }
-                                        if (a > b) {
-                                            return 1;
-                                        }
-
-                                        return 0;
-                                    } : function(a, b) {
-                                        if (a < b) {
-                                            return 1;
-                                        }
-                                        if (a > b) {
-                                            return -1;
-                                        }
-
-                                        return 0;
-                                    }),
-                                    new_results = {};
-
-                                for (var i = 0, l = sorted_keys.length; i < l; i++) {
-                                    new_results[sorted_keys[i]] = results[sorted_keys[i]];
-                                }
-
-                                results = new_results;
-
-                                for (var key in results) {
-                                    var result = results[key];
-
-                                    rows.push([{
-                                        visit_count: {
-                                            type: 'text',
-                                            label: result.visit_count
-                                        }
-                                    }, {
-                                        expend: {
-                                            type: 'button',
-                                            icon: '<svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"></svg>'
-                                        }
-                                    }, {
-                                        label: {
-                                            type: 'text',
-                                            label: key,
-
-                                            on: {
-                                                click: function(event) {
-                                                    var key = this.querySelector('.label').innerText,
-                                                        result = results[this.querySelector('.label').innerText],
-                                                        rows = [];
-
-                                                    for (var i = 0, l = result.urls.length; i < l; i++) {
-                                                        var url = result.urls[i].url;
-
-                                                        rows.push([{
-                                                            visit_count: {
-                                                                type: 'text',
-                                                                label: result.urls[i].visit_count
-                                                            }
-                                                        }, {
-                                                            title: {
-                                                                type: 'text',
-                                                                label: result.urls[i].title.substr(0, 28),
-                                                                title: result.urls[i].title
-                                                            }
-                                                        }, {
-                                                            label: {
-                                                                type: 'text',
-                                                                label: url.substr(url.indexOf(key)).replace(key, '').substr(0, 24),
-                                                                title: url.substr(url.indexOf(key)).replace(key, '')
-                                                            }
-                                                        }, {
-                                                            star: {
-                                                                type: 'button',
-                                                                icon: '<svg viewBox="0 0 24 24"><path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"></svg>'
-                                                            }
-                                                        }]);
-                                                    }
-
-                                                    document.querySelector('#table-url').update(rows);
-                                                }
-                                            }
-                                        }
-                                    }]);
-                                }
-
-                                document.querySelector('#table-domain').update(rows);
-
-                                return false;
-                            }
-                        }
+                        sort: 'domain/label'
                     }
                 }],
                 rows: []
@@ -307,20 +92,23 @@ Satus.chromium_storage.sync(function() {
                 columns: [{
                     visit_count: {
                         type: 'text',
-                        label: 'visitCount'
+                        label: 'visitCount',
+                        sort: 'visit_count/label'
                     }
                 }, {
-                    visit_count: {
+                    title: {
                         type: 'text',
-                        label: 'title'
+                        label: 'title',
+                        sort: 'title/label'
                     }
                 }, {
-                    visit_count: {
+                    url: {
                         type: 'text',
-                        label: 'url'
+                        label: 'url',
+                        sort: 'url/label'
                     }
                 }, {
-                    visit_count: {
+                    favorite: {
                         type: 'text'
                     }
                 }],
@@ -333,12 +121,14 @@ Satus.chromium_storage.sync(function() {
                 columns: [{
                     visit_count: {
                         type: 'text',
-                        label: 'visitCount'
+                        label: 'visitCount',
+                        sort: 'visit_count/label'
                     }
                 }, {
-                    visit_count: {
+                    domain: {
                         type: 'text',
-                        label: 'domain'
+                        label: 'domain',
+                        sort: 'domain/label'
                     }
                 }],
                 rows: []
@@ -355,12 +145,12 @@ Satus.chromium_storage.sync(function() {
                         label: result.visit_count
                     }
                 }, {
-                    expend: {
+                    expand: {
                         type: 'button',
                         icon: '<svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"></svg>'
                     }
                 }, {
-                    label: {
+                    domain: {
                         type: 'text',
                         label: key,
 
@@ -410,7 +200,7 @@ Satus.chromium_storage.sync(function() {
                         label: result.visit_count
                     }
                 }, {
-                    label: {
+                    domain: {
                         type: 'text',
                         label: key
                     }
@@ -434,13 +224,13 @@ Satus.chromium_storage.sync(function() {
                                 title: result.urls[i].title
                             }
                         }, {
-                            label: {
+                            url: {
                                 type: 'text',
                                 label: url.substr(url.indexOf(key)).replace(key, '').substr(0, 24),
                                 title: url.substr(url.indexOf(key)).replace(key, '')
                             }
                         }, {
-                            star: {
+                            favorite: {
                                 type: 'button',
                                 icon: '<svg viewBox="0 0 24 24"><path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"></svg>'
                             }
