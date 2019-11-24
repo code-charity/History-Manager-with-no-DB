@@ -25,6 +25,7 @@
 .satus-header
 {
     box-shadow: none;
+    background: var(--background-1);
 }
 
 #satus-header__search
@@ -45,8 +46,12 @@
 
 .satus-section--dashboard
 {
+    display: flex;
+
+    height: 100%;
     padding: 0;
 
+    flex: 1;
     align-items: flex-start;
 }
 
@@ -78,16 +83,6 @@
 #table-url
 {
     flex: 2;
-}
-
-.satus-table__head
-{
-    height: 40px;
-    margin: 0 0 12px 0;
-
-    border-radius: 28px;
-    background: transparent;
-    box-shadow: 0 0 2px rgba(0,0,0,.15);
 }
 
 .satus-table__head > div
@@ -144,7 +139,6 @@
 .satus-table__body
 {
     border-radius: 4px;
-    background: #fff;
     box-shadow: 0 2px 4px rgba(0,0,0,.1);
 }
 

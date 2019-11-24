@@ -27,6 +27,7 @@ Satus.components.slider = function(object, key) {
     component_label.innerText = Satus.memory.get('locale/' + object.label) || object.label || Satus.memory.get('locale/' + key) || key;
 
     component.dataset.value = value;
+    component_thumb.dataset.value = value;
     component_thumb.style.left = value * 100 / (max - min) + '%';
     component_track.style.width = value * 100 / (max - min) + '%';
 
@@ -39,6 +40,7 @@ Satus.components.slider = function(object, key) {
         value = value;
 
         this.dataset.value = value;
+        component_thumb.dataset.value = value;
         this.querySelector('.thumb').style.left = value * 100 / (max - min) + '%';
         this.querySelector('.track').style.width = value * 100 / (max - min) + '%';
     }
@@ -63,11 +65,12 @@ Satus.components.slider = function(object, key) {
 
                 x = steps * 100 / ((max - min) / step);
 
-                var value = steps * step + min;
+                var value = (steps * step + min).toFixed(2);
 
                 component.dataset.value = value;
+                component_thumb.dataset.value = Number(value);
                 Satus.storage.set((object.storage || '') + '/' + key, value);
-                
+
                 if (object.onchange) {
                     object.onchange(value);
                 }

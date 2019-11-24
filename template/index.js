@@ -9,11 +9,16 @@ Menu.main = {
 Satus.chromium_storage.sync(function() {
     Satus.locale(function() {
         Satus.chromium_history.get('', function(items) {
-            var results = {};
+            var results = {},
+                history = Satus.storage.get('history') || [];
+
+            history = history.concat(items);
+
+            Satus.storage.set('history', history);
 
             // SORT
-            for (var i = 0, l = items.length; i < l; i++) {
-                var item = items[i],
+            for (var i = 0, l = history.length; i < l; i++) {
+                var item = history[i],
                     origin = item.url.split('/')[2];
 
                 if (!results.hasOwnProperty(origin)) {
@@ -37,9 +42,7 @@ Satus.chromium_storage.sync(function() {
                 });
             }
 
-            var sorted_keys = Object.keys(results).sort(function(a, b) {
-                    return results[b].visit_count - results[a].visit_count
-                }),
+            var sorted_keys = Object.keys(results),
                 new_results = {};
 
             for (var i = 0, l = sorted_keys.length; i < l; i++) {
@@ -49,9 +52,7 @@ Satus.chromium_storage.sync(function() {
             results = new_results;
 
             for (var key in results) {
-                results[key].urls = results[key].urls.sort(function(a, b) {
-                    return b.visit_count - a.visit_count
-                });
+                results[key].urls = results[key].urls;
             }
 
 
@@ -175,13 +176,13 @@ Satus.chromium_storage.sync(function() {
                                             title: result.urls[i].title
                                         }
                                     }, {
-                                        label: {
+                                        url: {
                                             type: 'text',
                                             label: url.substr(url.indexOf(key)).replace(key, '').substr(0, 24),
                                             title: url.substr(url.indexOf(key)).replace(key, '')
                                         }
                                     }, {
-                                        star: {
+                                        favorite: {
                                             type: 'button',
                                             icon: '<svg viewBox="0 0 24 24"><path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"></svg>'
                                         }
