@@ -22,10 +22,16 @@
     src: url(../fonts/OpenSans-Regular.ttf);
 }
 
+input,
+textarea
+{
+    font-family: 'Open Sans', sans-serif;
+}
+
 .satus-header
 {
+    background: #212121;
     box-shadow: none;
-    background: var(--background-1);
 }
 
 #satus-header__search
@@ -34,13 +40,13 @@
 
     width: 100%;
     max-width: 1024px;
-    height: 48px;
+    height: 40px;
     margin-right: 8px;
-    padding: 16px 8px;
+    padding: 14px 8px;
 
-    color: #444;
-    border-radius: 8px;
-    background: #fafafa;
+    color: rgba(255,255,255,.7);
+    border-radius: 4px;
+    background-color: rgba(255,255,255,.1);
     box-shadow: 0 1px 3px rgba(0,0,0,.05);
 }
 
@@ -72,8 +78,6 @@
 #table-url,
 #table-search
 {
-    overflow: visible;
-
     height: calc(100% - 16px);
     margin: 8px;
 
@@ -107,7 +111,7 @@
 .satus-table__head > div .sort-desc .label::after
 {
     position: absolute;
-    top: 8px;
+    top: calc(50% - 2px);
     right: -14px;
 
     width: 0;
@@ -123,7 +127,7 @@
 .satus-table__head > div .sort-asc .label::after
 {
     position: absolute;
-    top: 8px;
+    top: calc(50% - 2px);
     right: -14px;
 
     width: 0;
@@ -138,7 +142,6 @@
 
 .satus-table__body
 {
-    border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0,0,0,.1);
 }
 

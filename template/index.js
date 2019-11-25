@@ -16,6 +16,8 @@ Satus.chromium_storage.sync(function() {
 
             Satus.storage.set('history', history);
 
+            //console.log(items);
+
             // SORT
             for (var i = 0, l = history.length; i < l; i++) {
                 var item = history[i],

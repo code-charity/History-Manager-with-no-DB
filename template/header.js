@@ -2,6 +2,42 @@
 >>> «HEADER» TEMPLATE
 -----------------------------------------------------------------------------*/
 
+var object_search = {
+    interval: false,
+    queue: [],
+    results: [],
+    query: '',
+    search: function(object) {
+        for (var key in object) {
+            if (typeof object[key] === 'string') {
+                if (object[key].indexOf(object_search.query) !== -1) {
+                    var rows = [];
+
+                    object_search.results.push(object[key]);
+
+                    for (var i = 0, l = object_search.results.length; i < l; i++) {
+                        rows.push([{
+                            visit_count: {
+                                type: 'text',
+                                label: 0
+                            }
+                        }, {
+                            domain: {
+                                type: 'text',
+                                label: object_search.results[i]
+                            }
+                        }]);
+                    }
+
+                    document.querySelector('#table-search').update(rows);
+                }
+            } else if (typeof object[key] === 'object') {
+                object_search.queue.push(object[key]);
+            }
+        }
+    }
+};
+
 const Menu = {
     header: {
         type: 'header',
@@ -12,16 +48,43 @@ const Menu = {
 
             search: {
                 type: 'textarea',
+                rows: 1,
                 id: 'satus-header__search',
-                placeholder: 'Search'
+                placeholder: 'Search',
+                on: {
+                    keyup: function(event) {
+                        if (event.keyCode === 13) {
+                            object_search.query = this.value;
+
+                            if (object_search.interval !== false) {
+                                clearInterval(object_search.interval);
+
+                                object_search.interval = false;
+                                object_search.queue = [];
+                                object_search.results = [];
+                            }
+
+                            Satus.chromium_bookmarks.get(function(items) {
+                                object_search.interval = setInterval(function() {
+                                    if (object_search.queue.length > 0) {
+                                        var item = object_search.queue[0];
+
+                                        object_search.search(item);
+
+                                        object_search.queue.shift();
+                                    }
+                                });
+
+                                object_search.search(items);
+                            });
+                        }
+                    }
+                }
             }
         },
         section_end: {
             type: 'section',
             class: ['satus-section--align-end'],
-            style: {
-                flex: 0
-            },
 
             vert: {
                 type: 'button',
@@ -32,8 +95,12 @@ const Menu = {
 
                     document.querySelector('.satus').appendChild(Satus.components.dialog({
                         right: 8,
-                        top: 56,
+                        top: 8,
                         scrim: false,
+                        surface: {
+                            maxWidth: '200px',
+                            minWidth: '200px'
+                        },
 
                         save_as: {
                             type: 'button',
