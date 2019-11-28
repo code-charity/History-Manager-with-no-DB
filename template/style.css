@@ -220,6 +220,13 @@ textarea
 }
 
 
+#table-url .satus-table__head > div:nth-child(5),
+#table-url .satus-table__body > div > div:nth-child(5)
+{
+    width: 20%;
+}
+
+
 /* SEARCH */
 #table-search .satus-table__head > div:nth-child(1),
 #table-search .satus-table__body > div > div:nth-child(1)

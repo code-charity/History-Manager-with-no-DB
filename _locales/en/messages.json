@@ -10,5 +10,8 @@
 	},
 	"url": {
 		"message": "URL"
+	},
+	"tags": {
+		"message": "Tags"
 	}
 }
