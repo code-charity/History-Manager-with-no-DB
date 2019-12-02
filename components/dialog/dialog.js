@@ -19,6 +19,10 @@ Satus.components.dialog = function(item, name) {
             }
         }
 
+        if (item.scrim === false) {
+            scrim.style.opacity = '0';
+        }
+
         if (item.top) {
             surface.style.top = item.top + 'px';
             transform_origin[1] = 'top';

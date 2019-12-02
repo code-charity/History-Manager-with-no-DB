@@ -33,6 +33,21 @@
     flex: 1;
 }
 
+.satus-table__body::-webkit-scrollbar
+{
+    width: 0 !important;
+}
+
+/*.satus-table__body > div
+{
+    overflow-y: scroll;
+
+    box-sizing: content-box;
+    width: 100%;
+    height: 100%;
+    padding-right: 17px;
+}*/
+
 .satus-table__body > div
 {
     display: flex;

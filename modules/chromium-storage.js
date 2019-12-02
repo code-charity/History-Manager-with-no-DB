@@ -26,7 +26,7 @@ Satus.chromium_storage = (function() {
                 for (var i = 0, l = tabs.length; i < l; i++) {
                     if (tabs[i].hasOwnProperty('url')) {
                         chrome.tabs.sendMessage(tabs[i].id, {
-                            name: name,
+                            name: name.replace('/', ''),
                             value: value
                         });
                     }
@@ -35,7 +35,7 @@ Satus.chromium_storage = (function() {
         }
 
         chrome.runtime.sendMessage({
-            name: name,
+            name: name.replace('/', ''),
             value: value
         });
     });

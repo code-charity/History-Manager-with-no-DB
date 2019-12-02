@@ -110,7 +110,7 @@ Satus.components.table = function(item, key) {
 
     setTimeout(function() {
         table.update(item.rows);
-        table_head.querySelector('.satus-text').click();
+        table_head.querySelectorAll('.satus-text')[1].click();
     });
 
     table.appendChild(table_head);

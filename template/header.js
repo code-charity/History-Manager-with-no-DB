@@ -2,7 +2,8 @@
 >>> «HEADER» TEMPLATE
 -----------------------------------------------------------------------------*/
 
-var header_search = false;
+var header_search = false,
+    search_type = 'bookmarks';
 
 const Menu = {
     header: {
@@ -11,6 +12,9 @@ const Menu = {
         section_start: {
             type: 'section',
             class: ['satus-section--align-start'],
+            style: {
+                position: 'relative'
+            },
 
             search: {
                 type: 'textarea',
@@ -20,7 +24,7 @@ const Menu = {
                 on: {
                     keyup: function(event) {
                         if (event.keyCode === 13) {
-                            var type = 'bookmarks';
+                            var type = search_type;
 
                             if (header_search !== false) {
                                 header_search.clear();
@@ -34,6 +38,10 @@ const Menu = {
 
                                         for (var i = 0, l = results.length; i < l; i++) {
                                             rows.push([{
+                                                select: {
+                                                    type: 'text'
+                                                }
+                                            }, {
                                                 visit_count: {
                                                     type: 'text',
                                                     label: 0
@@ -56,6 +64,10 @@ const Menu = {
 
                                         for (var i = 0, l = results.length; i < l; i++) {
                                             rows.push([{
+                                                select: {
+                                                    type: 'checkbox'
+                                                }
+                                            }, {
                                                 visit_count: {
                                                     type: 'text',
                                                     label: 0
@@ -71,7 +83,80 @@ const Menu = {
                                         document.querySelector('#table-search').update(rows);
                                     });
                                 });
+                            } else if (type === 'duckduckgo') {
+                                window.open('https://duckduckgo.com/?q=' + this.value, '_self');
+                            } else if (type === 'google') {
+                                window.open('https://www.google.com/search?q=' + this.value, '_self');
                             }
+                        }
+                    }
+                }
+            },
+
+            menu: {
+                type: 'dialog',
+                icon: '<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"></svg>',
+                left: 8,
+                top: 54,
+                scrim: false,
+                style: {
+                    position: 'absolute',
+                    right: '12px',
+                    minWidth: '32px',
+                    width: '32px',
+                    minHeight: '32px',
+                    height: '32px'
+                },
+
+                on: {
+                    click: function() {
+                        document.querySelector('.satus-dialog__surface').style.maxWidth = document.querySelector('#satus-header__search').offsetWidth + 'px';
+                        document.querySelector('.satus-dialog__surface').style.width = document.querySelector('#satus-header__search').offsetWidth + 'px';
+                        document.querySelector('.satus-dialog__surface').style.transformOrigin = 'center top';
+                    }
+                },
+
+                bookmarks: {
+                    type: 'button',
+                    label: 'Bookmarks',
+
+                    on: {
+                        click: function() {
+                            search_type = 'bookmarks';
+                            document.querySelector('.satus-dialog__scrim').click();
+                        }
+                    }
+                },
+                history: {
+                    type: 'button',
+                    label: 'History',
+
+                    on: {
+                        click: function() {
+                            search_type = 'history';
+                            document.querySelector('.satus-dialog__scrim').click();
+                        }
+                    }
+                },
+                duckduckgo: {
+                    type: 'button',
+                    label: 'DuckDuckGo',
+
+                    on: {
+                        click: function() {
+                            search_type = 'duckduckgo';
+                            document.querySelector('.satus-dialog__scrim').click();
+                        }
+                    }
+                },
+                google: {
+                    type: 'button',
+                    label: 'Google',
+
+                    on: {
+                        click: function() {
+                            search_type = 'google';
+                            document.querySelector('.satus-dialog__scrim').click();
                         }
                     }
                 }
