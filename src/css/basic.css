@@ -1,0 +1,48 @@
+/*--------------------------------------------------------------
+>>> TABLE OF CONTENTS:
+----------------------------------------------------------------
+# Fonts
+# Basic
+--------------------------------------------------------------*/
+
+/*--------------------------------------------------------------
+# FONTS
+--------------------------------------------------------------*/
+
+@font-face
+{
+    font-family: 'Open Sans';
+    font-weight: 400;
+
+    src: url('assets/fonts/OpenSans-Regular.ttf');
+}
+
+@font-face
+{
+    font-family: 'Open Sans';
+    font-weight: 700;
+
+    src: url('assets/fonts/OpenSans-SemiBold.ttf');
+}
+
+
+/*--------------------------------------------------------------
+# BASIC
+--------------------------------------------------------------*/
+
+body
+{
+    font-family: 'Open Sans', sans-serif;
+    font-size: .875rem;
+
+    display: flex;
+    overflow: hidden;
+    overflow: hidden;
+    flex-direction: column;
+
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+
+    background-color: #2c2b2c;
+}
