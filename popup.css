@@ -1,0 +1,380 @@
+
+html
+{
+	--primary: #111;
+	
+	--background-1: #111;
+    --text-1: #838383;
+    --icon-1: #FFD285;
+    --background-hover-1: rgba(255, 255, 255, .1);
+    --text-hover-1: #FFF;
+    --icon-hover-1: #FFF;
+
+    --background-2: #181818;
+    --text-2: #FFF;
+    --icon-2: #FFD285;
+    --background-hover-2: rgba(255, 255, 255, .08);
+    --text-hover-2: #FAFAFA;
+    --icon-hover-2: #FAFAFA;
+
+    --background-3: #181818;
+    --text-3: #838383;
+    --icon-3: #FFD285;
+    --background-hover-3: rgba(255, 255, 255, .1);
+    --text-hover-3: #FAFAFA;
+    --icon-hover-3: #FAFAFA;
+}
+/*--------------------------------------------------------------
+>>> TABLE OF CONTENTS:
+----------------------------------------------------------------
+# Fonts
+# Basic
+--------------------------------------------------------------*/
+
+/*--------------------------------------------------------------
+# FONTS
+--------------------------------------------------------------*/
+
+@font-face
+{
+    font-family: 'Open Sans';
+    font-weight: 400;
+
+    src: url('assets/fonts/OpenSans-Regular.ttf');
+}
+
+@font-face
+{
+    font-family: 'Open Sans';
+    font-weight: 700;
+
+    src: url('assets/fonts/OpenSans-SemiBold.ttf');
+}
+
+
+/*--------------------------------------------------------------
+# BASIC
+--------------------------------------------------------------*/
+
+body
+{
+    font-family: 'Open Sans', sans-serif;
+    font-size: .875rem;
+
+    display: flex;
+    overflow: hidden;
+    overflow: hidden;
+    flex-direction: column;
+
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+
+    background-color: #2c2b2c;
+}
+
+@font-face
+{
+    font-family: 'Open Sans';
+    font-weight: 700;
+
+    src: url(../fonts/OpenSans-Bold.ttf);
+}
+
+@font-face
+{
+    font-family: 'Open Sans';
+    font-weight: 600;
+
+    src: url(../fonts/OpenSans-SemiBold.ttf);
+}
+
+@font-face
+{
+    font-family: 'Open Sans';
+    font-weight: 400;
+
+    src: url(../fonts/OpenSans-Regular.ttf);
+}
+
+input,
+textarea
+{
+    font-family: 'Open Sans', sans-serif;
+}
+
+.satus-header
+{
+    border-bottom: 1px solid #2a2a2a;
+    background: #242424;
+    box-shadow: none;
+}
+
+#satus-header__search
+{
+    font-size: 14px;
+
+    width: 100%;
+    max-width: 1024px;
+    height: 40px;
+    margin-right: 8px;
+    padding: 14px 8px;
+
+    color: rgba(255,255,255,.7);
+    border-radius: 4px;
+    background-color: rgba(255,255,255,.1);
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+
+.satus-section--dashboard
+{
+    display: flex;
+
+    height: 100%;
+    padding: 0;
+
+    flex: 1;
+    align-items: flex-start;
+}
+
+
+
+
+
+
+
+
+
+
+/*-----------------------------------------------------------------------------
+>>> TABLES
+-----------------------------------------------------------------------------*/
+
+#table-domain,
+#table-url,
+#table-search
+{
+    height: calc(100% - 24px);
+    margin: 16px 8px 8px;
+
+    flex: 1;
+}
+
+#table-url
+{
+    flex: 2;
+}
+
+.satus-table__head
+{
+    border: 1px solid #242424;
+    background: #222;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .2);
+}
+
+.satus-table__head > div
+{
+    overflow: visible !important;
+
+    opacity: .75;
+}
+
+.satus-table__head > div:hover
+{
+    cursor: pointer;
+
+    opacity: 1;
+}
+
+.satus-table__head > div .label
+{
+    position: relative;
+}
+
+.satus-table__head > div .sort-desc .label::after
+{
+    position: absolute;
+    top: calc(50% - 2px);
+    right: -14px;
+
+    width: 0;
+    height: 0;
+
+    content: '';
+
+    border-top: 5px solid var(--text-1);
+    border-right: 5px solid transparent;
+    border-left: 5px solid transparent;
+}
+
+.satus-table__head > div .sort-asc .label::after
+{
+    position: absolute;
+    top: calc(50% - 2px);
+    right: -14px;
+
+    width: 0;
+    height: 0;
+
+    content: '';
+
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid var(--text-1);
+    border-left: 5px solid transparent;
+}
+
+.satus-table__body
+{
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.satus-table__body .satus-textarea
+{
+    background: transparent;
+}
+
+#table-domain .satus-table__head > div,
+#table-domain .satus-table__body > div > div,
+#table-url .satus-table__head > div,
+#table-url .satus-table__body > div > div,
+#table-search .satus-table__head > div,
+#table-search .satus-table__body > div > div
+{
+    overflow: hidden;
+
+    box-sizing: border-box;
+    padding: 4px 16px;
+
+    color: var(--text-2);
+}
+
+#table-domain .satus-table__body > div:hover
+{
+    cursor: pointer;
+}
+
+.satus-table__body > div:hover
+{
+    background: rgba(0,0,0,.2);
+}
+
+.satus-table__body > div.domain-selected
+{
+    background: rgba(0,0,0,.2);
+}
+
+
+/* DOMAIN */
+#table-domain .satus-table__head > div:nth-child(2),
+#table-domain .satus-table__body > div > div:nth-child(2)
+{
+    width: 32.5%;
+}
+
+.satus-table__head > div:nth-child(1),
+#table-domain .satus-table__head > div:nth-child(3)
+{
+    pointer-events: none;
+}
+
+#table-domain .satus-table__head > div:nth-child(3),
+#table-domain .satus-table__body > div > div:nth-child(3)
+{
+    display: flex;
+
+    width: 10%;
+
+    justify-content: center;
+}
+
+#table-domain .satus-table__head > div:nth-child(4),
+#table-domain .satus-table__body > div > div:nth-child(4)
+{
+    width: 62.5%;
+}
+
+
+/* URL */
+#table-url .satus-table__head > div:nth-child(2),
+#table-url .satus-table__body > div > div:nth-child(2)
+{
+    width: 20%;
+}
+
+
+#table-url .satus-table__head > div:nth-child(3),
+#table-url .satus-table__body > div > div:nth-child(3)
+{
+    width: 35%;
+}
+
+#table-url .satus-table__head > div:nth-child(4),
+#table-url .satus-table__body > div > div:nth-child(4)
+{
+    width: 35%;
+}
+
+
+#table-url .satus-table__head > div:nth-child(5),
+#table-url .satus-table__body > div > div:nth-child(5)
+{
+    width: 10%;
+}
+
+
+#table-url .satus-table__head > div:nth-child(6),
+#table-url .satus-table__body > div > div:nth-child(6)
+{
+    width: 20%;
+}
+
+
+/* SEARCH */
+#table-search .satus-table__head > div:nth-child(2),
+#table-search .satus-table__body > div > div:nth-child(2)
+{
+    width: 40%;
+}
+
+#table-search .satus-table__head > div:nth-child(4),
+#table-search .satus-table__body > div > div:nth-child(4)
+{
+    width: 60%;
+}
+
+
+
+
+
+.satus-section--dashboard #table-domain .satus-button,
+.satus-section--dashboard #table-url .satus-button,
+.satus-section--dashboard #table-search .satus-button
+{
+    width: 32px;
+    min-width: 32px;
+    height: 32px;
+}
+
+
+
+
+
+@media (max-width: 1365px)
+{
+    .satus-section--dashboard
+    {
+        flex-direction: column;
+    }
+
+    .satus-section--dashboard #table-domain,
+    .satus-section--dashboard #table-url,
+    .satus-section--dashboard #table-search
+    {
+        width: calc(100% - 16px);
+    }
+
+    #table-url
+    {
+        flex: 1;
+    }
+}
