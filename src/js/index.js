@@ -76,7 +76,7 @@ Satus.storage.import(function() {
             // MENU
             Menu.main.section = {
                 type: 'section',
-                class: ['satus-section--dashboard']
+                class: 'satus-section--dashboard'
             };
 
             Menu.main.section.by_domain = {
@@ -291,8 +291,6 @@ Satus.storage.import(function() {
             }
 
             document.body.innerHTML = '';
-
-            delete Menu.main;
 
             Satus.render(Menu);
         });
