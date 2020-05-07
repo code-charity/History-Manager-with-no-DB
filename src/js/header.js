@@ -10,13 +10,13 @@ var header_search = false,
 
             section_start: {
                 type: 'section',
-                class: ['satus-section--align-start'],
+                class: 'satus-section--align-start',
                 style: {
                     position: 'relative'
                 },
 
                 search: {
-                    type: 'textarea',
+                    type: 'text-field',
                     rows: 1,
                     id: 'satus-header__search',
                     placeholder: 'Search',
@@ -93,69 +93,53 @@ var header_search = false,
                 },
 
                 menu: {
-                    type: 'dialog',
+                    type: 'button',
                     icon: '<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"></svg>',
-                    left: 8,
-                    top: 54,
-                    scrim: false,
-                    style: {
-                        position: 'absolute',
-                        right: '12px',
-                        minWidth: '32px',
-                        width: '32px',
-                        minHeight: '32px',
-                        height: '32px'
-                    },
+                    onClickRender: {
+                        type: 'dialog',
 
-                    on: {
-                        click: function() {
-                            document.querySelector('.satus-dialog__surface').style.maxWidth = document.querySelector('#satus-header__search').offsetWidth + 'px';
-                            document.querySelector('.satus-dialog__surface').style.width = document.querySelector('#satus-header__search').offsetWidth + 'px';
-                            document.querySelector('.satus-dialog__surface').style.transformOrigin = 'center top';
-                        }
-                    },
+                        bookmarks: {
+                            type: 'button',
+                            label: 'Bookmarks',
 
-                    bookmarks: {
-                        type: 'button',
-                        label: 'Bookmarks',
-
-                        on: {
-                            click: function() {
-                                search_type = 'bookmarks';
-                                document.querySelector('.satus-dialog__scrim').click();
+                            on: {
+                                click: function() {
+                                    search_type = 'bookmarks';
+                                    document.querySelector('.satus-dialog__scrim').click();
+                                }
                             }
-                        }
-                    },
-                    history: {
-                        type: 'button',
-                        label: 'History',
+                        },
+                        history: {
+                            type: 'button',
+                            label: 'History',
 
-                        on: {
-                            click: function() {
-                                search_type = 'history';
-                                document.querySelector('.satus-dialog__scrim').click();
+                            on: {
+                                click: function() {
+                                    search_type = 'history';
+                                    document.querySelector('.satus-dialog__scrim').click();
+                                }
                             }
-                        }
-                    },
-                    duckduckgo: {
-                        type: 'button',
-                        label: 'DuckDuckGo',
+                        },
+                        duckduckgo: {
+                            type: 'button',
+                            label: 'DuckDuckGo',
 
-                        on: {
-                            click: function() {
-                                search_type = 'duckduckgo';
-                                document.querySelector('.satus-dialog__scrim').click();
+                            on: {
+                                click: function() {
+                                    search_type = 'duckduckgo';
+                                    document.querySelector('.satus-dialog__scrim').click();
+                                }
                             }
-                        }
-                    },
-                    google: {
-                        type: 'button',
-                        label: 'Google',
+                        },
+                        google: {
+                            type: 'button',
+                            label: 'Google',
 
-                        on: {
-                            click: function() {
-                                search_type = 'google';
-                                document.querySelector('.satus-dialog__scrim').click();
+                            on: {
+                                click: function() {
+                                    search_type = 'google';
+                                    document.querySelector('.satus-dialog__scrim').click();
+                                }
                             }
                         }
                     }
@@ -163,29 +147,97 @@ var header_search = false,
             },
             section_end: {
                 type: 'section',
-                class: ['satus-section--align-end'],
+                class: 'satus-section--align-end',
 
-                vert: {
-                    type: 'dialog',
-                    icon: '<svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle></svg>',
-                    right: 8,
-                    top: 8,
-                    scrim: false,
-                    surface: {
-                        maxWidth: '200px',
-                        minWidth: '200px'
-                    },
+                button_vert: {
+                    type: 'button',
+                    icon: '<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="5.25" r="0.45"/><circle cx="12" cy="12" r="0.45"/><circle cx="12" cy="18.75" r="0.45"/></svg>',
+                    onClickRender: {
+                        type: 'dialog',
+                        class: 'satus-dialog--vertical-menu',
 
-                    save_as: {
-                        type: 'button',
-                        label: 'saveAs',
-                        icon: '<svg viewBox="0 0 24 24" style=width:16px;height:16px;margin-right:10px;margin-top:2px><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>',
-                        onclick: function(satus, component) {
-                            chrome.runtime.sendMessage({
-                                name: 'download',
-                                filename: 'improvedtube-report',
-                                value: satus.modules.user.get()
-                            });
+                        export: {
+                            type: 'button',
+                            label: 'Export',
+                            onclick: function() {
+                                chrome.runtime.sendMessage({
+                                    name: 'download',
+                                    filename: 'regex-replace.json',
+                                    value: Satus.storage.get('data')
+                                });
+                            }
+                        },
+                        import: {
+                            type: 'button',
+                            label: 'Import',
+                            onclick: function() {
+                                try {
+                                    var input = document.createElement('input');
+
+                                    input.type = 'file';
+
+                                    input.addEventListener('change', function() {
+                                        var file_reader = new FileReader();
+
+                                        file_reader.onload = function() {
+                                            var data = JSON.parse(this.result);
+
+                                            for (var i in data) {
+                                                Satus.storage.set(i, data[i]);
+                                            }
+
+                                            Satus.render({
+                                                type: 'dialog',
+
+                                                message: {
+                                                    type: 'text',
+                                                    label: 'successfullyImportedSettings',
+                                                    style: {
+                                                        'width': '100%',
+                                                        'opacity': '.8'
+                                                    }
+                                                },
+                                                section: {
+                                                    type: 'section',
+                                                    class: 'controls',
+                                                    style: {
+                                                        'justify-content': 'flex-end',
+                                                        'display': 'flex'
+                                                    },
+
+                                                    cancel: {
+                                                        type: 'button',
+                                                        label: 'cancel',
+                                                        onclick: function() {
+                                                            var scrim = document.querySelectorAll('.satus-dialog__scrim');
+
+                                                            scrim[scrim.length - 1].click();
+                                                        }
+                                                    },
+                                                    ok: {
+                                                        type: 'button',
+                                                        label: 'OK',
+                                                        onclick: function() {
+                                                            var scrim = document.querySelectorAll('.satus-dialog__scrim');
+
+                                                            scrim[scrim.length - 1].click();
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                        };
+
+                                        file_reader.readAsText(this.files[0]);
+                                    });
+
+                                    input.click();
+                                } catch (err) {
+                                    chrome.runtime.sendMessage({
+                                        name: 'dialog-error',
+                                        value: err
+                                    });
+                                }
+                            }
                         }
                     }
                 }

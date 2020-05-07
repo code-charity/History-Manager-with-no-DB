@@ -10,8 +10,10 @@ Satus.storage.import(function() {
     var language = Satus.storage.get('language') || 'en';
 
     Satus.locale.import('_locales/' + language + '/messages.json', function() {
-        console.log(language);
-        Satus.chromium_history.get('', function(items) {
+        chrome.history.search({
+            text: '',
+            maxResults: 9999
+        }, function(items) {
             var results = {},
                 history = Satus.storage.get('history') || [];
 
@@ -288,13 +290,11 @@ Satus.storage.import(function() {
                 }]);
             }
 
-            document.querySelector('.satus').innerHTML = '';
+            document.body.innerHTML = '';
 
-            Satus.render(document.querySelector('.satus'), Menu);
+            delete Menu.main;
 
-            setTimeout(function() {
-                document.querySelector('#table-domain .satus-table__body > div > div:nth-child(4) > span').click();
-            }, 500);
+            Satus.render(Menu);
         });
     });
 });
