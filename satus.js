@@ -1858,7 +1858,7 @@ Satus.components.switch = function(element) {
 
     return component;
 };
-Satus.components.table = function(item, key) {
+Satus.components.table = function(item) {
     var table = document.createElement('div'),
         table_head = document.createElement('div'),
         table_body = document.createElement('div'),
@@ -1956,7 +1956,7 @@ Satus.components.table = function(item, key) {
                 var col = document.createElement('div');
 
                 if (typeof rows[i][j] === 'object') {
-                    Satus.render(col, rows[i][j]);
+                    Satus.render(rows[i][j], col);
                 }
 
                 row.appendChild(col);
@@ -1970,7 +1970,6 @@ Satus.components.table = function(item, key) {
 
     setTimeout(function() {
         table.update(item.rows);
-        table_head.querySelector('.satus-text').click();
     });
 
     table.appendChild(table_head);
