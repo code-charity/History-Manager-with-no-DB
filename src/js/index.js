@@ -6,8 +6,11 @@ Menu.main = {
     type: 'main'
 };
 
-Satus.chromium_storage.sync(function() {
-    Satus.locale(function() {
+Satus.storage.import(function() {
+    var language = Satus.storage.get('language') || 'en';
+
+    Satus.locale.import('_locales/' + language + '/messages.json', function() {
+        console.log(language);
         Satus.chromium_history.get('', function(items) {
             var results = {},
                 history = Satus.storage.get('history') || [];
@@ -294,32 +297,4 @@ Satus.chromium_storage.sync(function() {
             }, 500);
         });
     });
-});
-
-
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    if (request.name === 'dialog-error') {
-        Satus.components.dialog({
-            options: {
-                scrim_visibility: false,
-                surface_styles: {
-                    position: 'absolute',
-                    bottom: '16px',
-                    boxShadow: 'none',
-                    border: '1px solid rgba(255, 0, 0, .4)',
-                    background: 'rgba(255,0,0,.2)'
-                }
-            },
-
-            message: {
-                type: 'text',
-                label: request.value,
-                style: {
-                    'padding': '0 16px',
-                    'width': '100%',
-                    'opacity': '.8'
-                }
-            }
-        });
-    }
 });
