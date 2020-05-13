@@ -246,12 +246,109 @@ var header_search = false,
         }
     };
 /*-----------------------------------------------------------------------------
->>> «INDEX» TEMPLATE
+>>> «MAIN» TEMPLATE
 -----------------------------------------------------------------------------*/
 
 Menu.main = {
-    type: 'main'
+    type: 'main',
+
+    section: {
+        type: 'section',
+        class: 'satus-section--dashboard',
+
+        by_domain: {
+            type: 'table',
+            id: 'table-domain',
+
+            columns: [{
+                select: {
+                    type: 'text'
+                }
+            }, {
+                visit_count: {
+                    type: 'text',
+                    label: 'visitCount',
+                    sort: 'visit_count/label'
+                }
+            }, {
+                expand: {
+                    type: 'text'
+                }
+            }, {
+                domain: {
+                    type: 'text',
+                    label: 'domain',
+                    sort: 'domain/label'
+                }
+            }],
+            rows: []
+        },
+        by_url: {
+            type: 'table',
+            id: 'table-url',
+
+            columns: [{
+                select: {
+                    type: 'text'
+                }
+            }, {
+                visit_count: {
+                    type: 'text',
+                    label: 'visitCount',
+                    sort: 'visit_count/label'
+                }
+            }, {
+                title: {
+                    type: 'text',
+                    label: 'title',
+                    sort: 'title/label'
+                }
+            }, {
+                url: {
+                    type: 'text',
+                    label: 'url',
+                    sort: 'url/label'
+                }
+            }, {
+                favorite: {
+                    type: 'text'
+                }
+            }, {
+                tags: {
+                    type: 'text',
+                    label: 'tags'
+                }
+            }],
+            rows: []
+        },
+        search: {
+            type: 'table',
+            id: 'table-search',
+
+            columns: [{
+                select: {
+                    type: 'text'
+                }
+            }, {
+                visit_count: {
+                    type: 'text',
+                    label: 'visitCount',
+                    sort: 'visit_count/label'
+                }
+            }, {
+                domain: {
+                    type: 'text',
+                    label: 'domain',
+                    sort: 'domain/label'
+                }
+            }],
+            rows: []
+        }
+    }
 };
+/*-----------------------------------------------------------------------------
+>>> «INDEX» TEMPLATE
+-----------------------------------------------------------------------------*/
 
 Satus.storage.import(function() {
     var language = Satus.storage.get('language') || 'en';
@@ -321,99 +418,6 @@ Satus.storage.import(function() {
 
 
             // MENU
-            Menu.main.section = {
-                type: 'section',
-                class: 'satus-section--dashboard'
-            };
-
-            Menu.main.section.by_domain = {
-                type: 'table',
-                id: 'table-domain',
-                columns: [{
-                    select: {
-                        type: 'text'
-                    }
-                }, {
-                    visit_count: {
-                        type: 'text',
-                        label: 'visitCount',
-                        sort: 'visit_count/label'
-                    }
-                }, {
-                    expand: {
-                        type: 'text'
-                    }
-                }, {
-                    domain: {
-                        type: 'text',
-                        label: 'domain',
-                        sort: 'domain/label'
-                    }
-                }],
-                rows: []
-            };
-
-            Menu.main.section.by_url = {
-                type: 'table',
-                id: 'table-url',
-                columns: [{
-                    select: {
-                        type: 'text'
-                    }
-                }, {
-                    visit_count: {
-                        type: 'text',
-                        label: 'visitCount',
-                        sort: 'visit_count/label'
-                    }
-                }, {
-                    title: {
-                        type: 'text',
-                        label: 'title',
-                        sort: 'title/label'
-                    }
-                }, {
-                    url: {
-                        type: 'text',
-                        label: 'url',
-                        sort: 'url/label'
-                    }
-                }, {
-                    favorite: {
-                        type: 'text'
-                    }
-                }, {
-                    tags: {
-                        type: 'text',
-                        label: 'tags'
-                    }
-                }],
-                rows: []
-            };
-
-            Menu.main.section.search = {
-                type: 'table',
-                id: 'table-search',
-                columns: [{
-                    select: {
-                        type: 'text'
-                    }
-                }, {
-                    visit_count: {
-                        type: 'text',
-                        label: 'visitCount',
-                        sort: 'visit_count/label'
-                    }
-                }, {
-                    domain: {
-                        type: 'text',
-                        label: 'domain',
-                        sort: 'domain/label'
-                    }
-                }],
-                rows: []
-            };
-
             var kk = 0;
 
             for (var key in results) {

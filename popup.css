@@ -267,6 +267,15 @@ body[data-appearance='home'] .satus-text--title
     height: 18px;
 }
 
+/*--------------------------------------------------------------
+>>> MAIN
+--------------------------------------------------------------*/
+
+.satus-main,
+.satus-main__container {
+    background-color: #2c2b2c
+}
+
 input,
 textarea
 {
@@ -300,7 +309,7 @@ textarea
 {
     display: flex;
 
-    height: 100%;
+    height: calc(100vh - 56px);
     padding: 0;
 
     flex: 1;

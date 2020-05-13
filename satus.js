@@ -1939,7 +1939,7 @@ Satus.components.table = function(item) {
             table.update(sorted_rows);
         };
 
-        Satus.render(col, item.columns[i]);
+        Satus.render(item.columns[i], col);
 
         table_head.appendChild(col);
     }
