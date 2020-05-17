@@ -1,29 +1,81 @@
 
-html
+/*--------------------------------------------------------------
+>>> THEMES
+----------------------------------------------------------------
+# Header
+# Main
+# Table
+--------------------------------------------------------------*/
+
+/*--------------------------------------------------------------
+# HEADER
+--------------------------------------------------------------*/
+
+.satus-header
 {
-	--primary: #111;
-	
-	--background-1: #111;
-    --text-1: #838383;
-    --icon-1: #FFD285;
-    --background-hover-1: rgba(255, 255, 255, .1);
-    --text-hover-1: #FFF;
-    --icon-hover-1: #FFF;
+    color: #514e48;
+    background-color: #f6f5f4;
 
-    --background-2: #181818;
-    --text-2: #FFF;
-    --icon-2: #FFD285;
-    --background-hover-2: rgba(255, 255, 255, .08);
-    --text-hover-2: #FAFAFA;
-    --icon-hover-2: #FAFAFA;
-
-    --background-3: #181818;
-    --text-3: #838383;
-    --icon-3: #FFD285;
-    --background-hover-3: rgba(255, 255, 255, .1);
-    --text-hover-3: #FAFAFA;
-    --icon-hover-3: #FAFAFA;
+    fill: #514e48;
 }
+
+.satus-header__text-field
+{
+    color: #514e48;
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(0,0,0,.1);
+}
+
+
+/*--------------------------------------------------------------
+# MAIN
+--------------------------------------------------------------*/
+
+.satus-main,
+.satus-main__container
+{
+    background-color: #f6f5f4;
+}
+
+
+/*--------------------------------------------------------------
+# TABLE
+--------------------------------------------------------------*/
+
+.satus-table
+{
+    background: #fff;
+}
+
+.satus-table__head
+{
+    box-shadow: 0 1px 2px rgba(0,0,0,.1);
+}
+
+.satus-table__head > div
+{
+    height: 100%;
+    padding: 0;
+}
+
+.satus-table__head .satus-text
+{
+    display: inline-flex;
+
+    width: 100%;
+    height: 100%;
+
+    color: #b4b2af;
+
+    justify-content: center;
+    align-items: center;
+}
+
+.satus-table__head > div:hover .satus-text
+{
+    color: #514e48;
+}
+
 /*--------------------------------------------------------------
 >>> TABLE OF CONTENTS:
 ----------------------------------------------------------------
@@ -73,6 +125,12 @@ body
     background-color: #2c2b2c;
 }
 
+input,
+textarea
+{
+    font-family: 'Open Sans', sans-serif;
+}
+
 /*--------------------------------------------------------------
 >>> HEADER:
 ----------------------------------------------------------------
@@ -83,6 +141,11 @@ body
 4.0 Search
 5.0 Vertical menu
 --------------------------------------------------------------*/
+
+.satus-header
+{
+    box-shadow: none;
+}
 
 /*--------------------------------------------------------------
 1.0 BUTTONS
@@ -123,23 +186,26 @@ body[data-appearance='home'] .satus-button--back
 
 
 /*--------------------------------------------------------------
-2.0 TITLE
+2.0 SEARCH
 --------------------------------------------------------------*/
 
-.satus-text--title
+.satus-header__text-field
 {
-    font-size: 15px;
-    font-weight: 400;
+    font-size: 14px;
 
-    position: absolute;
-    left: 56px;
+    width: 100%;
+    max-width: 1024px;
+    height: 40px;
+    margin-right: 8px;
+    padding: 14px 8px;
 
-    letter-spacing: .0125em;
+    border-radius: 4px;
 }
 
-body[data-appearance='home'] .satus-text--title
+.satus-header__text-field + .satus-button
 {
-    left: 14px;
+    position: absolute;
+    right: 12px;
 }
 
 
@@ -159,71 +225,15 @@ body[data-appearance='home'] .satus-text--title
 
 
 /*--------------------------------------------------------------
-4.0 SEARCH
---------------------------------------------------------------*/
-
-.satus-dialog--search
-{
-    pointer-events: none;
-}
-
-.satus-dialog--search .satus-dialog__scrim
-{
-    display: none;
-}
-
-.satus-dialog--search .satus-dialog__surface
-{
-    position: fixed;
-    top: 11px;
-    right: 8px;
-
-    visibility: unset;
-
-    width: calc(100% - 62px);
-    min-width: unset;
-    max-width: unset;
-    height: 34px;
-    padding: 0;
-
-    transform: unset;
-    animation: unset;
-    pointer-events: all;
-
-    opacity: unset;
-    border: 1px solid rgba(0,0,0,.05);
-    box-shadow: unset;
-}
-
-.satus-dialog--search .satus-dialog__surface .satus-text-field
-{
-    height: 34px;
-}
-
-.satus-dialog--search .satus-dialog__surface .satus-button
-{
-    position: absolute;
-    top: 3px;
-    right: 3px;
-
-    overflow: hidden;
-
-    width: 32px;
-    height: 32px;
-
-    border-radius: 50%;
-}
-
-.satus-dialog--search .satus-dialog__surface .satus-button svg
-{
-    fill: unset;
-    stroke: currentColor;
-}
-
-
-/*--------------------------------------------------------------
 5.0 VERTICAL MENU
 --------------------------------------------------------------*/
+
+.satus-dialog--vertical-menu .satus-dialog__scrim
+{
+    background: rgba(0,0,0,.7);
+
+    backdrop-filter: blur(4px);
+}
 
 .satus-dialog--vertical-menu .satus-dialog__surface
 {
@@ -271,45 +281,11 @@ body[data-appearance='home'] .satus-text--title
 >>> MAIN
 --------------------------------------------------------------*/
 
-.satus-main,
-.satus-main__container {
-    background-color: #2c2b2c
-}
-
-input,
-textarea
-{
-    font-family: 'Open Sans', sans-serif;
-}
-
-.satus-header
-{
-    border-bottom: 1px solid #2a2a2a;
-    background: #242424;
-    box-shadow: none;
-}
-
-#satus-header__search
-{
-    font-size: 14px;
-
-    width: 100%;
-    max-width: 1024px;
-    height: 40px;
-    margin-right: 8px;
-    padding: 14px 8px;
-
-    color: rgba(255,255,255,.7);
-    border-radius: 4px;
-    background-color: rgba(255,255,255,.1);
-    box-shadow: 0 1px 3px rgba(0,0,0,.05);
-}
-
 .satus-section--dashboard
 {
     display: flex;
 
-    height: calc(100vh - 56px);
+    height: calc(100vh - 58px);
     padding: 0;
 
     flex: 1;
@@ -317,45 +293,115 @@ textarea
 }
 
 
+/*--------------------------------------------------------------
+# CHECKBOXES
+--------------------------------------------------------------*/
 
-
-
-
-
-
-
-
-/*-----------------------------------------------------------------------------
->>> TABLES
------------------------------------------------------------------------------*/
-
-#table-domain,
-#table-url,
-#table-search
+.satus-switch--checkbox
 {
-    height: calc(100% - 24px);
-    margin: 16px 8px 8px;
+    flex-direction: row-reverse;
+}
+
+.satus-switch--checkbox:hover
+{
+    background-color: unset;
+}
+
+.satus-switch--checkbox .satus-switch__label
+{
+    margin: 0 0 0 16px;
 
     flex: 1;
+}
+
+.satus-switch--checkbox .satus-switch__track
+{
+    width: 22px;
+    min-width: 22px;
+    max-width: 22px;
+    height: 22px;
+    min-height: 22px;
+    max-height: 22px;
+
+    border-radius: 50%;
+    background: transparent;
+    box-shadow: inset 0 0 0 1px #bdbdbd;
+}
+
+.satus-switch--checkbox .satus-switch__track::before
+{
+    position: absolute;
+    top: 7px;
+    left: 5px;
+
+    visibility: hidden;
+
+    width: 10px;
+    height: 5px;
+
+    transition: unset;
+    transform: rotate(-45deg);
+
+    opacity: 0;
+    border: 2px solid #fff;
+    border-top: none;
+    border-right: none;
+    border-radius: unset;
+    background-color: transparent;
+}
+
+.satus-switch--checkbox .satus-switch__input:checked + .satus-switch__track::before
+{
+    top: 7px;
+    left: 5px;
+
+    visibility: visible;
+
+    transform: rotate(-45deg);
+
+    opacity: 1;
+    background-color: transparent;
+}
+
+.satus-switch--checkbox .satus-switch__track::after
+{
+    content: none;
+}
+
+.satus-switch--checkbox .satus-switch__input:checked + .satus-switch__track
+{
+    background-color: #f6b465;
+    box-shadow: none;
+}
+
+
+/*--------------------------------------------------------------
+# TABLES
+--------------------------------------------------------------*/
+
+.satus-table
+{
+    height: calc(100% - 10px);
+    margin: 6px 6px 4px;
+
+    flex: 1;
+}
+
+.satus-table .satus-button
+{
+    overflow: hidden;
+
+    width: 32px;
+    min-width: 32px;
+    height: 32px;
+    padding: 4px;
+
+    border-radius: 50%;
 }
 
 #table-url
 {
     flex: 2;
-}
-
-.satus-table__head
-{
-    border: 1px solid #242424;
-    background: #222;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .2);
-}
-
-.satus-table__head > div
-{
-    overflow: visible !important;
-
-    opacity: .75;
 }
 
 .satus-table__head > div:hover
@@ -365,12 +411,12 @@ textarea
     opacity: 1;
 }
 
-.satus-table__head > div .label
+.satus-table__head > div .satus-text__label
 {
     position: relative;
 }
 
-.satus-table__head > div .sort-desc .label::after
+.satus-table__head > div .sort-desc .satus-text__label::after
 {
     position: absolute;
     top: calc(50% - 2px);
@@ -381,12 +427,12 @@ textarea
 
     content: '';
 
-    border-top: 5px solid var(--text-1);
+    border-top: 5px solid #514e48;
     border-right: 5px solid transparent;
     border-left: 5px solid transparent;
 }
 
-.satus-table__head > div .sort-asc .label::after
+.satus-table__head > div .sort-asc .satus-text__label::after
 {
     position: absolute;
     top: calc(50% - 2px);
@@ -398,7 +444,7 @@ textarea
     content: '';
 
     border-right: 5px solid transparent;
-    border-bottom: 5px solid var(--text-1);
+    border-bottom: 5px solid #514e48;
     border-left: 5px solid transparent;
 }
 
@@ -412,40 +458,32 @@ textarea
     background: transparent;
 }
 
-#table-domain .satus-table__head > div,
-#table-domain .satus-table__body > div > div,
-#table-url .satus-table__head > div,
-#table-url .satus-table__body > div > div,
-#table-search .satus-table__head > div,
-#table-search .satus-table__body > div > div
+.satus-table__head > div,
+.satus-table__body .satus-scrollbar__content > div > div
 {
     overflow: hidden;
+}
 
+.satus-table__body .satus-scrollbar__content > div > div
+{
     box-sizing: border-box;
     padding: 4px 16px;
-
-    color: var(--text-2);
 }
 
-#table-domain .satus-table__body > div:hover
+.satus-table__body .satus-scrollbar__content > div:hover
 {
-    cursor: pointer;
+    background: rgba(0,0,0,.05);
 }
 
-.satus-table__body > div:hover
+.satus-table__body .satus-scrollbar__content > div.domain-selected
 {
-    background: rgba(0,0,0,.2);
-}
-
-.satus-table__body > div.domain-selected
-{
-    background: rgba(0,0,0,.2);
+    background: rgba(0,0,0,.1);
 }
 
 
 /* DOMAIN */
 #table-domain .satus-table__head > div:nth-child(2),
-#table-domain .satus-table__body > div > div:nth-child(2)
+#table-domain .satus-table__body .satus-scrollbar__content > div > div:nth-child(2)
 {
     width: 32.5%;
 }
@@ -457,7 +495,7 @@ textarea
 }
 
 #table-domain .satus-table__head > div:nth-child(3),
-#table-domain .satus-table__body > div > div:nth-child(3)
+#table-domain .satus-table__body .satus-scrollbar__content > div > div:nth-child(3)
 {
     display: flex;
 
@@ -467,7 +505,7 @@ textarea
 }
 
 #table-domain .satus-table__head > div:nth-child(4),
-#table-domain .satus-table__body > div > div:nth-child(4)
+#table-domain .satus-table__body .satus-scrollbar__content > div > div:nth-child(4)
 {
     width: 62.5%;
 }
@@ -475,34 +513,34 @@ textarea
 
 /* URL */
 #table-url .satus-table__head > div:nth-child(2),
-#table-url .satus-table__body > div > div:nth-child(2)
+#table-url .satus-table__body .satus-scrollbar__content > div > div:nth-child(2)
 {
     width: 20%;
 }
 
 
 #table-url .satus-table__head > div:nth-child(3),
-#table-url .satus-table__body > div > div:nth-child(3)
+#table-url .satus-table__body .satus-scrollbar__content > div > div:nth-child(3)
 {
     width: 35%;
 }
 
 #table-url .satus-table__head > div:nth-child(4),
-#table-url .satus-table__body > div > div:nth-child(4)
+#table-url .satus-table__body .satus-scrollbar__content > div > div:nth-child(4)
 {
     width: 35%;
 }
 
 
 #table-url .satus-table__head > div:nth-child(5),
-#table-url .satus-table__body > div > div:nth-child(5)
+#table-url .satus-table__body .satus-scrollbar__content > div > div:nth-child(5)
 {
     width: 10%;
 }
 
 
 #table-url .satus-table__head > div:nth-child(6),
-#table-url .satus-table__body > div > div:nth-child(6)
+#table-url .satus-table__body .satus-scrollbar__content > div > div:nth-child(6)
 {
     width: 20%;
 }
@@ -510,29 +548,22 @@ textarea
 
 /* SEARCH */
 #table-search .satus-table__head > div:nth-child(2),
-#table-search .satus-table__body > div > div:nth-child(2)
+#table-search .satus-table__body .satus-scrollbar__content > div > div:nth-child(2)
 {
     width: 40%;
 }
 
 #table-search .satus-table__head > div:nth-child(4),
-#table-search .satus-table__body > div > div:nth-child(4)
+#table-search .satus-table__body .satus-scrollbar__content > div > div:nth-child(4)
 {
     width: 60%;
 }
 
+/*-----------------------------------------------------------------------------
+>>> TABLES
+-----------------------------------------------------------------------------*/
 
 
-
-
-.satus-section--dashboard #table-domain .satus-button,
-.satus-section--dashboard #table-url .satus-button,
-.satus-section--dashboard #table-search .satus-button
-{
-    width: 32px;
-    min-width: 32px;
-    height: 32px;
-}
 
 
 

@@ -15,10 +15,10 @@ var header_search = false,
                     position: 'relative'
                 },
 
-                search: {
+                text_field: {
                     type: 'text-field',
                     rows: 1,
-                    id: 'satus-header__search',
+                    class: 'satus-header__text-field',
                     placeholder: 'Search',
                     on: {
                         keyup: function(event) {

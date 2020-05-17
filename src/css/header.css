@@ -9,6 +9,11 @@
 5.0 Vertical menu
 --------------------------------------------------------------*/
 
+.satus-header
+{
+    box-shadow: none;
+}
+
 /*--------------------------------------------------------------
 1.0 BUTTONS
 --------------------------------------------------------------*/
@@ -48,23 +53,26 @@ body[data-appearance='home'] .satus-button--back
 
 
 /*--------------------------------------------------------------
-2.0 TITLE
+2.0 SEARCH
 --------------------------------------------------------------*/
 
-.satus-text--title
+.satus-header__text-field
 {
-    font-size: 15px;
-    font-weight: 400;
+    font-size: 14px;
 
-    position: absolute;
-    left: 56px;
+    width: 100%;
+    max-width: 1024px;
+    height: 40px;
+    margin-right: 8px;
+    padding: 14px 8px;
 
-    letter-spacing: .0125em;
+    border-radius: 4px;
 }
 
-body[data-appearance='home'] .satus-text--title
+.satus-header__text-field + .satus-button
 {
-    left: 14px;
+    position: absolute;
+    right: 12px;
 }
 
 
@@ -84,71 +92,15 @@ body[data-appearance='home'] .satus-text--title
 
 
 /*--------------------------------------------------------------
-4.0 SEARCH
---------------------------------------------------------------*/
-
-.satus-dialog--search
-{
-    pointer-events: none;
-}
-
-.satus-dialog--search .satus-dialog__scrim
-{
-    display: none;
-}
-
-.satus-dialog--search .satus-dialog__surface
-{
-    position: fixed;
-    top: 11px;
-    right: 8px;
-
-    visibility: unset;
-
-    width: calc(100% - 62px);
-    min-width: unset;
-    max-width: unset;
-    height: 34px;
-    padding: 0;
-
-    transform: unset;
-    animation: unset;
-    pointer-events: all;
-
-    opacity: unset;
-    border: 1px solid rgba(0,0,0,.05);
-    box-shadow: unset;
-}
-
-.satus-dialog--search .satus-dialog__surface .satus-text-field
-{
-    height: 34px;
-}
-
-.satus-dialog--search .satus-dialog__surface .satus-button
-{
-    position: absolute;
-    top: 3px;
-    right: 3px;
-
-    overflow: hidden;
-
-    width: 32px;
-    height: 32px;
-
-    border-radius: 50%;
-}
-
-.satus-dialog--search .satus-dialog__surface .satus-button svg
-{
-    fill: unset;
-    stroke: currentColor;
-}
-
-
-/*--------------------------------------------------------------
 5.0 VERTICAL MENU
 --------------------------------------------------------------*/
+
+.satus-dialog--vertical-menu .satus-dialog__scrim
+{
+    background: rgba(0,0,0,.7);
+
+    backdrop-filter: blur(4px);
+}
 
 .satus-dialog--vertical-menu .satus-dialog__surface
 {

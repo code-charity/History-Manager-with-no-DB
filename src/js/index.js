@@ -77,7 +77,8 @@ Satus.storage.import(function() {
 
                 Menu.main.section.by_domain.rows.push([{
                     select: {
-                        type: 'switch'
+                        type: 'switch',
+                        class: 'satus-switch--checkbox'
                     }
                 }, {
                     visit_count: {
@@ -104,7 +105,8 @@ Satus.storage.import(function() {
 
                                 rows.push([{
                                     select: {
-                                        type: 'switch'
+                                        type: 'switch',
+                                        class: 'satus-switch--checkbox'
                                     }
                                 }, {
                                     visit_count: {

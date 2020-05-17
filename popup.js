@@ -16,10 +16,10 @@ var header_search = false,
                     position: 'relative'
                 },
 
-                search: {
+                text_field: {
                     type: 'text-field',
                     rows: 1,
-                    id: 'satus-header__search',
+                    class: 'satus-header__text-field',
                     placeholder: 'Search',
                     on: {
                         keyup: function(event) {
@@ -425,7 +425,8 @@ Satus.storage.import(function() {
 
                 Menu.main.section.by_domain.rows.push([{
                     select: {
-                        type: 'switch'
+                        type: 'switch',
+                        class: 'satus-switch--checkbox'
                     }
                 }, {
                     visit_count: {
@@ -452,7 +453,8 @@ Satus.storage.import(function() {
 
                                 rows.push([{
                                     select: {
-                                        type: 'switch'
+                                        type: 'switch',
+                                        class: 'satus-switch--checkbox'
                                     }
                                 }, {
                                     visit_count: {

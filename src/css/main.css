@@ -2,7 +2,280 @@
 >>> MAIN
 --------------------------------------------------------------*/
 
-.satus-main,
-.satus-main__container {
-    background-color: #2c2b2c
+.satus-section--dashboard
+{
+    display: flex;
+
+    height: calc(100vh - 58px);
+    padding: 0;
+
+    flex: 1;
+    align-items: flex-start;
+}
+
+
+/*--------------------------------------------------------------
+# CHECKBOXES
+--------------------------------------------------------------*/
+
+.satus-switch--checkbox
+{
+    flex-direction: row-reverse;
+}
+
+.satus-switch--checkbox:hover
+{
+    background-color: unset;
+}
+
+.satus-switch--checkbox .satus-switch__label
+{
+    margin: 0 0 0 16px;
+
+    flex: 1;
+}
+
+.satus-switch--checkbox .satus-switch__track
+{
+    width: 22px;
+    min-width: 22px;
+    max-width: 22px;
+    height: 22px;
+    min-height: 22px;
+    max-height: 22px;
+
+    border-radius: 50%;
+    background: transparent;
+    box-shadow: inset 0 0 0 1px #bdbdbd;
+}
+
+.satus-switch--checkbox .satus-switch__track::before
+{
+    position: absolute;
+    top: 7px;
+    left: 5px;
+
+    visibility: hidden;
+
+    width: 10px;
+    height: 5px;
+
+    transition: unset;
+    transform: rotate(-45deg);
+
+    opacity: 0;
+    border: 2px solid #fff;
+    border-top: none;
+    border-right: none;
+    border-radius: unset;
+    background-color: transparent;
+}
+
+.satus-switch--checkbox .satus-switch__input:checked + .satus-switch__track::before
+{
+    top: 7px;
+    left: 5px;
+
+    visibility: visible;
+
+    transform: rotate(-45deg);
+
+    opacity: 1;
+    background-color: transparent;
+}
+
+.satus-switch--checkbox .satus-switch__track::after
+{
+    content: none;
+}
+
+.satus-switch--checkbox .satus-switch__input:checked + .satus-switch__track
+{
+    background-color: #f6b465;
+    box-shadow: none;
+}
+
+
+/*--------------------------------------------------------------
+# TABLES
+--------------------------------------------------------------*/
+
+.satus-table
+{
+    height: calc(100% - 10px);
+    margin: 6px 6px 4px;
+
+    flex: 1;
+}
+
+.satus-table .satus-button
+{
+    overflow: hidden;
+
+    width: 32px;
+    min-width: 32px;
+    height: 32px;
+    padding: 4px;
+
+    border-radius: 50%;
+}
+
+#table-url
+{
+    flex: 2;
+}
+
+.satus-table__head > div:hover
+{
+    cursor: pointer;
+
+    opacity: 1;
+}
+
+.satus-table__head > div .satus-text__label
+{
+    position: relative;
+}
+
+.satus-table__head > div .sort-desc .satus-text__label::after
+{
+    position: absolute;
+    top: calc(50% - 2px);
+    right: -14px;
+
+    width: 0;
+    height: 0;
+
+    content: '';
+
+    border-top: 5px solid #514e48;
+    border-right: 5px solid transparent;
+    border-left: 5px solid transparent;
+}
+
+.satus-table__head > div .sort-asc .satus-text__label::after
+{
+    position: absolute;
+    top: calc(50% - 2px);
+    right: -14px;
+
+    width: 0;
+    height: 0;
+
+    content: '';
+
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid #514e48;
+    border-left: 5px solid transparent;
+}
+
+.satus-table__body
+{
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.satus-table__body .satus-textarea
+{
+    background: transparent;
+}
+
+.satus-table__head > div,
+.satus-table__body .satus-scrollbar__content > div > div
+{
+    overflow: hidden;
+}
+
+.satus-table__body .satus-scrollbar__content > div > div
+{
+    box-sizing: border-box;
+    padding: 4px 16px;
+}
+
+.satus-table__body .satus-scrollbar__content > div:hover
+{
+    background: rgba(0,0,0,.05);
+}
+
+.satus-table__body .satus-scrollbar__content > div.domain-selected
+{
+    background: rgba(0,0,0,.1);
+}
+
+
+/* DOMAIN */
+#table-domain .satus-table__head > div:nth-child(2),
+#table-domain .satus-table__body .satus-scrollbar__content > div > div:nth-child(2)
+{
+    width: 32.5%;
+}
+
+.satus-table__head > div:nth-child(1),
+#table-domain .satus-table__head > div:nth-child(3)
+{
+    pointer-events: none;
+}
+
+#table-domain .satus-table__head > div:nth-child(3),
+#table-domain .satus-table__body .satus-scrollbar__content > div > div:nth-child(3)
+{
+    display: flex;
+
+    width: 10%;
+
+    justify-content: center;
+}
+
+#table-domain .satus-table__head > div:nth-child(4),
+#table-domain .satus-table__body .satus-scrollbar__content > div > div:nth-child(4)
+{
+    width: 62.5%;
+}
+
+
+/* URL */
+#table-url .satus-table__head > div:nth-child(2),
+#table-url .satus-table__body .satus-scrollbar__content > div > div:nth-child(2)
+{
+    width: 20%;
+}
+
+
+#table-url .satus-table__head > div:nth-child(3),
+#table-url .satus-table__body .satus-scrollbar__content > div > div:nth-child(3)
+{
+    width: 35%;
+}
+
+#table-url .satus-table__head > div:nth-child(4),
+#table-url .satus-table__body .satus-scrollbar__content > div > div:nth-child(4)
+{
+    width: 35%;
+}
+
+
+#table-url .satus-table__head > div:nth-child(5),
+#table-url .satus-table__body .satus-scrollbar__content > div > div:nth-child(5)
+{
+    width: 10%;
+}
+
+
+#table-url .satus-table__head > div:nth-child(6),
+#table-url .satus-table__body .satus-scrollbar__content > div > div:nth-child(6)
+{
+    width: 20%;
+}
+
+
+/* SEARCH */
+#table-search .satus-table__head > div:nth-child(2),
+#table-search .satus-table__body .satus-scrollbar__content > div > div:nth-child(2)
+{
+    width: 40%;
+}
+
+#table-search .satus-table__head > div:nth-child(4),
+#table-search .satus-table__body .satus-scrollbar__content > div > div:nth-child(4)
+{
+    width: 60%;
 }
