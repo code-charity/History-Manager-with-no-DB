@@ -21,6 +21,7 @@ Menu.main = {
                         ]);
                     }
 
+                    document.querySelector('.satus-main__container > .satus-table:nth-child(2)').pagingIndex = 0;
                     document.querySelector('.satus-main__container > .satus-table:nth-child(2)').update(data, 0, 'desc');
 
                     i = l;
@@ -31,6 +32,7 @@ Menu.main = {
 
     table_01: {
         type: 'table',
+        paging: 100,
         columns: [{
             title: ''
         }, {
@@ -45,6 +47,7 @@ Menu.main = {
 
     table_02: {
         type: 'table',
+        paging: 100,
         columns: [{
             title: 'Visit count'
         }, {
@@ -58,6 +61,7 @@ Menu.main = {
 
     table_03: {
         type: 'table',
+        paging: 100,
         columns: [{
             title: 'Visit count'
         }, {

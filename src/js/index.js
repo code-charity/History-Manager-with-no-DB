@@ -6,7 +6,7 @@ Satus.storage.import(function() {
         text: '',
         startTime: start_time,
         endTime: end_time,
-        maxResults: 99999
+        maxResults: 999999
     }, function(items) {
         History = Satus.storage.get('history') || {};
 
@@ -43,5 +43,7 @@ Satus.storage.import(function() {
         Menu.main.table_01.data = data;
 
         Satus.render(Menu);
+
+        document.querySelector('.satus-main__container td:nth-child(4)').click();
     });
 });

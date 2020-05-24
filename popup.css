@@ -83,11 +83,12 @@ body
     height: 100vh;
     margin: 0;
 
-    background-color: #2c2b2c;
+    background-color: #f6f5f4;
 }
 
 input,
-textarea
+textarea,
+button
 {
     font-family: 'Open Sans', sans-serif;
 }
