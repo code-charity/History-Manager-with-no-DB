@@ -1,49 +1,71 @@
+/*---------------------------------------------------------------
+>>> INDEX:
+-----------------------------------------------------------------
+# Storage import
+# Locale import
+# History import
+---------------------------------------------------------------*/
+
 Satus.storage.import(function() {
     var end_time = new Date().getTime(),
-        start_time = Satus.storage.get('startTime') || start_time - 7.776e+9;
+        start_time = Satus.storage.get('startTime') || start_time - 7.776e+9,
+        language = 'en';
 
-    chrome.history.search({
-        text: '',
-        startTime: start_time,
-        endTime: end_time,
-        maxResults: 999999
-    }, function(items) {
-        History = Satus.storage.get('history') || {};
+    Satus.locale.import('_locales/' + language + '/messages.json', function() {
+        chrome.history.search({
+            text: '',
+            startTime: start_time,
+            endTime: end_time,
+            maxResults: 999999
+        }, function(items) {
+            History = Satus.storage.get('history') || {};
 
-        for (var i = 0, l = items.length; i < l; i++) {
-            var item = items[i],
-                url = item.url,
-                host = url.split('/')[2];
+            for (var i = 0, l = items.length; i < l; i++) {
+                var item = items[i],
+                    url = item.url,
+                    host = url.split('/')[2];
 
-            if (History.hasOwnProperty(host) === false) {
-                History[host] = {
-                    items: {},
-                    lastVisitTime: item.lastVisitTime,
-                    visitCount: 0
+                if (History.hasOwnProperty(host) === false) {
+                    History[host] = {
+                        items: {},
+                        lastVisitTime: item.lastVisitTime,
+                        visitCount: 0
+                    };
+                }
+
+                History[host].visitCount += item.visitCount;
+
+                History[host].items[url] = {
+                    title: item.title,
+                    visitCount: item.visitCount
                 };
             }
 
-            History[host].visitCount += item.visitCount;
+            Satus.storage.set('history', History);
+            Satus.storage.set('startTime', end_time);
 
-            History[host].items[url] = {
-                title: item.title,
-                visitCount: item.visitCount
-            };
-        }
+            var data = [];
 
-        Satus.storage.set('history', History);
-        Satus.storage.set('startTime', end_time);
+            for (var key in History) {
+                data.push([
+                {
+                    text: History[key].visitCount
+                },
+                {
+                    text: ''
+                },
+                {
+                    text: key,
+                    html: '<a href="https://' + key + '">' + key + '</a>'
+                }
+                ]);
+            }
 
-        var data = [];
+            Menu.main.table_01.data = data;
 
-        for (var key in History) {
-            data.push(['', History[key].visitCount, '', key]);
-        }
+            Satus.render(Menu);
 
-        Menu.main.table_01.data = data;
-
-        Satus.render(Menu);
-
-        document.querySelector('.satus-main__container td:nth-child(4)').click();
+            document.querySelector('.satus-table__cell:nth-child(3)').click();
+        });
     });
 });

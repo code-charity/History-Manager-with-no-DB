@@ -7,24 +7,40 @@ Menu.main = {
         for (var i = 0, l = event.path.length; i < l; i++) {
             var item = event.path[i];
 
-            if (item.nodeName === 'TD') {
-                if (Array.prototype.indexOf.call(item.parentElement.children, item) === 3) {
+            if (item.classList && item.classList.contains('satus-table__cell')) {
+                if (Array.prototype.indexOf.call(item.parentElement.children, item) === 2) {
                     var data = [],
                         object = History[item.innerText];
 
                     for (var key in object.items) {
                         data.push([
-                            object.items[key].visitCount,
-                            object.items[key].title,
-                            key,
-                            ''
+                        {
+                            html: '<input type=checkbox>',
+                            text: ''
+                        },
+                        {
+                            text: object.items[key].visitCount
+                        },
+                        {
+                            text: object.items[key].title
+                        },
+                        {
+                            text: key
+                        },
+                        {
+                            text: ''
+                        }
                         ]);
                     }
 
-                    document.querySelector('.satus-main__container > .satus-table:nth-child(2)').pagingIndex = 0;
-                    document.querySelector('.satus-main__container > .satus-table:nth-child(2)').update(data, 0, 'desc');
+                    document.querySelector('#by-url').pagingIndex = 0;
+                    document.querySelector('#by-url').update(data, 0, 'desc');
 
                     i = l;
+                    
+                    event.preventDefault();
+                    
+                    return false;
                 }
             }
         }
@@ -32,10 +48,9 @@ Menu.main = {
 
     table_01: {
         type: 'table',
+        id: 'by-domain',
         paging: 100,
         columns: [{
-            title: ''
-        }, {
             title: 'Visit count',
             sorting: 'desc'
         }, {
@@ -47,8 +62,11 @@ Menu.main = {
 
     table_02: {
         type: 'table',
+        id: 'by-url',
         paging: 100,
         columns: [{
+            title: ''
+        }, {
             title: 'Visit count'
         }, {
             title: 'Title'
@@ -56,16 +74,6 @@ Menu.main = {
             title: 'URL'
         }, {
             title: 'Tags'
-        }]
-    },
-
-    table_03: {
-        type: 'table',
-        paging: 100,
-        columns: [{
-            title: 'Visit count'
-        }, {
-            title: 'Domain'
         }]
     }
 };

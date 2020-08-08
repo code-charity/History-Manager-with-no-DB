@@ -2,51 +2,63 @@
 /*--------------------------------------------------------------
 >>> THEMES
 ----------------------------------------------------------------
-# Header
-# Main
-# Table
+1.0 Default
+2.0 Dark
 --------------------------------------------------------------*/
 
-/*--------------------------------------------------------------
-# HEADER
---------------------------------------------------------------*/
+/*---------------------------------------------------------------
+1.0 DEFAULT
+---------------------------------------------------------------*/
 
-.satus-header
-{
-    color: #514e48;
-    background-color: #f6f5f4;
-
-    fill: #514e48;
-}
-
-.satus-header__text-field
-{
-    color: #514e48;
-    background-color: #fff;
-    box-shadow: 0 1px 2px rgba(0,0,0,.1);
+html {
+    --satus-theme-primary: #f6b465;
+    
+    --satus-theme-header: transparent;
+    /*--satus-theme-header-text: #f6b465;*/
+    
+    --satus-theme-main: #f2f4f8;
 }
 
 
-/*--------------------------------------------------------------
-# MAIN
---------------------------------------------------------------*/
+/*---------------------------------------------------------------
+2.0 DARK
+---------------------------------------------------------------*/
 
-.satus-main,
-.satus-main__container
+html[theme="dark"]
 {
-    background-color: #f6f5f4;
+	--satus-theme-primary: #f6b465;
+
+	--satus-theme-dialog: #2c2b2c;
+	--satus-theme-dialog-text: #b5b5b5;
+
+	--satus-theme-header: #343334;
+	--satus-theme-header-text: #b5b5b5;
+
+	--satus-theme-main: #2c2b2c;
+	--satus-theme-main-text: #b5b5b5;
+
+	--satus-theme-section: #343334;
+
+	--satus-theme-button: transparent;
+
+	--satus-theme-scrollbar: rgba(255, 255, 255, .2);
+	--satus-theme-scrollbar-focus: rgba(255, 255, 255, .4);
+
+	--satus-theme-tooltip: rgba(10, 10, 10, .7);
+
+	--satus-theme-ripple: rgba(255, 255, 255, .04);
 }
 
-/*--------------------------------------------------------------
->>> TABLE OF CONTENTS:
-----------------------------------------------------------------
-# Fonts
-# Basic
---------------------------------------------------------------*/
+/*---------------------------------------------------------------
+>>> INDEX:
+-----------------------------------------------------------------
+# Font
+# Body
+---------------------------------------------------------------*/
 
-/*--------------------------------------------------------------
-# FONTS
---------------------------------------------------------------*/
+/*---------------------------------------------------------------
+# FONT
+---------------------------------------------------------------*/
 
 @font-face
 {
@@ -64,28 +76,7 @@
     src: url('assets/fonts/OpenSans-SemiBold.ttf');
 }
 
-
-/*--------------------------------------------------------------
-# BASIC
---------------------------------------------------------------*/
-
-body
-{
-    font-family: 'Open Sans', sans-serif;
-    font-size: .875rem;
-
-    display: flex;
-    overflow: hidden;
-    overflow: hidden;
-    flex-direction: column;
-
-    width: 100vw;
-    height: 100vh;
-    margin: 0;
-
-    background-color: #f6f5f4;
-}
-
+body,
 input,
 textarea,
 button
@@ -93,25 +84,50 @@ button
     font-family: 'Open Sans', sans-serif;
 }
 
-/*--------------------------------------------------------------
+
+/*---------------------------------------------------------------
+# BASIC
+---------------------------------------------------------------*/
+
+body
+{
+    font-size: .875rem;
+
+    display: flex;
+    overflow: hidden;
+    flex-direction: column;
+
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+
+    background-color: var(--satus-theme-main);
+}
+
+/*---------------------------------------------------------------
 >>> HEADER:
-----------------------------------------------------------------
+-----------------------------------------------------------------
 1.0 Buttons
     1.1 Back button
 2.0 Title
 3.0 Right section
 4.0 Search
 5.0 Vertical menu
---------------------------------------------------------------*/
+---------------------------------------------------------------*/
 
 .satus-header
 {
     box-shadow: none;
 }
 
-/*--------------------------------------------------------------
+.satus-header .satus-section
+{
+    background-color: transparent;
+}
+
+/*---------------------------------------------------------------
 1.0 BUTTONS
---------------------------------------------------------------*/
+---------------------------------------------------------------*/
 
 .satus-header .satus-button
 {
@@ -125,10 +141,15 @@ button
     border-radius: 50%;
 }
 
+.satus-header__text-field + .satus-button svg
+{
+    fill: var(--satus-theme-header-text)
+}
 
-/*--------------------------------------------------------------
+
+/*---------------------------------------------------------------
 1.1 BACK BUTTON
---------------------------------------------------------------*/
+---------------------------------------------------------------*/
 
 .satus-button--back
 {
@@ -147,9 +168,9 @@ body[data-appearance='home'] .satus-button--back
 }
 
 
-/*--------------------------------------------------------------
+/*---------------------------------------------------------------
 2.0 SEARCH
---------------------------------------------------------------*/
+---------------------------------------------------------------*/
 
 .satus-header__text-field
 {
@@ -162,6 +183,9 @@ body[data-appearance='home'] .satus-button--back
     padding: 14px 8px;
 
     border-radius: 4px;
+    color: var(--satus-theme-header-text);
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(0,0,0,.1);
 }
 
 .satus-header__text-field + .satus-button
@@ -171,9 +195,9 @@ body[data-appearance='home'] .satus-button--back
 }
 
 
-/*--------------------------------------------------------------
+/*---------------------------------------------------------------
 3.0 RIGHT SECTION
---------------------------------------------------------------*/
+---------------------------------------------------------------*/
 
 .satus-section--align-end
 {
@@ -186,9 +210,9 @@ body[data-appearance='home'] .satus-button--back
 }
 
 
-/*--------------------------------------------------------------
+/*---------------------------------------------------------------
 5.0 VERTICAL MENU
---------------------------------------------------------------*/
+---------------------------------------------------------------*/
 
 .satus-dialog--vertical-menu .satus-dialog__scrim
 {
@@ -230,13 +254,27 @@ body[data-appearance='home'] .satus-button--back
     opacity: .75;
 
     fill: none;
-    stroke: #f6b465;
+    stroke: var(--satus-theme-primary);
 }
 
 .satus-dialog--vertical-menu .satus-button--github svg
 {
     width: 18px;
     height: 18px;
+}
+
+
+.satus-dialog--search-menu .satus-dialog__scrim
+{
+    background: transparent;
+
+    backdrop-filter: none;
+}
+
+.satus-dialog--search-menu .satus-dialog__surface
+{
+    right: auto;
+    left: calc(50vw - 186px);
 }
 
 /*--------------------------------------------------------------
@@ -258,34 +296,55 @@ body[data-appearance='home'] .satus-button--back
 # TABLE
 --------------------------------------------------------------*/
 
-.satus-table
+.satus-table a
+{
+    text-decoration: none
+}
+
+#by-domain
 {
     margin-left: 8px;
-
+    
     flex: 1;
 }
 
-.satus-table:nth-child(2)
+#by-url .satus-table__head > div:nth-child(1),
+#by-url .satus-table__cell:nth-child(1),
+#by-domain .satus-table__head > div:nth-child(2),
+#by-domain .satus-table__cell:nth-child(2)
 {
+    width: 32px;
+}
+
+#by-domain .satus-table__head > div:nth-child(1),
+#by-domain .satus-table__cell:nth-child(1),
+#by-url .satus-table__head > div:nth-child(2),
+#by-url .satus-table__cell:nth-child(2),
+#by-url .satus-table__head > div:nth-child(4),
+#by-url .satus-table__cell:nth-child(4)
+{
+    width: 100px;
+}
+
+#by-domain .satus-table__head > div:nth-child(3),
+#by-domain .satus-table__cell:nth-child(3)
+{
+    width: calc(100% - 164px);
+}
+
+#by-url .satus-table__head > div:nth-child(3),
+#by-url .satus-table__cell:nth-child(3),
+#by-url .satus-table__head > div:nth-child(4),
+#by-url .satus-table__cell:nth-child(4)
+{
+    width: calc(50% - 100px);
+}
+
+#by-url
+{
+    margin: 0 8px;
+    
     flex: 2;
-}
-
-.satus-main__container > .satus-table:last-child
-{
-    margin-right: 8px;
-}
-
-.satus-table td:nth-child(4)
-{
-    opacity: .7;
-    color: #2979ff;
-}
-
-.satus-table td:nth-child(4):hover
-{
-    cursor: pointer;
-
-    opacity: 1;
 }
 
 
@@ -375,12 +434,6 @@ body[data-appearance='home'] .satus-button--back
 /*-----------------------------------------------------------------------------
 >>> TABLES
 -----------------------------------------------------------------------------*/
-
-
-
-
-
-
 
 @media (max-width: 1365px)
 {

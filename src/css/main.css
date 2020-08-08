@@ -17,34 +17,55 @@
 # TABLE
 --------------------------------------------------------------*/
 
-.satus-table
+.satus-table a
+{
+    text-decoration: none
+}
+
+#by-domain
 {
     margin-left: 8px;
-
+    
     flex: 1;
 }
 
-.satus-table:nth-child(2)
+#by-url .satus-table__head > div:nth-child(1),
+#by-url .satus-table__cell:nth-child(1),
+#by-domain .satus-table__head > div:nth-child(2),
+#by-domain .satus-table__cell:nth-child(2)
 {
+    width: 32px;
+}
+
+#by-domain .satus-table__head > div:nth-child(1),
+#by-domain .satus-table__cell:nth-child(1),
+#by-url .satus-table__head > div:nth-child(2),
+#by-url .satus-table__cell:nth-child(2),
+#by-url .satus-table__head > div:nth-child(4),
+#by-url .satus-table__cell:nth-child(4)
+{
+    width: 100px;
+}
+
+#by-domain .satus-table__head > div:nth-child(3),
+#by-domain .satus-table__cell:nth-child(3)
+{
+    width: calc(100% - 164px);
+}
+
+#by-url .satus-table__head > div:nth-child(3),
+#by-url .satus-table__cell:nth-child(3),
+#by-url .satus-table__head > div:nth-child(4),
+#by-url .satus-table__cell:nth-child(4)
+{
+    width: calc(50% - 100px);
+}
+
+#by-url
+{
+    margin: 0 8px;
+    
     flex: 2;
-}
-
-.satus-main__container > .satus-table:last-child
-{
-    margin-right: 8px;
-}
-
-.satus-table td:nth-child(4)
-{
-    opacity: .7;
-    color: #2979ff;
-}
-
-.satus-table td:nth-child(4):hover
-{
-    cursor: pointer;
-
-    opacity: 1;
 }
 
 

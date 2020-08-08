@@ -1,37 +1,49 @@
 /*--------------------------------------------------------------
 >>> THEMES
 ----------------------------------------------------------------
-# Header
-# Main
-# Table
+1.0 Default
+2.0 Dark
 --------------------------------------------------------------*/
 
-/*--------------------------------------------------------------
-# HEADER
---------------------------------------------------------------*/
+/*---------------------------------------------------------------
+1.0 DEFAULT
+---------------------------------------------------------------*/
 
-.satus-header
-{
-    color: #514e48;
-    background-color: #f6f5f4;
-
-    fill: #514e48;
-}
-
-.satus-header__text-field
-{
-    color: #514e48;
-    background-color: #fff;
-    box-shadow: 0 1px 2px rgba(0,0,0,.1);
+html {
+    --satus-theme-primary: #f6b465;
+    
+    --satus-theme-header: transparent;
+    /*--satus-theme-header-text: #f6b465;*/
+    
+    --satus-theme-main: #f2f4f8;
 }
 
 
-/*--------------------------------------------------------------
-# MAIN
---------------------------------------------------------------*/
+/*---------------------------------------------------------------
+2.0 DARK
+---------------------------------------------------------------*/
 
-.satus-main,
-.satus-main__container
+html[theme="dark"]
 {
-    background-color: #f6f5f4;
+	--satus-theme-primary: #f6b465;
+
+	--satus-theme-dialog: #2c2b2c;
+	--satus-theme-dialog-text: #b5b5b5;
+
+	--satus-theme-header: #343334;
+	--satus-theme-header-text: #b5b5b5;
+
+	--satus-theme-main: #2c2b2c;
+	--satus-theme-main-text: #b5b5b5;
+
+	--satus-theme-section: #343334;
+
+	--satus-theme-button: transparent;
+
+	--satus-theme-scrollbar: rgba(255, 255, 255, .2);
+	--satus-theme-scrollbar-focus: rgba(255, 255, 255, .4);
+
+	--satus-theme-tooltip: rgba(10, 10, 10, .7);
+
+	--satus-theme-ripple: rgba(255, 255, 255, .04);
 }

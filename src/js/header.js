@@ -1,6 +1,6 @@
-/*-----------------------------------------------------------------------------
->>> «HEADER» TEMPLATE
------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------
+>>> HEADER
+---------------------------------------------------------------*/
 
 var header_search = false,
     search_type = 'bookmarks',
@@ -97,10 +97,12 @@ var header_search = false,
                     icon: '<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"></svg>',
                     onClickRender: {
                         type: 'dialog',
+                        class: 'satus-dialog--vertical-menu satus-dialog--search-menu',
 
                         bookmarks: {
                             type: 'button',
                             label: 'Bookmarks',
+                            before: '<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>',
 
                             on: {
                                 click: function() {
@@ -112,6 +114,7 @@ var header_search = false,
                         history: {
                             type: 'button',
                             label: 'History',
+                            before: '<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>',
 
                             on: {
                                 click: function() {
@@ -123,6 +126,7 @@ var header_search = false,
                         duckduckgo: {
                             type: 'button',
                             label: 'DuckDuckGo',
+                            before: '<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>',
 
                             on: {
                                 click: function() {
@@ -134,6 +138,7 @@ var header_search = false,
                         google: {
                             type: 'button',
                             label: 'Google',
+                            before: '<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>',
 
                             on: {
                                 click: function() {
