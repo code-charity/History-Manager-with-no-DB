@@ -12,6 +12,8 @@
 .satus-header
 {
     box-shadow: none;
+    
+    min-height: 54px;
 }
 
 .satus-header .satus-section
@@ -69,13 +71,11 @@ body[data-appearance='home'] .satus-button--back
 .satus-header__text-field
 {
     font-size: 14px;
-
     width: 100%;
     max-width: 1024px;
-    height: 40px;
+    height: 38px;
     margin-right: 8px;
-    padding: 14px 8px;
-
+    padding: 10px 8px;
     border-radius: 4px;
     color: var(--satus-theme-header-text);
     background-color: #fff;

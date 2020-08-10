@@ -37,7 +37,9 @@ Satus.storage.import(function() {
 
                 History[host].items[url] = {
                     title: item.title,
-                    visitCount: item.visitCount
+                    visitCount: item.visitCount,
+                    star: 0,
+                    tags: ''
                 };
             }
 
@@ -52,11 +54,8 @@ Satus.storage.import(function() {
                     text: History[key].visitCount
                 },
                 {
-                    text: ''
-                },
-                {
                     text: key,
-                    html: '<a href="https://' + key + '">' + key + '</a>'
+                    html: '<a class="satus-link--domain" href="https://' + key + '">' + key + '</a>'
                 }
                 ]);
             }
@@ -64,8 +63,8 @@ Satus.storage.import(function() {
             Menu.main.table_01.data = data;
 
             Satus.render(Menu);
-
-            document.querySelector('.satus-table__cell:nth-child(3)').click();
+            
+            updateURLTable(document.querySelector('.satus-table__cell:nth-child(2) a').innerText);
         });
     });
 });
