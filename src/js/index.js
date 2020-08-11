@@ -8,7 +8,7 @@
 
 Satus.storage.import(function() {
     var end_time = new Date().getTime(),
-        start_time = Satus.storage.get('startTime') || start_time - 7.776e+9,
+        start_time = Satus.storage.get('startTime') || 0,
         language = 'en';
 
     Satus.locale.import('_locales/' + language + '/messages.json', function() {
@@ -33,14 +33,20 @@ Satus.storage.import(function() {
                     };
                 }
 
-                History[host].visitCount += item.visitCount;
-
                 History[host].items[url] = {
                     title: item.title,
                     visitCount: item.visitCount,
                     star: 0,
                     tags: ''
                 };
+            }
+            
+            for (var key in History) {
+                History[key].visitCount = 0;
+                
+                for (var i in History[key].items) {
+                    History[key].visitCount += History[key].items[i].visitCount;
+                }
             }
 
             Satus.storage.set('history', History);
