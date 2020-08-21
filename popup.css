@@ -16,7 +16,7 @@ html {
     --satus-theme-header: transparent;
     /*--satus-theme-header-text: #f6b465;*/
     
-    --satus-theme-main: #eef2fb;
+    --satus-theme-main: #eee;
 }
 
 
@@ -117,9 +117,9 @@ body
 
 .satus-header
 {
-    box-shadow: none;
-    
     min-height: 54px;
+
+    box-shadow: none;
 }
 
 .satus-header .satus-section
@@ -145,7 +145,7 @@ body
 
 .satus-header__text-field + .satus-button svg
 {
-    fill: var(--satus-theme-header-text)
+    fill: var(--satus-theme-header-text);
 }
 
 
@@ -176,22 +176,26 @@ body[data-appearance='home'] .satus-button--back
 
 .satus-header__text-field
 {
-    font-size: 14px;
     width: 100%;
     max-width: 1024px;
     height: 38px;
     margin-right: 8px;
     padding: 10px 8px;
-    border-radius: 4px;
+
     color: var(--satus-theme-header-text);
+    border: 1px solid #ddd;
+    border-radius: 4px;
     background-color: #fff;
-    box-shadow: 0 1px 2px rgba(0,0,0,.1);
 }
 
 .satus-header__text-field + .satus-button
 {
     position: absolute;
-    right: 12px;
+    right: 14px;
+
+    width: 28px;
+    height: 28px;
+    padding: 2px;
 }
 
 
@@ -296,61 +300,101 @@ body[data-appearance='home'] .satus-button--back
 # TABLE
 --------------------------------------------------------------*/
 
+.satus-table
+{
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.satus-table__head
+{
+    height: 39px;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, .1);
+}
+
+.satus-table__body
+{
+    background: #fafafa;
+}
+
 .satus-table a
 {
     text-decoration: none;
+
     color: currentColor;
 }
 
 #by-domain
 {
-    margin-left: 8px;
-    
+    margin: 0 8px 8px;
+
     flex: 1;
 }
 
-/*#by-url .satus-table__cell:nth-child(1)
+#by-url
 {
-    margin-left: 24px;
-}*/
+    margin: 0 8px 8px 0;
+
+    flex: 2;
+}
+
+#by-params
+{
+    margin: 0 8px 8px 0;
+
+    flex: 1;
+}
 
 #by-domain .satus-table__head > div:nth-child(1),
 #by-domain .satus-table__cell:nth-child(1),
 #by-url .satus-table__head > div:nth-child(1),
 #by-url .satus-table__cell:nth-child(1),
 #by-url .satus-table__head > div:nth-child(5),
-#by-url .satus-table__cell:nth-child(5)
+#by-url .satus-table__cell:nth-child(5),
+.satus-table--toolbar > *:nth-child(5),
+#by-params .satus-table__head > div:nth-child(1),
+#by-params .satus-table__cell:nth-child(1)
 {
-    width: 100px;
+    width: 68px;
+}
+
+#by-domain .satus-table__head > div:nth-child(2),
+#by-domain .satus-table__cell:nth-child(2),
+#by-url .satus-table__head > div:nth-child(4),
+#by-url .satus-table__cell:nth-child(4),
+.satus-table--toolbar > *:nth-child(4)
+{
+    width: 28px;
 }
 
 #by-url .satus-table__head > div:nth-child(5),
 #by-url .satus-table__cell:nth-child(5)
 {
     padding-top: 0;
-    padding-bottom: 0
+    padding-bottom: 0;
 }
 
-#by-domain .satus-table__head > div:nth-child(2),
-#by-domain .satus-table__cell:nth-child(2)
+#by-domain .satus-table__head > div:nth-child(3),
+#by-domain .satus-table__cell:nth-child(3),
+#by-params .satus-table__head > div:nth-child(3),
+#by-params .satus-table__cell:nth-child(3)
 {
-    width: calc(100% - 100px);
+    width: calc(100% - 96px);
 }
-
-/*#by-url .satus-table__head > div:nth-child(2),
-#by-url .satus-table__cell:nth-child(2),
-#by-url .satus-table__head > div:nth-child(3),
-#by-url .satus-table__cell:nth-child(3)
-{
-    width: calc(50% - 139px);
-}*/
 
 #by-url .satus-table__head > div:nth-child(2),
 #by-url .satus-table__cell:nth-child(2),
 #by-url .satus-table__head > div:nth-child(3),
 #by-url .satus-table__cell:nth-child(3)
 {
-    width: calc(50% - 127px);
+    width: calc(50% - 82px);
+}
+
+#by-params .satus-table__head > div:nth-child(2),
+#by-params .satus-table__cell:nth-child(2)
+{
+    width: calc(100% - 68px);
 }
 
 #by-url .satus-table__cell:nth-child(3)
@@ -358,30 +402,23 @@ body[data-appearance='home'] .satus-button--back
     color: #1e6fdb;
 }
 
-#by-url .satus-table__head > div:nth-child(4),
-#by-url .satus-table__cell:nth-child(4)
-{
-    width: 54px;
-}
-
-
-#by-url
-{
-    margin: 0 8px;
-    
-    flex: 2;
-}
-
 
 #by-url .satus-table__row:hover
 {
+    cursor: default;
+
     background-color: rgba(0,0,0,.075);
-    cursor: default
 }
 
 
 
 
+.satus-button--dropdown
+{
+    width: 20px;
+    height: 20px;
+    padding: 2px;
+}
 
 .satus-button--star
 {
@@ -390,9 +427,25 @@ body[data-appearance='home'] .satus-button--back
     padding: 0;
 }
 
+.satus-button--dropdown svg:last-child
+{
+    display: none;
+}
+
+.satus-button--dropdown.opened svg:first-child
+{
+    display: none;
+}
+
+.satus-button--dropdown.opened svg:last-child
+{
+    display: block;
+}
+
+.satus-button--dropdown svg,
 .satus-button--star svg
 {
-    pointer-events: none
+    pointer-events: none;
 }
 
 .satus-button--star[data-value='0'] svg
@@ -406,6 +459,7 @@ body[data-appearance='home'] .satus-button--back
     stroke: var(--satus-theme-primary);
 }
 
+.satus-button--dropdown::before,
 .satus-button--star::before
 {
     content: none;
@@ -415,14 +469,39 @@ body[data-appearance='home'] .satus-button--back
 
 .satus-input--tags
 {
-    width: 100%;
-    margin: 5px 0;
-    border: 1px solid #d2d2d2;
     box-sizing: border-box;
-    padding: 1px 2px;
-    border-radius: 4px;
+    width: 100%;
     height: calc(100% - 10px);
-    outline: none
+    margin: 5px 0;
+    padding: 1px 2px;
+
+    border: 1px solid #d2d2d2;
+    border-radius: 4px;
+    outline: none;
+}
+
+
+
+
+
+.satus-dropdown-list
+{
+    width: 100%;
+}
+
+.satus-dropdown-list .satus-table__head
+{
+    display: none;
+}
+
+#by-domain .satus-dropdown-list .satus-table__cell:nth-child(2)
+{
+    width: 60px;
+}
+
+#by-domain .satus-dropdown-list .satus-table__cell:nth-child(3)
+{
+    width: calc(100% - 132px);
 }
 
 
@@ -430,16 +509,18 @@ body[data-appearance='home'] .satus-button--back
 
 .satus-table__row.selected
 {
-    background-color: rgba(255, 255, 0, .3)
+    background-color: rgba(255, 255, 0, .3);
 }
 
 .satus-table--toolbar
 {
     display: none;
-    background: #fff;
+
     height: 38px;
-    box-shadow: 0 -2px 4px rgba(0, 0, 0, .1);
     padding: 0 8px;
+
+    background: #fff;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, .1);
 }
 
 .satus-table--selected .satus-table--toolbar

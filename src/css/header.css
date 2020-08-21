@@ -11,9 +11,9 @@
 
 .satus-header
 {
-    box-shadow: none;
-    
     min-height: 54px;
+
+    box-shadow: none;
 }
 
 .satus-header .satus-section
@@ -39,7 +39,7 @@
 
 .satus-header__text-field + .satus-button svg
 {
-    fill: var(--satus-theme-header-text)
+    fill: var(--satus-theme-header-text);
 }
 
 
@@ -70,22 +70,26 @@ body[data-appearance='home'] .satus-button--back
 
 .satus-header__text-field
 {
-    font-size: 14px;
     width: 100%;
     max-width: 1024px;
     height: 38px;
     margin-right: 8px;
     padding: 10px 8px;
-    border-radius: 4px;
+
     color: var(--satus-theme-header-text);
+    border: 1px solid #ddd;
+    border-radius: 4px;
     background-color: #fff;
-    box-shadow: 0 1px 2px rgba(0,0,0,.1);
 }
 
 .satus-header__text-field + .satus-button
 {
     position: absolute;
-    right: 12px;
+    right: 14px;
+
+    width: 28px;
+    height: 28px;
+    padding: 2px;
 }
 
 

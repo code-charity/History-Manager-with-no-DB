@@ -251,20 +251,13 @@ var header_search = false,
         }
     };
 
-var History = {},
-    Selected = {};
+var Selected = {};
 
 window.addEventListener('click', function(event) {
     var target = event.target;
     
     if (target.classList.contains('satus-button--star')) {
         star(target);
-    } else if (target.classList.contains('satus-link--domain')) {
-        updateURLTable(target.innerText);
-            
-        event.preventDefault();
-
-        return false;
     } else if (!target.classList.contains('satus-input--tags')) {
         var is_url_table = false;
     
@@ -279,7 +272,7 @@ window.addEventListener('click', function(event) {
                 if (event.path[i].classList.contains('selected')) {
                     Selected[href] = undefined;
                 } else {
-                    Selected[href] = History[href.split('/')[2]].items[href];
+                    Selected[href] = satus.history.pages[href];
                 }
                 
                 event.path[i].classList.toggle('selected');
@@ -311,11 +304,11 @@ function star(target) {
     
     target.dataset.value = value;
     
-    History[target.dataset.href.split('/')[2]].items[target.dataset.href].star = value;
-
-    Satus.storage.set('history', History);
+    satus.history.pages[target.dataset.href].star = value;
     
-    updateURLTable(target.dataset.href.split('/')[2]);
+    updateTable2(true);
+
+    Satus.storage.set('history', satus.history);
     
     for (var key in Selected) {
         Selected[key] = undefined;
@@ -325,53 +318,17 @@ function star(target) {
 }
 
 function tags() {    
-    History[this.dataset.href.split('/')[2]].items[this.dataset.href].tags = this.value;
+    satus.history.pages[this.dataset.href].tags = this.value;
 
-    Satus.storage.set('history', History);
+    Satus.storage.set('history', satus.history);
     
-    updateURLTable(this.dataset.href.split('/')[2]);
+    updateTable2(true);
     
     for (var key in Selected) {
         Selected[key] = undefined;
     }
     
     checkToolbar();
-}
-
-function updateURLTable(domain) {
-    var data = [],
-        object = History[domain];
-
-    for (var key in object.items) {
-        var url = decodeURI(key.replace(/^.*\/\/[^\/]+:?[0-9]?\//g, ''));
-        
-        data.push([
-        {
-            text: object.items[key].visitCount
-        },
-        {
-            text: object.items[key].title
-        },
-        {
-            html: '<a href="' + key + '">/' + url + '</a>',
-            text: url
-        },
-        {
-            html: '<button class="satus-button satus-button--star" data-href="' + key + '" data-value="' + object.items[key].star + '"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>',
-            text: object.items[key].star
-        },
-        {
-            html: '<input class="satus-input--tags" type="text" data-href="' + key + '" value="' + object.items[key].tags + '">',
-            text: object.items[key].tags,
-            onrender: function() {
-                this.querySelector('.satus-input--tags').onblur = tags;
-            }
-        }
-        ]);
-    }
-
-    document.querySelector('#by-url').pagingIndex = 0;
-    document.querySelector('#by-url').update(data);
 }
 
 Menu.main = {
@@ -385,6 +342,63 @@ Menu.main = {
         columns: [{
             title: 'Visits',
             sorting: 'desc'
+        }, {
+            title: '',
+            onrender: function() {
+                this.querySelector('.satus-button--dropdown').addEventListener('click', function() {
+                    var container = this.parentNode.parentNode;
+                    
+                    if (!container.querySelector('.satus-dropdown-list')) {
+                        var list = document.createElement('div'),
+                            data = [],
+                            host = this.dataset.key;
+                        
+                        list.className = 'satus-dropdown-list';
+                        
+                        for (var key in satus.history.hosts[host].items) {
+                            var item = satus.history.hosts[host].items[key];
+                            
+                            data.push([
+                            {
+                                
+                            },
+                            {
+                                text: item.visitCount
+                            },
+                            {
+                                text: key,
+                                html: '<a class="satus-link--domain" href="https://' + host + '/' + key + '" title="' + item.title + '">' + key + '</a>'
+                            }
+                            ]);
+                        }
+                        
+                        Satus.render({
+                            type: 'table',
+                            paging: 100,
+                            columns: [{
+                                title: ''
+                            }, {
+                                title: 'Visits',
+                                sorting: 'desc'
+                            }, {
+                                title: 'Title',
+                                onrender: function() {
+                                    this.querySelector('a').innerText = '/' + this.querySelector('a').innerText;
+                                }
+                            }],
+                            data: data
+                        }, list);
+                        
+                        container.appendChild(list);
+                        
+                        this.classList.add('opened');
+                    } else {
+                        container.querySelector('.satus-dropdown-list').remove();
+                    
+                        this.classList.remove('opened');
+                    }
+                });
+            }
         }, {
             title: 'Domain'
         }]
@@ -404,7 +418,10 @@ Menu.main = {
         }, {
             title: '★'
         }, {
-            title: 'Tags'
+            title: 'Tags',
+            onrender: function() {
+                this.querySelector('.satus-input--tags').onblur = tags;
+            }
         }],
         onrender: function() {
             var toolbar = document.createElement('div');
@@ -441,9 +458,9 @@ Menu.main = {
                             }
                         }
                         
-                        updateURLTable(document.querySelector('#by-url a').href.split('/')[2]);
+                        updateTable2(true);
 
-                        Satus.storage.set('history', History);
+                        Satus.storage.set('history', satus.history);
                         
                         for (var key in Selected) {
                             Selected[key] = undefined;
@@ -459,14 +476,14 @@ Menu.main = {
                     onclick: function() {
                         for (var key in Selected) {
                             if  (Selected[key]) {
-                                delete History[key.split('/')[2]].items[key];
+                                delete satus.history.pages[key];
                                 delete Selected[key];
                             }
                         }
                         
-                        updateURLTable(document.querySelector('#by-url a').href.split('/')[2]);
+                        updateTable2(true);
 
-                        Satus.storage.set('history', History);
+                        Satus.storage.set('history', satus.history);
                         
                         for (var key in Selected) {
                             Selected[key] = undefined;
@@ -486,9 +503,9 @@ Menu.main = {
                             }
                         }
                         
-                        updateURLTable(document.querySelector('#by-url a').href.split('/')[2]);
+                        updateTable2(true);
 
-                        Satus.storage.set('history', History);
+                        Satus.storage.set('history', satus.history);
                         
                         for (var key in Selected) {
                             Selected[key] = undefined;
@@ -509,9 +526,9 @@ Menu.main = {
                                 }
                             }
                             
-                            updateURLTable(document.querySelector('#by-url a').href.split('/')[2]);
+                            updateTable2(true);
 
-                            Satus.storage.set('history', History);
+                            Satus.storage.set('history', satus.history);
                         }
                     }
                 }
@@ -519,82 +536,245 @@ Menu.main = {
             
             this.appendChild(toolbar);
         }
+    },
+    
+    table_03: {
+        type: 'table',
+        id: 'by-params',
+        paging: 100,
+        columns: [{
+            title: 'Visits',
+            sorting: 'desc'
+        }, {
+            title: 'Domain'
+        }]
     }
 };
 
 /*---------------------------------------------------------------
->>> INDEX:
+>>> HISTORY
 -----------------------------------------------------------------
-# Storage import
-# Locale import
-# History import
+1.0 Parse
 ---------------------------------------------------------------*/
 
-Satus.storage.import(function() {
-    var end_time = new Date().getTime(),
-        start_time = Satus.storage.get('startTime') || 0,
-        language = 'en';
+/*---------------------------------------------------------------
+1.0 PARSE
+---------------------------------------------------------------*/
 
-    Satus.locale.import('_locales/' + language + '/messages.json', function() {
-        chrome.history.search({
-            text: '',
-            startTime: start_time,
-            endTime: end_time,
-            maxResults: 999999
-        }, function(items) {
-            History = Satus.storage.get('history') || {};
-
-            for (var i = 0, l = items.length; i < l; i++) {
-                var item = items[i],
-                    url = item.url,
-                    host = url.split('/')[2];
-
-                if (History.hasOwnProperty(host) === false) {
-                    History[host] = {
-                        items: {},
-                        lastVisitTime: item.lastVisitTime,
-                        visitCount: 0
-                    };
-                }
-
-                History[host].items[url] = {
-                    title: item.title,
-                    visitCount: item.visitCount,
-                    star: 0,
-                    tags: ''
-                };
-            }
+function parseHistory(items, callback) {
+    var hosts_data = satus.history.hosts,
+        pages_data = satus.history.pages,
+        params_data = satus.history.params;
+    
+    items = items.sort(function(a, b) {
+        return b.visitCount - a.visitCount;
+    });
+    
+    // BY DOMAIN
+    for (var i = 0, l = items.length; i < l; i++) {
+        var item = items[i],
+            host = item.url.split('/')[2];
+        
+        if (!hosts_data[host]) {
+            hosts_data[host] = {
+                items: {},
+                visitCount: item.visitCount
+            };
+        } else {
+            hosts_data[host].visitCount += item.visitCount;
+        }
+        
+        hosts_data[host].items[/*decodeURI*/(item.url.replace(/^.*\/\/[^\/]+:?[0-9]?\//g, ''))] = {
+            title: item.title,
+            visitCount: item.visitCount
+        };
+    }
+    
+    // BY PAGE
+    
+    for (var i = 0, l = Math.min(items.length, 1000); i < l; i++) {
+        var item = items[i];
+        
+        pages_data[item.url] = {
+            title: item.title,
+            visitCount: item.visitCount,
+            star: 0,
+            tags: ''
+        };
+    }
+    
+    // BY PARAM
+    for (var i = 0, l = items.length, j = 0; i < l; i++) {
+        var item = items[i];
+        
+        if (item.url.match(/[^\w]q=/) && j < 1000) {
+            params_data[item.url] = {
+                title: item.title,
+                visitCount: item.visitCount,
+                star: 0,
+                tags: ''
+            };
             
-            for (var key in History) {
-                History[key].visitCount = 0;
+            j++;
+        }
+    }
+    
+    Satus.storage.set('history', satus.history);
+    
+    //console.log(items);
+}
+
+function updateTable1() {
+    var data = satus.history.hosts,
+        table = [];
+    
+    for (var key in data) {
+        table.push([
+            {
+                text: data[key].visitCount
+            },
+            {
+                html: '<button class="satus-button satus-button--dropdown" data-key="' + key + '"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>'
+            },
+            {
+                text: key,
+                html: '<a class="satus-link--domain" href="https://' + key + '">' + key + '</a>'
+            }
+        ]);
+    }
+    
+    Menu.main.table_01.data = table;
+}
+
+function updateTable2(force) {
+    var data = satus.history.pages,
+        table = [];
+
+    for (var key in data) {
+        var item = data[key],
+            url = /*decodeURI*/(key.replace(/^.*\/\/[^\/]+:?[0-9]?\//g, ''));
+        
+        table.push([
+        {
+            text: item.visitCount
+        },
+        {
+            text: item.title
+        },
+        {
+            html: '<a href="' + key + '">/' + url + '</a>',
+            text: url
+        },
+        {
+            html: '<button class="satus-button satus-button--star" data-href="' + key + '" data-value="' + item.star + '"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>',
+            text: item.star
+        },
+        {
+            html: '<input class="satus-input--tags" type="text" data-href="' + key + '" value="' + item.tags + '">',
+            text: item.tags
+        }
+        ]);
+    }
+
+    Menu.main.table_02.data = table;
+    
+    if (force === true) {
+        document.querySelector('#by-url').update(table);
+    }
+}
+
+function updateTable3(force) {
+    var data = satus.history.hosts,
+        table = [];
+
+    for (var key in data) {
+        var item = data[key];
+        
+        table.push([
+        {
+            text: item.visitCount
+        },
+        {
+            html: '<a href="https://' + key + '">' + key + '</a>',
+            text: key
+        }
+        ]);
+    }
+
+    Menu.main.table_03.data = table;
+    
+    if (force === true) {
+        document.querySelector('#by-params').update(table);
+    }
+}
+
+/*---------------------------------------------------------------
+>>> INDEX
+-----------------------------------------------------------------
+1.0 Storage
+2.0 Locale
+3.0 History
+4.0 Init
+---------------------------------------------------------------*/
+
+/*---------------------------------------------------------------
+1.0 STORAGE
+---------------------------------------------------------------*/
+
+function importStorage(callback) {
+    satus.storage.import(callback);
+}
+
+
+/*---------------------------------------------------------------
+2.0 LOCALE
+---------------------------------------------------------------*/
+
+function importLocale(path, callback) {
+    satus.locale.import(path, callback);
+}
+
+
+/*---------------------------------------------------------------
+3.0 HISTORY
+---------------------------------------------------------------*/
+
+function importHistory(params, callback) {
+    chrome.history.search(params, callback);
+}
+
+
+/*---------------------------------------------------------------
+4.0 INIT
+---------------------------------------------------------------*/
+
+window.addEventListener('load', function() {
+    importStorage(function() {
+        satus.history = satus.storage.get('history') || {
+            hosts: {},
+            pages: {},
+            params: {}
+        };
+        
+        importLocale('_locales/en/messages.json', function() {
+            var end_time = new Date().getTime();
+            
+            importHistory({
+                text: '',
+                startTime: Satus.storage.get('startTime') || 0,
+                endTime: end_time,
+                maxResults: 9999999
+            }, function(items) {
+                parseHistory(items);
                 
-                for (var i in History[key].items) {
-                    History[key].visitCount += History[key].items[i].visitCount;
-                }
-            }
-
-            Satus.storage.set('history', History);
-            Satus.storage.set('startTime', end_time);
-
-            var data = [];
-
-            for (var key in History) {
-                data.push([
-                {
-                    text: History[key].visitCount
-                },
-                {
-                    text: key,
-                    html: '<a class="satus-link--domain" href="https://' + key + '">' + key + '</a>'
-                }
-                ]);
-            }
-
-            Menu.main.table_01.data = data;
-
-            Satus.render(Menu);
+                updateTable1();
+                updateTable2();
+                updateTable3();
+                
+                Satus.render(Menu);
+            });
             
-            updateURLTable(document.querySelector('.satus-table__cell:nth-child(2) a').innerText);
+            Satus.storage.set('startTime', end_time);
         });
     });
 });

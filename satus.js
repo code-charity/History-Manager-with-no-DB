@@ -8,7 +8,8 @@
 # Animation duration
 --------------------------------------------------------------*/
 
-var Satus = {};
+var Satus = {},
+    satus = Satus;
 
 
 /*--------------------------------------------------------------
@@ -71,6 +72,7 @@ Satus.camelize = function(string) {
 Satus.getAnimationDuration = function(element) {
     return Number(window.getComputedStyle(element).getPropertyValue('animation-duration').replace(/[^0-9.]/g, '')) * 1000;
 };
+
 /*--------------------------------------------------------------
 >>> CHROMIUM STORAGE
 ----------------------------------------------------------------
@@ -1948,8 +1950,8 @@ Satus.components.table = function(item) {
                             td.innerText = data[i][j].text;
                         }
                         
-                        if (data[i][j].onrender) {
-                            td.onrender = data[i][j].onrender;
+                        if (item.columns[j].onrender) {
+                            td.onrender = item.columns[j].onrender;
                             
                             td.onrender();
                         }
