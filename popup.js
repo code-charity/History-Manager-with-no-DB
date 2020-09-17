@@ -3,152 +3,96 @@
 >>> HEADER
 ---------------------------------------------------------------*/
 
-var header_search = false,
-    search_type = 'bookmarks',
-    Menu = {
+// TODO optimize dataSearch function
+
+function dataSearch(event) {
+    var value = this.value;
+
+    if (HISTORY_MANAGER.SEARCH.INTERVAL) {
+        clearInterval(HISTORY_MANAGER.SEARCH.INTERVAL);
+
+        HISTORY_MANAGER.SEARCH.DOMAINS = {};
+
+        HISTORY_MANAGER.SEARCH.INDEX = 0;
+    }
+    
+    if (value.length === 0) {
+        updateTable1(true, HISTORY_MANAGER.DOMAINS);
+        updateTable2(true, HISTORY_MANAGER.PAGES);
+        updateTable3(true, HISTORY_MANAGER.PARAMS);
+        
+        return;
+    }
+
+    HISTORY_MANAGER.SEARCH.INTERVAL = setInterval(function() {
+        if (HISTORY_MANAGER.SEARCH.INDEX < HISTORY_MANAGER.LENGTH[0]) {
+            for (var i = HISTORY_MANAGER.SEARCH.INDEX, l = HISTORY_MANAGER.LENGTH[0]; i < l; i++) {
+                HISTORY_MANAGER.SEARCH.INDEX++;
+                var key = HISTORY_MANAGER.KEYS[0][i];
+
+                if (key.indexOf(value) !== -1 || (HISTORY_MANAGER.DOMAINS[key].title || '').indexOf(value) !== -1) {
+                    HISTORY_MANAGER.SEARCH.DOMAINS[key] = HISTORY_MANAGER.DOMAINS[key];
+                }
+            }
+        } else if (HISTORY_MANAGER.SEARCH.INDEX - HISTORY_MANAGER.LENGTH[0] < HISTORY_MANAGER.KEYS[1].length) {
+            for (var i = HISTORY_MANAGER.SEARCH.INDEX - HISTORY_MANAGER.LENGTH[0], l = HISTORY_MANAGER.KEYS[1].length; i < l; i++) {
+                HISTORY_MANAGER.SEARCH.INDEX++;
+                var key = HISTORY_MANAGER.KEYS[1][i];
+
+                if (key.indexOf(value) !== -1 || (HISTORY_MANAGER.PAGES[key].title || '').indexOf(value) !== -1) {
+                    HISTORY_MANAGER.SEARCH.PAGES[key] = HISTORY_MANAGER.PAGES[key];
+                }
+            }
+        } else if (HISTORY_MANAGER.SEARCH.INDEX - HISTORY_MANAGER.LENGTH[1] < HISTORY_MANAGER.KEYS[2].length) {
+            for (var i = HISTORY_MANAGER.SEARCH.INDEX - HISTORY_MANAGER.LENGTH[1], l = HISTORY_MANAGER.KEYS[2].length; i < l; i++) {
+                HISTORY_MANAGER.SEARCH.INDEX++;
+                
+                var key = HISTORY_MANAGER.KEYS[2][i];
+
+                if (key.indexOf(value) !== -1 || (HISTORY_MANAGER.PARAMS[key].title || '').indexOf(value) !== -1) {
+                    HISTORY_MANAGER.SEARCH.PARAMS[key] = HISTORY_MANAGER.PARAMS[key];
+                }
+            }
+        }
+        
+        if (HISTORY_MANAGER.SEARCH.INDEX === HISTORY_MANAGER.LENGTH[0]) {
+            updateTable1(true, HISTORY_MANAGER.SEARCH.DOMAINS);
+
+            HISTORY_MANAGER.SEARCH.DOMAINS = {};
+        } else if (HISTORY_MANAGER.SEARCH.INDEX === HISTORY_MANAGER.LENGTH[1]) {
+            updateTable2(true, HISTORY_MANAGER.SEARCH.PAGES);
+
+            HISTORY_MANAGER.SEARCH.PAGES = {};
+        } else if (HISTORY_MANAGER.SEARCH.INDEX === HISTORY_MANAGER.LENGTH[2]) {
+            updateTable3(true, HISTORY_MANAGER.SEARCH.PARAMS);
+
+            HISTORY_MANAGER.SEARCH.PARAMS = {};
+            HISTORY_MANAGER.SEARCH.INDEX = 0;
+            
+            clearInterval(HISTORY_MANAGER.SEARCH.INTERVAL);
+        }
+    }, 100);
+}
+
+var Menu = {
         header: {
             type: 'header',
 
             section_start: {
                 type: 'section',
                 class: 'satus-section--align-start',
-                style: {
-                    position: 'relative'
-                },
 
+                search_icon: {
+                    type: 'button',
+                    class: 'satus-header__search-button',
+                    before: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>'
+                },
                 text_field: {
                     type: 'text-field',
                     rows: 1,
                     class: 'satus-header__text-field',
                     placeholder: 'Search',
-                    on: {
-                        keyup: function(event) {
-                            if (event.keyCode === 13) {
-                                var type = search_type;
-
-                                if (header_search !== false) {
-                                    header_search.clear();
-                                    header_search = false;
-                                }
-
-                                if (type === 'bookmarks') {
-                                    Satus.chromium_bookmarks.get(function(items) {
-                                        header_search = Satus.search(event.target.value, items, function(results) {
-                                            var rows = [];
-
-                                            for (var i = 0, l = results.length; i < l; i++) {
-                                                rows.push([{
-                                                    select: {
-                                                        type: 'text'
-                                                    }
-                                                }, {
-                                                    visit_count: {
-                                                        type: 'text',
-                                                        label: 0
-                                                    }
-                                                }, {
-                                                    domain: {
-                                                        type: 'text',
-                                                        label: results[i]
-                                                    }
-                                                }]);
-                                            }
-
-                                            document.querySelector('#table-search').update(rows);
-                                        });
-                                    });
-                                } else if (type === 'history') {
-                                    Satus.chromium_history.get('', function(items) {
-                                        header_search = Satus.search(event.target.value, items, function(results) {
-                                            var rows = [];
-
-                                            for (var i = 0, l = results.length; i < l; i++) {
-                                                rows.push([{
-                                                    select: {
-                                                        type: 'checkbox'
-                                                    }
-                                                }, {
-                                                    visit_count: {
-                                                        type: 'text',
-                                                        label: 0
-                                                    }
-                                                }, {
-                                                    domain: {
-                                                        type: 'text',
-                                                        label: results[i]
-                                                    }
-                                                }]);
-                                            }
-
-                                            document.querySelector('#table-search').update(rows);
-                                        });
-                                    });
-                                } else if (type === 'duckduckgo') {
-                                    window.open('https://duckduckgo.com/?q=' + this.value, '_self');
-                                } else if (type === 'google') {
-                                    window.open('https://www.google.com/search?q=' + this.value, '_self');
-                                }
-                            }
-                        }
-                    }
-                },
-
-                menu: {
-                    type: 'button',
-                    icon: '<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"></svg>',
-                    onClickRender: {
-                        type: 'dialog',
-                        class: 'satus-dialog--vertical-menu satus-dialog--search-menu',
-
-                        bookmarks: {
-                            type: 'button',
-                            label: 'Bookmarks',
-                            before: '<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>',
-
-                            on: {
-                                click: function() {
-                                    search_type = 'bookmarks';
-                                    document.querySelector('.satus-dialog__scrim').click();
-                                }
-                            }
-                        },
-                        history: {
-                            type: 'button',
-                            label: 'History',
-                            before: '<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>',
-
-                            on: {
-                                click: function() {
-                                    search_type = 'history';
-                                    document.querySelector('.satus-dialog__scrim').click();
-                                }
-                            }
-                        },
-                        duckduckgo: {
-                            type: 'button',
-                            label: 'DuckDuckGo',
-                            before: '<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>',
-
-                            on: {
-                                click: function() {
-                                    search_type = 'duckduckgo';
-                                    document.querySelector('.satus-dialog__scrim').click();
-                                }
-                            }
-                        },
-                        google: {
-                            type: 'button',
-                            label: 'Google',
-                            before: '<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>',
-
-                            on: {
-                                click: function() {
-                                    search_type = 'google';
-                                    document.querySelector('.satus-dialog__scrim').click();
-                                }
-                            }
-                        }
-                    }
+                    oninput: dataSearch
                 }
             },
             section_end: {
@@ -157,95 +101,7 @@ var header_search = false,
 
                 button_vert: {
                     type: 'button',
-                    icon: '<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="5.25" r="0.45"/><circle cx="12" cy="12" r="0.45"/><circle cx="12" cy="18.75" r="0.45"/></svg>',
-                    onClickRender: {
-                        type: 'dialog',
-                        class: 'satus-dialog--vertical-menu',
-
-                        export: {
-                            type: 'button',
-                            label: 'Export',
-                            onclick: function() {
-                                chrome.runtime.sendMessage({
-                                    name: 'download',
-                                    filename: 'regex-replace.json',
-                                    value: Satus.storage.get('data')
-                                });
-                            }
-                        },
-                        import: {
-                            type: 'button',
-                            label: 'Import',
-                            onclick: function() {
-                                try {
-                                    var input = document.createElement('input');
-
-                                    input.type = 'file';
-
-                                    input.addEventListener('change', function() {
-                                        var file_reader = new FileReader();
-
-                                        file_reader.onload = function() {
-                                            var data = JSON.parse(this.result);
-
-                                            for (var i in data) {
-                                                Satus.storage.set(i, data[i]);
-                                            }
-
-                                            Satus.render({
-                                                type: 'dialog',
-
-                                                message: {
-                                                    type: 'text',
-                                                    label: 'successfullyImportedSettings',
-                                                    style: {
-                                                        'width': '100%',
-                                                        'opacity': '.8'
-                                                    }
-                                                },
-                                                section: {
-                                                    type: 'section',
-                                                    class: 'controls',
-                                                    style: {
-                                                        'justify-content': 'flex-end',
-                                                        'display': 'flex'
-                                                    },
-
-                                                    cancel: {
-                                                        type: 'button',
-                                                        label: 'cancel',
-                                                        onclick: function() {
-                                                            var scrim = document.querySelectorAll('.satus-dialog__scrim');
-
-                                                            scrim[scrim.length - 1].click();
-                                                        }
-                                                    },
-                                                    ok: {
-                                                        type: 'button',
-                                                        label: 'OK',
-                                                        onclick: function() {
-                                                            var scrim = document.querySelectorAll('.satus-dialog__scrim');
-
-                                                            scrim[scrim.length - 1].click();
-                                                        }
-                                                    }
-                                                }
-                                            });
-                                        };
-
-                                        file_reader.readAsText(this.files[0]);
-                                    });
-
-                                    input.click();
-                                } catch (err) {
-                                    chrome.runtime.sendMessage({
-                                        name: 'dialog-error',
-                                        value: err
-                                    });
-                                }
-                            }
-                        }
-                    }
+                    before: '<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="5.25" r="0.45"/><circle cx="12" cy="12" r="0.45"/><circle cx="12" cy="18.75" r="0.45"/></svg>'
                 }
             }
         }
@@ -255,28 +111,28 @@ var Selected = {};
 
 window.addEventListener('click', function(event) {
     var target = event.target;
-    
+
     if (target.classList.contains('satus-button--star')) {
         star(target);
     } else if (!target.classList.contains('satus-input--tags')) {
         var is_url_table = false;
-    
+
         for (var i = event.path.length - 2; i > 0; i--) {
             if (event.path[i].id === 'by-url') {
                 is_url_table = true;
             }
-            
+
             if (event.path[i].classList && event.path[i].classList.contains('satus-table__row') && is_url_table === true) {
                 var href = event.path[i].querySelector('a').href;
-                
+
                 if (event.path[i].classList.contains('selected')) {
                     Selected[href] = undefined;
                 } else {
-                    Selected[href] = satus.history.pages[href];
+                    Selected[href] = HISTORY_MANAGER.PAGES[href];
                 }
-                
+
                 event.path[i].classList.toggle('selected');
-                
+
                 checkToolbar();
             }
         }
@@ -285,13 +141,13 @@ window.addEventListener('click', function(event) {
 
 function checkToolbar() {
     var is_empty = true;
-            
+
     for (var key in Selected) {
         if (Selected[key]) {
             is_empty = false;
         }
     }
-    
+
     if (is_empty === false) {
         document.querySelector('#by-url').classList.add('satus-table--selected');
     } else {
@@ -301,33 +157,49 @@ function checkToolbar() {
 
 function star(target) {
     var value = Number(target.dataset.value) === 0 ? 1 : 0;
-    
+
     target.dataset.value = value;
-    
-    satus.history.pages[target.dataset.href].star = value;
-    
+
+    HISTORY_MANAGER.PAGES[target.dataset.href].star = value;
+
     updateTable2(true);
 
-    Satus.storage.set('history', satus.history);
-    
+    var DOMAINS = HISTORY_MANAGER.DOMAINS,
+        PAGES = HISTORY_MANAGER.PAGES,
+        PARAMS = HISTORY_MANAGER.PARAMS;
+
+    Satus.storage.set('HISTORY', {
+        DOMAINS,
+        PAGES,
+        PARAMS
+    });
+
     for (var key in Selected) {
         Selected[key] = undefined;
     }
-    
+
     checkToolbar();
 }
 
-function tags() {    
-    satus.history.pages[this.dataset.href].tags = this.value;
+function tags() {
+    HISTORY_MANAGER.PAGES[this.dataset.href].tags = this.value;
 
-    Satus.storage.set('history', satus.history);
-    
+    var DOMAINS = HISTORY_MANAGER.DOMAINS,
+        PAGES = HISTORY_MANAGER.PAGES,
+        PARAMS = HISTORY_MANAGER.PARAMS;
+
+    Satus.storage.set('HISTORY', {
+        DOMAINS,
+        PAGES,
+        PARAMS
+    });
+
     updateTable2(true);
-    
+
     for (var key in Selected) {
         Selected[key] = undefined;
     }
-    
+
     checkToolbar();
 }
 
@@ -347,31 +219,30 @@ Menu.main = {
             onrender: function() {
                 this.querySelector('.satus-button--dropdown').addEventListener('click', function() {
                     var container = this.parentNode.parentNode;
-                    
+
                     if (!container.querySelector('.satus-dropdown-list')) {
                         var list = document.createElement('div'),
                             data = [],
                             host = this.dataset.key;
-                        
+
                         list.className = 'satus-dropdown-list';
-                        
-                        for (var key in satus.history.hosts[host].items) {
-                            var item = satus.history.hosts[host].items[key];
-                            
-                            data.push([
-                            {
-                                
-                            },
-                            {
-                                text: item.visitCount
-                            },
-                            {
-                                text: key,
-                                html: '<a class="satus-link--domain" href="https://' + host + '/' + key + '" title="' + item.title + '">' + key + '</a>'
-                            }
+
+                        for (var key in HISTORY_MANAGER.DOMAINS[host].items) {
+                            var item = HISTORY_MANAGER.DOMAINS[host].items[key];
+
+                            data.push([{
+
+                                },
+                                {
+                                    text: item.visitCount
+                                },
+                                {
+                                    text: key,
+                                    html: '<a class="satus-link--domain" href="https://' + host + '/' + key + '" title="' + item.title + '">' + key + '</a>'
+                                }
                             ]);
                         }
-                        
+
                         Satus.render({
                             type: 'table',
                             paging: 100,
@@ -388,13 +259,13 @@ Menu.main = {
                             }],
                             data: data
                         }, list);
-                        
+
                         container.appendChild(list);
-                        
+
                         this.classList.add('opened');
                     } else {
                         container.querySelector('.satus-dropdown-list').remove();
-                    
+
                         this.classList.remove('opened');
                     }
                 });
@@ -425,119 +296,151 @@ Menu.main = {
         }],
         onrender: function() {
             var toolbar = document.createElement('div');
-            
+
             toolbar.className = 'satus-table--toolbar';
-            
+
             Satus.render({
                 undo: {
                     type: 'button',
                     label: 'Undo',
-                    
+
                     onclick: function() {
                         var selected = document.querySelectorAll('.satus-table__row.selected')
-                        
+
                         for (var key in Selected) {
                             Selected[key] = undefined;
                         }
-                        
+
                         for (var i = 0, l = selected.length; i < l; i++) {
                             selected[i].classList.remove('selected');
                         }
-                        
+
                         checkToolbar();
                     }
                 },
                 star: {
                     type: 'button',
                     label: 'Star',
-                    
+
                     onclick: function() {
                         for (var key in Selected) {
-                            if  (Selected[key]) {
+                            if (Selected[key]) {
                                 Selected[key].star = 1;
                             }
                         }
-                        
+
                         updateTable2(true);
 
-                        Satus.storage.set('history', satus.history);
-                        
+                        var DOMAINS = HISTORY_MANAGER.DOMAINS,
+                            PAGES = HISTORY_MANAGER.PAGES,
+                            PARAMS = HISTORY_MANAGER.PARAMS;
+
+                        Satus.storage.set('HISTORY', {
+                            DOMAINS,
+                            PAGES,
+                            PARAMS
+                        });
+
                         for (var key in Selected) {
                             Selected[key] = undefined;
                         }
-                        
+
                         checkToolbar();
                     }
                 },
                 remove: {
                     type: 'button',
                     label: 'Remove',
-                    
+
                     onclick: function() {
                         for (var key in Selected) {
-                            if  (Selected[key]) {
-                                delete satus.history.pages[key];
+                            if (Selected[key]) {
+                                delete HISTORY_MANAGER.PAGES[key];
                                 delete Selected[key];
                             }
                         }
-                        
+
                         updateTable2(true);
 
-                        Satus.storage.set('history', satus.history);
-                        
+                        var DOMAINS = HISTORY_MANAGER.DOMAINS,
+                            PAGES = HISTORY_MANAGER.PAGES,
+                            PARAMS = HISTORY_MANAGER.PARAMS;
+
+                        Satus.storage.set('HISTORY', {
+                            DOMAINS,
+                            PAGES,
+                            PARAMS
+                        });
+
                         for (var key in Selected) {
                             Selected[key] = undefined;
                         }
-                        
+
                         checkToolbar();
                     }
                 },
                 edit: {
                     type: 'button',
                     label: 'Edit',
-                    
+
                     onclick: function() {
                         for (var key in Selected) {
-                            if  (Selected[key]) {
+                            if (Selected[key]) {
                                 Selected[key].tags = this.parentNode.querySelector('input').value;
                             }
                         }
-                        
+
                         updateTable2(true);
 
-                        Satus.storage.set('history', satus.history);
-                        
+                        var DOMAINS = HISTORY_MANAGER.DOMAINS,
+                            PAGES = HISTORY_MANAGER.PAGES,
+                            PARAMS = HISTORY_MANAGER.PARAMS;
+
+                        Satus.storage.set('HISTORY', {
+                            DOMAINS,
+                            PAGES,
+                            PARAMS
+                        });
+
                         for (var key in Selected) {
                             Selected[key] = undefined;
                         }
-                        
+
                         checkToolbar();
                     }
                 },
                 tags: {
                     type: 'text-field',
                     class: 'satus-input--tags',
-                    
+
                     onkeydown: function(event) {
                         if (event.keyCode === 13) {
                             for (var key in Selected) {
-                                if  (Selected[key]) {
+                                if (Selected[key]) {
                                     Selected[key].tags = this.value;
                                 }
                             }
-                            
+
                             updateTable2(true);
 
-                            Satus.storage.set('history', satus.history);
+                            var DOMAINS = HISTORY_MANAGER.DOMAINS,
+                                PAGES = HISTORY_MANAGER.PAGES,
+                                PARAMS = HISTORY_MANAGER.PARAMS;
+
+                            Satus.storage.set('HISTORY', {
+                                DOMAINS,
+                                PAGES,
+                                PARAMS
+                            });
                         }
                     }
                 }
             }, toolbar);
-            
+
             this.appendChild(toolbar);
         }
     },
-    
+
     table_03: {
         type: 'table',
         id: 'by-params',
@@ -552,80 +455,19 @@ Menu.main = {
 };
 
 /*---------------------------------------------------------------
->>> HISTORY
+>>> TABLES
 -----------------------------------------------------------------
-1.0 Parse
+1.0 Table 1
+2.0 Table 2
+3.0 Table 3
 ---------------------------------------------------------------*/
 
 /*---------------------------------------------------------------
-1.0 PARSE
+>>> TABLE 1
 ---------------------------------------------------------------*/
 
-function parseHistory(items, callback) {
-    var hosts_data = satus.history.hosts,
-        pages_data = satus.history.pages,
-        params_data = satus.history.params;
-    
-    items = items.sort(function(a, b) {
-        return b.visitCount - a.visitCount;
-    });
-    
-    // BY DOMAIN
-    for (var i = 0, l = items.length; i < l; i++) {
-        var item = items[i],
-            host = item.url.split('/')[2];
-        
-        if (!hosts_data[host]) {
-            hosts_data[host] = {
-                items: {},
-                visitCount: item.visitCount
-            };
-        } else {
-            hosts_data[host].visitCount += item.visitCount;
-        }
-        
-        hosts_data[host].items[/*decodeURI*/(item.url.replace(/^.*\/\/[^\/]+:?[0-9]?\//g, ''))] = {
-            title: item.title,
-            visitCount: item.visitCount
-        };
-    }
-    
-    // BY PAGE
-    
-    for (var i = 0, l = Math.min(items.length, 1000); i < l; i++) {
-        var item = items[i];
-        
-        pages_data[item.url] = {
-            title: item.title,
-            visitCount: item.visitCount,
-            star: 0,
-            tags: ''
-        };
-    }
-    
-    // BY PARAM
-    for (var i = 0, l = items.length, j = 0; i < l; i++) {
-        var item = items[i];
-        
-        if (item.url.match(/[^\w]q=/) && j < 1000) {
-            params_data[item.url] = {
-                title: item.title,
-                visitCount: item.visitCount,
-                star: 0,
-                tags: ''
-            };
-            
-            j++;
-        }
-    }
-    
-    Satus.storage.set('history', satus.history);
-    
-    //console.log(items);
-}
-
-function updateTable1() {
-    var data = satus.history.hosts,
+function updateTable1(force, d) {
+    var data = d || HISTORY_MANAGER.DOMAINS,
         table = [];
     
     for (var key in data) {
@@ -638,16 +480,25 @@ function updateTable1() {
             },
             {
                 text: key,
-                html: '<a class="satus-link--domain" href="https://' + key + '">' + key + '</a>'
+                html: '<a class="satus-link--domain" href="' + key + '"><img src="chrome://favicon/https://' + key + '">' + key + '</a>'
             }
         ]);
     }
     
     Menu.main.table_01.data = table;
+    
+    if (force === true) {
+        document.querySelector('#by-domain').update(table);
+    }
 }
 
-function updateTable2(force) {
-    var data = satus.history.pages,
+
+/*---------------------------------------------------------------
+>>> TABLE 2
+---------------------------------------------------------------*/
+
+function updateTable2(force, d) {
+    var data = d || HISTORY_MANAGER.PAGES,
         table = [];
 
     for (var key in data) {
@@ -659,6 +510,7 @@ function updateTable2(force) {
             text: item.visitCount
         },
         {
+            html: '<img src="chrome://favicon/' + key + '">' + item.title,
             text: item.title
         },
         {
@@ -683,8 +535,13 @@ function updateTable2(force) {
     }
 }
 
-function updateTable3(force) {
-    var data = satus.history.hosts,
+
+/*---------------------------------------------------------------
+>>> TABLE 3
+---------------------------------------------------------------*/
+
+function updateTable3(force, d) {
+    var data = d || HISTORY_MANAGER.PARAMS,
         table = [];
 
     for (var key in data) {
@@ -695,7 +552,7 @@ function updateTable3(force) {
             text: item.visitCount
         },
         {
-            html: '<a href="https://' + key + '">' + key + '</a>',
+            html: '<a href="' + key + '"><img src="chrome://favicon/' + key + '">' + key + '</a>',
             text: key
         }
         ]);
@@ -710,71 +567,57 @@ function updateTable3(force) {
 
 /*---------------------------------------------------------------
 >>> INDEX
------------------------------------------------------------------
-1.0 Storage
-2.0 Locale
-3.0 History
-4.0 Init
 ---------------------------------------------------------------*/
 
-/*---------------------------------------------------------------
-1.0 STORAGE
----------------------------------------------------------------*/
-
-function importStorage(callback) {
-    satus.storage.import(callback);
-}
-
-
-/*---------------------------------------------------------------
-2.0 LOCALE
----------------------------------------------------------------*/
-
-function importLocale(path, callback) {
-    satus.locale.import(path, callback);
-}
-
-
-/*---------------------------------------------------------------
-3.0 HISTORY
----------------------------------------------------------------*/
-
-function importHistory(params, callback) {
-    chrome.history.search(params, callback);
-}
-
-
-/*---------------------------------------------------------------
-4.0 INIT
----------------------------------------------------------------*/
-
-window.addEventListener('load', function() {
-    importStorage(function() {
-        satus.history = satus.storage.get('history') || {
-            hosts: {},
-            pages: {},
-            params: {}
-        };
+var HISTORY_MANAGER = {
+    DOMAINS: {},
+    PAGES: {},
+    PARAMS: {},
+    
+    KEYS: [
+        [],
+        [],
+        []
+    ],
+    
+    LENGTH: [0, 0, 0],
+    
+    SEARCH: {
+        INDEX: 0,
+        INTERVAL: false,
         
-        importLocale('_locales/en/messages.json', function() {
-            var end_time = new Date().getTime();
+        DOMAINS: {},
+        PAGES: {},
+        PARAMS: {}
+    }
+};
+
+console.time();
+
+satus.storage.import(function() {
+    var object = satus.storage.get('HISTORY') || {};
+    
+    HISTORY_MANAGER.DOMAINS = object.DOMAINS;
+    HISTORY_MANAGER.PAGES = object.PAGES;
+    HISTORY_MANAGER.PARAMS = object.PARAMS;
+
+    satus.locale.import('_locales/en/messages.json', function() {
+        updateTable1();
+        updateTable2();
+        updateTable3();
+
+        Satus.render(Menu);
+        
+        console.timeEnd();
+        
+        setTimeout(function() {
+            HISTORY_MANAGER.KEYS[0] = Object.keys(HISTORY_MANAGER.DOMAINS);
+            HISTORY_MANAGER.KEYS[1] = Object.keys(HISTORY_MANAGER.PAGES);
+            HISTORY_MANAGER.KEYS[2] = Object.keys(HISTORY_MANAGER.PARAMS);
             
-            importHistory({
-                text: '',
-                startTime: Satus.storage.get('startTime') || 0,
-                endTime: end_time,
-                maxResults: 9999999
-            }, function(items) {
-                parseHistory(items);
-                
-                updateTable1();
-                updateTable2();
-                updateTable3();
-                
-                Satus.render(Menu);
-            });
-            
-            Satus.storage.set('startTime', end_time);
-        });
+            HISTORY_MANAGER.LENGTH[0] = HISTORY_MANAGER.KEYS[0].length;
+            HISTORY_MANAGER.LENGTH[1] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length;
+            HISTORY_MANAGER.LENGTH[2] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length + HISTORY_MANAGER.KEYS[2].length;
+        }, 250);
     });
 });

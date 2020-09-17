@@ -1,78 +1,17 @@
 /*---------------------------------------------------------------
->>> HISTORY
+>>> TABLES
 -----------------------------------------------------------------
-1.0 Parse
+1.0 Table 1
+2.0 Table 2
+3.0 Table 3
 ---------------------------------------------------------------*/
 
 /*---------------------------------------------------------------
-1.0 PARSE
+>>> TABLE 1
 ---------------------------------------------------------------*/
 
-function parseHistory(items, callback) {
-    var hosts_data = satus.history.hosts,
-        pages_data = satus.history.pages,
-        params_data = satus.history.params;
-    
-    items = items.sort(function(a, b) {
-        return b.visitCount - a.visitCount;
-    });
-    
-    // BY DOMAIN
-    for (var i = 0, l = items.length; i < l; i++) {
-        var item = items[i],
-            host = item.url.split('/')[2];
-        
-        if (!hosts_data[host]) {
-            hosts_data[host] = {
-                items: {},
-                visitCount: item.visitCount
-            };
-        } else {
-            hosts_data[host].visitCount += item.visitCount;
-        }
-        
-        hosts_data[host].items[/*decodeURI*/(item.url.replace(/^.*\/\/[^\/]+:?[0-9]?\//g, ''))] = {
-            title: item.title,
-            visitCount: item.visitCount
-        };
-    }
-    
-    // BY PAGE
-    
-    for (var i = 0, l = Math.min(items.length, 1000); i < l; i++) {
-        var item = items[i];
-        
-        pages_data[item.url] = {
-            title: item.title,
-            visitCount: item.visitCount,
-            star: 0,
-            tags: ''
-        };
-    }
-    
-    // BY PARAM
-    for (var i = 0, l = items.length, j = 0; i < l; i++) {
-        var item = items[i];
-        
-        if (item.url.match(/[^\w]q=/) && j < 1000) {
-            params_data[item.url] = {
-                title: item.title,
-                visitCount: item.visitCount,
-                star: 0,
-                tags: ''
-            };
-            
-            j++;
-        }
-    }
-    
-    Satus.storage.set('history', satus.history);
-    
-    //console.log(items);
-}
-
-function updateTable1() {
-    var data = satus.history.hosts,
+function updateTable1(force, d) {
+    var data = d || HISTORY_MANAGER.DOMAINS,
         table = [];
     
     for (var key in data) {
@@ -85,16 +24,25 @@ function updateTable1() {
             },
             {
                 text: key,
-                html: '<a class="satus-link--domain" href="https://' + key + '">' + key + '</a>'
+                html: '<a class="satus-link--domain" href="' + key + '"><img src="chrome://favicon/https://' + key + '">' + key + '</a>'
             }
         ]);
     }
     
     Menu.main.table_01.data = table;
+    
+    if (force === true) {
+        document.querySelector('#by-domain').update(table);
+    }
 }
 
-function updateTable2(force) {
-    var data = satus.history.pages,
+
+/*---------------------------------------------------------------
+>>> TABLE 2
+---------------------------------------------------------------*/
+
+function updateTable2(force, d) {
+    var data = d || HISTORY_MANAGER.PAGES,
         table = [];
 
     for (var key in data) {
@@ -106,6 +54,7 @@ function updateTable2(force) {
             text: item.visitCount
         },
         {
+            html: '<img src="chrome://favicon/' + key + '">' + item.title,
             text: item.title
         },
         {
@@ -130,8 +79,13 @@ function updateTable2(force) {
     }
 }
 
-function updateTable3(force) {
-    var data = satus.history.hosts,
+
+/*---------------------------------------------------------------
+>>> TABLE 3
+---------------------------------------------------------------*/
+
+function updateTable3(force, d) {
+    var data = d || HISTORY_MANAGER.PARAMS,
         table = [];
 
     for (var key in data) {
@@ -142,7 +96,7 @@ function updateTable3(force) {
             text: item.visitCount
         },
         {
-            html: '<a href="https://' + key + '">' + key + '</a>',
+            html: '<a href="' + key + '"><img src="chrome://favicon/' + key + '">' + key + '</a>',
             text: key
         }
         ]);

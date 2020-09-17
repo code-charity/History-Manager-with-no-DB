@@ -16,7 +16,7 @@ html {
     --satus-theme-header: transparent;
     /*--satus-theme-header-text: #f6b465;*/
     
-    --satus-theme-main: #eee;
+    --satus-theme-main: #eaeeef;
 }
 
 
@@ -105,7 +105,7 @@ body
 }
 
 /*---------------------------------------------------------------
->>> HEADER:
+>>> HEADER
 -----------------------------------------------------------------
 1.0 Buttons
     1.1 Back button
@@ -122,9 +122,9 @@ body
     box-shadow: none;
 }
 
-.satus-header .satus-section
+.satus-section--align-start
 {
-    background-color: transparent;
+    position: relative;
 }
 
 /*---------------------------------------------------------------
@@ -143,36 +143,19 @@ body
     border-radius: 50%;
 }
 
-.satus-header__text-field + .satus-button svg
-{
-    fill: var(--satus-theme-header-text);
-}
-
-
-/*---------------------------------------------------------------
-1.1 BACK BUTTON
----------------------------------------------------------------*/
-
-.satus-button--back
-{
-    position: absolute;
-}
-
-.satus-button--back svg
-{
-    fill: none;
-    stroke: currentColor;
-}
-
-body[data-appearance='home'] .satus-button--back
-{
-    visibility: hidden;
-}
-
 
 /*---------------------------------------------------------------
 2.0 SEARCH
 ---------------------------------------------------------------*/
+
+.satus-header .satus-button.satus-header__search-button
+{
+    position: absolute;
+
+    padding: 9px;
+
+    pointer-events: none;
+}
 
 .satus-header__text-field
 {
@@ -180,22 +163,11 @@ body[data-appearance='home'] .satus-button--back
     max-width: 1024px;
     height: 38px;
     margin-right: 8px;
-    padding: 10px 8px;
+    padding: 10px 8px 10px 36px;
 
-    color: var(--satus-theme-header-text);
     border: 1px solid #ddd;
     border-radius: 4px;
     background-color: #fff;
-}
-
-.satus-header__text-field + .satus-button
-{
-    position: absolute;
-    right: 14px;
-
-    width: 28px;
-    height: 28px;
-    padding: 2px;
 }
 
 
@@ -267,20 +239,6 @@ body[data-appearance='home'] .satus-button--back
     height: 18px;
 }
 
-
-.satus-dialog--search-menu .satus-dialog__scrim
-{
-    background: transparent;
-
-    backdrop-filter: none;
-}
-
-.satus-dialog--search-menu .satus-dialog__surface
-{
-    right: auto;
-    left: calc(50vw - 186px);
-}
-
 /*--------------------------------------------------------------
 >>> MAIN
 ----------------------------------------------------------------
@@ -323,6 +281,13 @@ body[data-appearance='home'] .satus-button--back
     text-decoration: none;
 
     color: currentColor;
+}
+
+.satus-table img
+{
+    width: 16px;
+    height: 16px;
+    margin: 0 8px -3px 0;
 }
 
 #by-domain

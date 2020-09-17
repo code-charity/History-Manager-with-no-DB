@@ -1,70 +1,56 @@
 /*---------------------------------------------------------------
 >>> INDEX
------------------------------------------------------------------
-1.0 Storage
-2.0 Locale
-3.0 History
-4.0 Init
 ---------------------------------------------------------------*/
 
-/*---------------------------------------------------------------
-1.0 STORAGE
----------------------------------------------------------------*/
-
-function importStorage(callback) {
-    satus.storage.import(callback);
-}
-
-
-/*---------------------------------------------------------------
-2.0 LOCALE
----------------------------------------------------------------*/
-
-function importLocale(path, callback) {
-    satus.locale.import(path, callback);
-}
-
-
-/*---------------------------------------------------------------
-3.0 HISTORY
----------------------------------------------------------------*/
-
-function importHistory(params, callback) {
-    chrome.history.search(params, callback);
-}
-
-
-/*---------------------------------------------------------------
-4.0 INIT
----------------------------------------------------------------*/
-
-window.addEventListener('load', function() {
-    importStorage(function() {
-        satus.history = satus.storage.get('history') || {
-            hosts: {},
-            pages: {},
-            params: {}
-        };
+var HISTORY_MANAGER = {
+    DOMAINS: {},
+    PAGES: {},
+    PARAMS: {},
+    
+    KEYS: [
+        [],
+        [],
+        []
+    ],
+    
+    LENGTH: [0, 0, 0],
+    
+    SEARCH: {
+        INDEX: 0,
+        INTERVAL: false,
         
-        importLocale('_locales/en/messages.json', function() {
-            var end_time = new Date().getTime();
+        DOMAINS: {},
+        PAGES: {},
+        PARAMS: {}
+    }
+};
+
+console.time();
+
+satus.storage.import(function() {
+    var object = satus.storage.get('HISTORY') || {};
+    
+    HISTORY_MANAGER.DOMAINS = object.DOMAINS;
+    HISTORY_MANAGER.PAGES = object.PAGES;
+    HISTORY_MANAGER.PARAMS = object.PARAMS;
+
+    satus.locale.import('_locales/en/messages.json', function() {
+        updateTable1();
+        updateTable2();
+        updateTable3();
+
+        Satus.render(Menu);
+        
+        console.timeEnd();
+        
+        setTimeout(function() {
+            HISTORY_MANAGER.KEYS[0] = Object.keys(HISTORY_MANAGER.DOMAINS);
+            HISTORY_MANAGER.KEYS[1] = Object.keys(HISTORY_MANAGER.PAGES);
+            HISTORY_MANAGER.KEYS[2] = Object.keys(HISTORY_MANAGER.PARAMS);
             
-            importHistory({
-                text: '',
-                startTime: Satus.storage.get('startTime') || 0,
-                endTime: end_time,
-                maxResults: 9999999
-            }, function(items) {
-                parseHistory(items);
-                
-                updateTable1();
-                updateTable2();
-                updateTable3();
-                
-                Satus.render(Menu);
-            });
-            
-            Satus.storage.set('startTime', end_time);
-        });
+            HISTORY_MANAGER.LENGTH[0] = HISTORY_MANAGER.KEYS[0].length;
+            HISTORY_MANAGER.LENGTH[1] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length;
+            HISTORY_MANAGER.LENGTH[2] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length + HISTORY_MANAGER.KEYS[2].length;
+        }, 250);
     });
 });

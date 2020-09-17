@@ -2,7 +2,7 @@
     "popup.js": [
         "src/js/header.js",
         "src/js/main.js",
-        "src/js/history.js",
+        "src/js/tables.js",
         "src/js/index.js"
     ],
     "popup.css": [
