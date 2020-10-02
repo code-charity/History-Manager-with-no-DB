@@ -29,7 +29,7 @@ function updateTable1(force, d) {
         ]);
     }
     
-    Menu.main.table_01.data = table;
+    Menu.main.section.table_01.data = table;
     
     if (force === true) {
         document.querySelector('#by-domain').update(table);
@@ -72,7 +72,7 @@ function updateTable2(force, d) {
         ]);
     }
 
-    Menu.main.table_02.data = table;
+    Menu.main.section.table_02.data = table;
     
     if (force === true) {
         document.querySelector('#by-url').update(table);
@@ -102,7 +102,7 @@ function updateTable3(force, d) {
         ]);
     }
 
-    Menu.main.table_03.data = table;
+    Menu.main.section.table_03.data = table;
     
     if (force === true) {
         document.querySelector('#by-params').update(table);

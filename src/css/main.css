@@ -17,10 +17,18 @@
 # TABLE
 --------------------------------------------------------------*/
 
+.satus-section--tables
+{
+    width: 100vw;
+    align-items: flex-start;
+    background-color: transparent !important;
+}
+
 .satus-table
 {
     border: 1px solid #ddd;
     border-radius: 4px;
+    height: calc(100vh - 62px);
 }
 
 .satus-table__head
@@ -47,6 +55,13 @@
     width: 16px;
     height: 16px;
     margin: 0 8px -3px 0;
+}
+
+.satus-table .satus-button
+{
+    height: auto;
+    width: auto;
+    padding: 0
 }
 
 #by-domain
@@ -90,6 +105,7 @@
 .satus-table--toolbar > *:nth-child(4)
 {
     width: 28px;
+        text-overflow: unset;
 }
 
 #by-url .satus-table__head > div:nth-child(5),
