@@ -5,7 +5,7 @@
 // TODO optimize dataSearch function
 
 function dataSearch(event) {
-    var value = this.value;
+    var value = event.target.value;
 
     if (HISTORY_MANAGER.SEARCH.INTERVAL) {
         clearInterval(HISTORY_MANAGER.SEARCH.INTERVAL);
@@ -18,7 +18,7 @@ function dataSearch(event) {
     if (value.length === 0) {
         updateTable1(true, HISTORY_MANAGER.DOMAINS);
         updateTable2(true, HISTORY_MANAGER.PAGES);
-        updateTable3(true, HISTORY_MANAGER.PARAMS);
+        updateTable3(true, HISTORY_MANAGER.DOMAINS);
         
         return;
     }
@@ -48,8 +48,8 @@ function dataSearch(event) {
                 
                 var key = HISTORY_MANAGER.KEYS[2][i];
 
-                if (key.indexOf(value) !== -1 || (HISTORY_MANAGER.PARAMS[key].title || '').indexOf(value) !== -1) {
-                    HISTORY_MANAGER.SEARCH.PARAMS[key] = HISTORY_MANAGER.PARAMS[key];
+                if (key.indexOf(value) !== -1) {
+                    HISTORY_MANAGER.SEARCH.PARAMS[key] = HISTORY_MANAGER.DOMAINS[key];
                 }
             }
         }
@@ -91,7 +91,36 @@ var Menu = {
                     rows: 1,
                     class: 'satus-header__text-field',
                     placeholder: 'Search',
-                    oninput: dataSearch
+                    oninput: function(event) {
+                        if (all_loading === false) {
+                            if (all_loaded === false) {
+                                all_loading = true;
+                                
+                                satus.storage.import('_all', function(item) {
+                                    HISTORY_MANAGER.DOMAINS = item.domains;
+                                    HISTORY_MANAGER.PAGES = item.pages;
+
+                                    document.querySelector('#by-domain').data = updateTable1();
+                                    document.querySelector('#by-url').data = updateTable2();
+                                    document.querySelector('#by-params').data = updateTable3();
+
+                                    HISTORY_MANAGER.KEYS[0] = Object.keys(HISTORY_MANAGER.DOMAINS);
+                                    HISTORY_MANAGER.KEYS[1] = Object.keys(HISTORY_MANAGER.PAGES);
+                                    HISTORY_MANAGER.KEYS[2] = Object.keys(HISTORY_MANAGER.DOMAINS);
+                                    HISTORY_MANAGER.LENGTH[0] = HISTORY_MANAGER.KEYS[0].length;
+                                    HISTORY_MANAGER.LENGTH[1] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length;
+                                    HISTORY_MANAGER.LENGTH[2] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length + HISTORY_MANAGER.KEYS[2].length;
+                                    
+                                    all_loaded = true;
+                                    all_loading = false;
+                                    
+                                    dataSearch(event);
+                                });
+                            } else {
+                                dataSearch(event);
+                            }
+                        }
+                    }
                 }
             },
             section_end: {
@@ -100,7 +129,26 @@ var Menu = {
 
                 button_vert: {
                     type: 'button',
-                    before: '<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="5.25" r="0.45"/><circle cx="12" cy="12" r="0.45"/><circle cx="12" cy="18.75" r="0.45"/></svg>'
+                    before: '<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="5.25" r="0.45"/><circle cx="12" cy="12" r="0.45"/><circle cx="12" cy="18.75" r="0.45"/></svg>',
+                    onclick: {
+                        type: 'dialog',
+                        class: 'satus-dialog--vertical-menu',
+                        
+                        compact_mode: {
+                            type: 'switch',
+                            label: 'compactMode',
+                            storage_key: 'compact_mode',
+                            onclick: function() {
+                                setTimeout(function() {
+                                    document.body.dataset.compactMode = satus.storage.get('compact_mode');
+                                    
+                                    setTimeout(function() {
+                                        window.dispatchEvent(new Event('resize'));
+                                    });
+                                });
+                            }
+                        }
+                    }
                 }
             }
         }

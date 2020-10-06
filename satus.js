@@ -815,14 +815,26 @@ satus.storage.set = function(name, value) {
 3.0 IMPORT
 ---------------------------------------------------------------*/
 
-satus.storage.import = function(callback) {
-    chrome.storage.local.get(function(items) {
-        satus.storage.data = items;
+satus.storage.import = function(name, callback) {
+    if (typeof name === 'function') {
+        chrome.storage.local.get(function(items) {
+            satus.storage.data = items;
 
-        if (callback) {
-            callback();
-        }
-    });
+            if (callback) {
+                callback(items);
+            }
+        });
+    } else {
+        chrome.storage.local.get(name, function(items) {
+            for (var key in items) {
+                satus.storage.data[key] = items[key];
+            }
+
+            if (callback) {
+                callback(items[name]);
+            }
+        });
+    }
 };
 
 
@@ -880,7 +892,7 @@ Satus.components.table = function(item) {
     component_body.className = 'satus-table__body';
 
     function update(data) {
-        var pages = Math.ceil(component.data.length / component.paging),
+        var pages = item.pages,
             start = Math.max((component.pagingIndex - 1) * component.paging, 0),
             end = component.pagingIndex * component.paging;
 
@@ -991,6 +1003,11 @@ Satus.components.table = function(item) {
 
         column.dataset.sorting = 'none';
         column.addEventListener('click', sort);
+        column.addEventListener('click', function() {
+            if (typeof item.beforeUpdate === 'function') {
+                item.beforeUpdate(item);
+            }
+        });
         column.innerHTML = '<span>' + item.columns[i].title + '</span>';
 
         component_head.appendChild(column);
@@ -1003,11 +1020,16 @@ Satus.components.table = function(item) {
 
     component.data = item.data;
     component.paging = item.paging;
+    component.pages = item.pages;
     component.pagingIndex = 1;
 
-    component.update = function(data, index, mode) {
+    component.update = function(data, update_pages) {
         if (Satus.isset(data)) {
             this.data = data;
+        }
+        
+        if (update_pages !== false) {
+            item.pages = Math.ceil(this.data.length / this.paging);
         }
         
         if (this.querySelector('div[data-sorting=asc], div[data-sorting=desc]')) {
@@ -1044,6 +1066,10 @@ Satus.components.table = function(item) {
         button.innerText = i;
         button.parentComponent = component;
         button.addEventListener('click', function() {
+            if (typeof item.beforeUpdate === 'function') {
+                item.beforeUpdate(item);
+            }
+            
             this.parentComponent.pagingIndex = Number(this.innerText);
             this.parentComponent.update(this.parentComponent.data);
             this.parentComponent.pagingUpdate();
@@ -1054,34 +1080,36 @@ Satus.components.table = function(item) {
 
     function pagingUpdate() {
         if (typeof this.paging === 'number') {
-            var pages = Math.ceil(this.data.length / this.paging),
+            var pages = item.pages,
                 c = this.querySelector('.satus-table__paging');
 
             c.innerHTML = '';
             
-            pagingButton(1, c);
+            if (pages > 1) {
+                pagingButton(1, c);
             
-            if (component.pagingIndex - 2 > 2) {
-                var span = document.createElement('span');
-                
-                span.innerText = '...';
-                
-                c.appendChild(span);
-            }
+                if (component.pagingIndex - 2 > 2) {
+                    var span = document.createElement('span');
+                    
+                    span.innerText = '...';
+                    
+                    c.appendChild(span);
+                }
 
-            for (var i = component.pagingIndex - 2 < 2 ? 2 : component.pagingIndex - 2, l = component.pagingIndex + 2 > pages - 1 ? pages - 1 : component.pagingIndex + 2; i <= l; i++) {
-                pagingButton(i, c);
-            }
-            
-            if (component.pagingIndex + 2 < pages - 1) {
-                var span = document.createElement('span');
+                for (var i = component.pagingIndex - 2 < 2 ? 2 : component.pagingIndex - 2, l = component.pagingIndex + 2 > pages - 1 ? pages - 1 : component.pagingIndex + 2; i <= l; i++) {
+                    pagingButton(i, c);
+                }
                 
-                span.innerText = '...';
+                if (component.pagingIndex + 2 < pages - 1) {
+                    var span = document.createElement('span');
+                    
+                    span.innerText = '...';
+                    
+                    c.appendChild(span);
+                }
                 
-                c.appendChild(span);
+                pagingButton(pages, c);
             }
-            
-            pagingButton(pages, c);
         }
         
         resize();
@@ -1098,7 +1126,7 @@ Satus.components.table = function(item) {
     // END PAGING
     
     if (item.data) {
-        component.update(item.data);
+        component.update(item.data, false);
     }
     
     return component;

@@ -1,4 +1,6 @@
-var Selected = {};
+var Selected = {},
+    all_loaded = false,
+    all_loading = false;
 
 window.addEventListener('click', function(event) {
     var target = event.target;
@@ -44,6 +46,8 @@ function checkToolbar() {
     } else {
         document.querySelector('#by-url').classList.remove('satus-table--selected');
     }
+    
+    window.dispatchEvent(new Event('resize'));
 }
 
 function star(target) {
@@ -55,14 +59,9 @@ function star(target) {
 
     updateTable2(true);
 
-    var DOMAINS = HISTORY_MANAGER.DOMAINS,
-        PAGES = HISTORY_MANAGER.PAGES,
-        PARAMS = HISTORY_MANAGER.PARAMS;
-
-    Satus.storage.set('HISTORY', {
-        DOMAINS,
-        PAGES,
-        PARAMS
+    satus.storage.set('_all', {
+        dimains: HISTORY_MANAGER.DOMAINS,
+        pages: HISTORY_MANAGER.PAGES
     });
 
     for (var key in Selected) {
@@ -116,48 +115,49 @@ Menu.main = {
                         var container = this.parentNode.parentNode;
 
                         if (!container.querySelector('.satus-dropdown-list')) {
-                            var list = document.createElement('div'),
+                            var self = this,
+                                list = document.createElement('div'),
                                 data = [],
                                 host = this.dataset.key;
 
                             list.className = 'satus-dropdown-list';
+                                
+                            satus.storage.import(host, function(items) {
+                                for (var key in items) {
+                                    var item = items[key];
 
-                            for (var key in HISTORY_MANAGER.DOMAINS[host].items) {
-                                var item = HISTORY_MANAGER.DOMAINS[host].items[key];
+                                    data.push([{
+                                            text: item.visitCount
+                                        },
+                                        {},
+                                        {
+                                            text: key,
+                                            html: '<a class="satus-link--domain" href="https://' + host + '/' + key + '" title="' + item.title + '">' + key + '</a>'
+                                        }
+                                    ]);
+                                }
 
-                                data.push([{
+                                Satus.render({
+                                    type: 'table',
+                                    paging: 100,
+                                    columns: [{
+                                        title: 'Visits',
+                                        sorting: 'desc'
+                                    }, {
+                                        title: ''
+                                    }, {
+                                        title: 'Title',
+                                        onrender: function() {
+                                            this.querySelector('a').innerText = this.querySelector('a').innerText;
+                                        }
+                                    }],
+                                    data: data
+                                }, list);
 
-                                    },
-                                    {
-                                        text: item.visitCount
-                                    },
-                                    {
-                                        text: key,
-                                        html: '<a class="satus-link--domain" href="https://' + host + '/' + key + '" title="' + item.title + '">' + key + '</a>'
-                                    }
-                                ]);
-                            }
+                                container.appendChild(list);
 
-                            Satus.render({
-                                type: 'table',
-                                paging: 100,
-                                columns: [{
-                                    title: ''
-                                }, {
-                                    title: 'Visits',
-                                    sorting: 'desc'
-                                }, {
-                                    title: 'Title',
-                                    onrender: function() {
-                                        this.querySelector('a').innerText = '/' + this.querySelector('a').innerText;
-                                    }
-                                }],
-                                data: data
-                            }, list);
-
-                            container.appendChild(list);
-
-                            this.classList.add('opened');
+                                self.classList.add('opened');
+                            });
                         } else {
                             container.querySelector('.satus-dropdown-list').remove();
 
@@ -167,7 +167,30 @@ Menu.main = {
                 }
             }, {
                 title: 'Domain'
-            }]
+            }],
+            beforeUpdate: function(item) {
+                if (all_loaded === false) {
+                    satus.storage.import('_all', function(item) {
+                        HISTORY_MANAGER.DOMAINS = item.domains;
+                        HISTORY_MANAGER.PAGES = item.pages;
+
+                        document.querySelector('#by-domain').data = updateTable1(true);
+                        document.querySelector('#by-url').data = updateTable2();
+                        document.querySelector('#by-params').data = updateTable3();
+
+                        HISTORY_MANAGER.KEYS[0] = Object.keys(HISTORY_MANAGER.DOMAINS);
+                        HISTORY_MANAGER.KEYS[1] = Object.keys(HISTORY_MANAGER.PAGES);
+                        HISTORY_MANAGER.KEYS[2] = Object.keys(HISTORY_MANAGER.DOMAINS);
+                        HISTORY_MANAGER.LENGTH[0] = HISTORY_MANAGER.KEYS[0].length;
+                        HISTORY_MANAGER.LENGTH[1] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length;
+                        HISTORY_MANAGER.LENGTH[2] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length + HISTORY_MANAGER.KEYS[2].length;
+                        
+                        all_loaded = true;
+                        
+                        document.querySelectorAll('.satus-table')[0].querySelector('.satus-scrollbar__wrapper').scrollTo(0, 0);
+                    });
+                }
+            }
         },
 
         table_02: {
@@ -333,6 +356,29 @@ Menu.main = {
                 }, toolbar);
 
                 this.appendChild(toolbar);
+            },
+            beforeUpdate: function(item) {
+                if (all_loaded === false) {
+                    satus.storage.import('_all', function(item) {
+                        HISTORY_MANAGER.DOMAINS = item.domains;
+                        HISTORY_MANAGER.PAGES = item.pages;
+
+                        document.querySelector('#by-domain').data = updateTable1();
+                        document.querySelector('#by-url').data = updateTable2(true);
+                        document.querySelector('#by-params').data = updateTable();
+
+                        HISTORY_MANAGER.KEYS[0] = Object.keys(HISTORY_MANAGER.DOMAINS);
+                        HISTORY_MANAGER.KEYS[1] = Object.keys(HISTORY_MANAGER.PAGES);
+                        HISTORY_MANAGER.KEYS[2] = Object.keys(HISTORY_MANAGER.DOMAINS);
+                        HISTORY_MANAGER.LENGTH[0] = HISTORY_MANAGER.KEYS[0].length;
+                        HISTORY_MANAGER.LENGTH[1] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length;
+                        HISTORY_MANAGER.LENGTH[2] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length + HISTORY_MANAGER.KEYS[2].length;
+                        
+                        all_loaded = true;
+                        
+                        document.querySelectorAll('.satus-table')[1].querySelector('.satus-scrollbar__wrapper').scrollTo(0, 0);
+                    });
+                }
             }
         },
 
@@ -344,8 +390,102 @@ Menu.main = {
                 title: 'Visits',
                 sorting: 'desc'
             }, {
+                title: '',
+                onrender: function() {
+                    this.querySelector('.satus-button--dropdown').addEventListener('click', function() {
+                        var container = this.parentNode.parentNode;
+
+                        if (!container.querySelector('.satus-dropdown-list')) {
+                            var self = this,
+                                list = document.createElement('div'),
+                                data = [],
+                                host = this.dataset.key;
+
+                            list.className = 'satus-dropdown-list';
+                                
+                            satus.storage.import(host, function(items) {
+                                for (var key in items) {
+                                    var q = key.match(/[?&]q=[^&]+/) || key.match(/[?&]search_query=[^&]+/);
+                                    
+                                    if (q) {
+                                        var item = items[key];
+                                        
+                                        try {
+                                            var qq = decodeURIComponent(q[0].substring(q[0].indexOf('=') + 1));
+                                        } catch(err) {
+                                            var qq = q[0].substring(q[0].indexOf('=') + 1);
+                                        }
+
+                                        data.push([{
+                                                text: item.visitCount
+                                            },
+                                            {},
+                                            {
+                                                text: key,
+                                                html: '<a class="satus-link--domain" href="https://' + host + '/' + key + '" title="' + q + '">' + qq + '</a>'
+                                            }
+                                        ]);
+                                    }
+                                }
+                                
+                                if (data.length === 0) {
+                                    return;
+                                }
+
+                                Satus.render({
+                                    type: 'table',
+                                    paging: 100,
+                                    columns: [{
+                                        title: 'Visits',
+                                        sorting: 'desc'
+                                    }, {
+                                        title: ''
+                                    }, {
+                                        title: 'Title',
+                                        onrender: function() {
+                                            this.querySelector('a').innerText = this.querySelector('a').innerText;
+                                        }
+                                    }],
+                                    data: data
+                                }, list);
+
+                                container.appendChild(list);
+
+                                self.classList.add('opened');
+                            });
+                        } else {
+                            container.querySelector('.satus-dropdown-list').remove();
+
+                            this.classList.remove('opened');
+                        }
+                    });
+                }
+            }, {
                 title: 'Domain'
-            }]
+            }],
+            beforeUpdate: function(item) {
+                if (all_loaded === false) {
+                    satus.storage.import('_all', function(item) {
+                        HISTORY_MANAGER.DOMAINS = item.domains;
+                        HISTORY_MANAGER.PAGES = item.pages;
+
+                        document.querySelector('#by-domain').data = updateTable1();
+                        document.querySelector('#by-url').data = updateTable2();
+                        document.querySelector('#by-params').data = updateTable3(true);
+
+                        HISTORY_MANAGER.KEYS[0] = Object.keys(HISTORY_MANAGER.DOMAINS);
+                        HISTORY_MANAGER.KEYS[1] = Object.keys(HISTORY_MANAGER.PAGES);
+                        HISTORY_MANAGER.KEYS[2] = Object.keys(HISTORY_MANAGER.DOMAINS);
+                        HISTORY_MANAGER.LENGTH[0] = HISTORY_MANAGER.KEYS[0].length;
+                        HISTORY_MANAGER.LENGTH[1] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length;
+                        HISTORY_MANAGER.LENGTH[2] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length + HISTORY_MANAGER.KEYS[2].length;
+                        
+                        all_loaded = true;
+                        
+                        document.querySelectorAll('.satus-table')[2].querySelector('.satus-scrollbar__wrapper').scrollTo(0, 0);
+                    });
+                }
+            }
         }
     }
 };

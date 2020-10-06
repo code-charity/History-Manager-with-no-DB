@@ -17,7 +17,7 @@ function updateTable1(force, d) {
     for (var key in data) {
         table.push([
             {
-                text: data[key].visitCount
+                text: data[key]
             },
             {
                 html: '<button class="satus-button satus-button--dropdown" data-key="' + key + '"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>'
@@ -34,6 +34,8 @@ function updateTable1(force, d) {
     if (force === true) {
         document.querySelector('#by-domain').update(table);
     }
+    
+    return table;
 }
 
 
@@ -54,7 +56,7 @@ function updateTable2(force, d) {
             text: item.visitCount
         },
         {
-            html: '<img src="chrome://favicon/' + key + '">' + item.title,
+            html: '<img src="chrome://favicon/https://' + key.split('/')[2] + '">' + item.title,
             text: item.title
         },
         {
@@ -77,6 +79,8 @@ function updateTable2(force, d) {
     if (force === true) {
         document.querySelector('#by-url').update(table);
     }
+    
+    return table;
 }
 
 
@@ -85,18 +89,19 @@ function updateTable2(force, d) {
 ---------------------------------------------------------------*/
 
 function updateTable3(force, d) {
-    var data = d || HISTORY_MANAGER.PARAMS,
+    var data = d || HISTORY_MANAGER.DOMAINS,
         table = [];
 
     for (var key in data) {
-        var item = data[key];
-        
         table.push([
         {
-            text: item.visitCount
+            text: data[key]
         },
         {
-            html: '<a href="' + key + '"><img src="chrome://favicon/' + key + '">' + key + '</a>',
+            html: '<button class="satus-button satus-button--dropdown" data-key="' + key + '"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>'
+        },
+        {
+            html: '<a href="' + key + '"><img src="chrome://favicon/https://' + key + '">' + key + '</a>',
             text: key
         }
         ]);
@@ -107,4 +112,6 @@ function updateTable3(force, d) {
     if (force === true) {
         document.querySelector('#by-params').update(table);
     }
+    
+    return table;
 }

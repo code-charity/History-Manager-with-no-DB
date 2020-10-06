@@ -1,0 +1,165 @@
+/*---------------------------------------------------------------
+>>> TABLES
+-----------------------------------------------------------------
+1.0 By domain
+2.0 By URL
+3.0 By params
+4.0 Compact mode
+---------------------------------------------------------------*/
+
+/*---------------------------------------------------------------
+1.0 BY DOMAIN
+---------------------------------------------------------------*/
+
+#by-domain
+{
+    margin: 0 8px 8px;
+
+    flex: 1;
+}
+
+#by-domain .satus-table__head > div:nth-child(1),
+#by-domain .satus-table__cell:nth-child(1)
+{
+    width: 68px;
+}
+
+#by-domain .satus-table__head > div:nth-child(2),
+#by-domain .satus-table__cell:nth-child(2)
+{
+    width: 28px;
+}
+
+#by-domain .satus-table__cell:nth-child(2)
+{
+    padding: 0 8px 0 0;
+
+    text-overflow: unset;
+}
+
+#by-domain .satus-table__head > div:nth-child(3),
+#by-domain .satus-table__cell:nth-child(3)
+{
+    width: calc(100% - 96px);
+}
+
+
+/*---------------------------------------------------------------
+2.0 BY URL
+---------------------------------------------------------------*/
+
+#by-url
+{
+    margin: 0 8px 8px 0;
+
+    flex: 2;
+}
+
+#by-url .satus-table__row:hover
+{
+    cursor: default;
+
+    background-color: rgba(0,0,0,.075);
+}
+
+#by-url .satus-table__head > div:nth-child(1),
+#by-url .satus-table__cell:nth-child(1)
+{
+    width: 68px;
+}
+
+#by-url .satus-table__head > div:nth-child(2),
+#by-url .satus-table__cell:nth-child(2)
+{
+    width: calc(50% - 82px);
+}
+
+#by-url .satus-table__head > div:nth-child(3),
+#by-url .satus-table__cell:nth-child(3)
+{
+    width: calc(50% - 82px);
+}
+
+#by-url .satus-table__cell:nth-child(3)
+{
+    color: #1e6fdb;
+}
+
+#by-url .satus-table__head > div:nth-child(4),
+#by-url .satus-table__cell:nth-child(4)
+{
+    width: 28px;
+    padding: 0 8px 0 0;
+
+    text-overflow: unset;
+}
+
+#by-url .satus-table__head > div:nth-child(5),
+#by-url .satus-table__cell:nth-child(5)
+{
+    width: 68px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+
+/*---------------------------------------------------------------
+3.0 BY PARAMS
+---------------------------------------------------------------*/
+
+#by-params
+{
+    margin: 0 8px 8px 0;
+
+    flex: 1;
+}
+
+#by-params .satus-table__head > div:nth-child(1),
+#by-params .satus-table__cell:nth-child(1)
+{
+    width: 68px;
+}
+
+#by-params .satus-table__head > div:nth-child(2),
+#by-params .satus-table__cell:nth-child(2)
+{
+    width: 28px;
+}
+
+#by-params .satus-table__cell:nth-child(2)
+{
+    padding: 0 8px 0 0;
+
+    text-overflow: unset;
+}
+
+#by-params .satus-table__head > div:nth-child(3),
+#by-params .satus-table__cell:nth-child(3)
+{
+    width: calc(100% - 96px);
+}
+
+
+/*---------------------------------------------------------------
+4.0 COMPACT MODE
+---------------------------------------------------------------*/
+
+body[data-compact-mode="true"] .satus-table
+{
+    height: calc(100vh - 38px);
+    border-radius: 0;
+    border: none;
+}
+
+body[data-compact-mode="true"] #by-domain,
+body[data-compact-mode="true"] #by-url,
+body[data-compact-mode="true"] #by-params
+{
+    margin: 0;
+}
+
+body[data-compact-mode="true"] #by-domain,
+body[data-compact-mode="true"] #by-url
+{
+    border-right: 1px solid #ddd;
+}

@@ -16,6 +16,12 @@
     box-shadow: none;
 }
 
+body[data-compact-mode="true"] .satus-header
+{
+    min-height: 38px;
+    padding-left: 0;
+}
+
 .satus-section--align-start
 {
     position: relative;
@@ -62,6 +68,13 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     background-color: #fff;
+}
+
+body[data-compact-mode="true"] .satus-header__text-field
+{
+    border-radius: 0;
+    border-top: none;
+    border-left: none;
 }
 
 

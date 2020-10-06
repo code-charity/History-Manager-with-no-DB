@@ -6,7 +6,7 @@
 // TODO optimize dataSearch function
 
 function dataSearch(event) {
-    var value = this.value;
+    var value = event.target.value;
 
     if (HISTORY_MANAGER.SEARCH.INTERVAL) {
         clearInterval(HISTORY_MANAGER.SEARCH.INTERVAL);
@@ -19,7 +19,7 @@ function dataSearch(event) {
     if (value.length === 0) {
         updateTable1(true, HISTORY_MANAGER.DOMAINS);
         updateTable2(true, HISTORY_MANAGER.PAGES);
-        updateTable3(true, HISTORY_MANAGER.PARAMS);
+        updateTable3(true, HISTORY_MANAGER.DOMAINS);
         
         return;
     }
@@ -49,8 +49,8 @@ function dataSearch(event) {
                 
                 var key = HISTORY_MANAGER.KEYS[2][i];
 
-                if (key.indexOf(value) !== -1 || (HISTORY_MANAGER.PARAMS[key].title || '').indexOf(value) !== -1) {
-                    HISTORY_MANAGER.SEARCH.PARAMS[key] = HISTORY_MANAGER.PARAMS[key];
+                if (key.indexOf(value) !== -1) {
+                    HISTORY_MANAGER.SEARCH.PARAMS[key] = HISTORY_MANAGER.DOMAINS[key];
                 }
             }
         }
@@ -92,7 +92,36 @@ var Menu = {
                     rows: 1,
                     class: 'satus-header__text-field',
                     placeholder: 'Search',
-                    oninput: dataSearch
+                    oninput: function(event) {
+                        if (all_loading === false) {
+                            if (all_loaded === false) {
+                                all_loading = true;
+                                
+                                satus.storage.import('_all', function(item) {
+                                    HISTORY_MANAGER.DOMAINS = item.domains;
+                                    HISTORY_MANAGER.PAGES = item.pages;
+
+                                    document.querySelector('#by-domain').data = updateTable1();
+                                    document.querySelector('#by-url').data = updateTable2();
+                                    document.querySelector('#by-params').data = updateTable3();
+
+                                    HISTORY_MANAGER.KEYS[0] = Object.keys(HISTORY_MANAGER.DOMAINS);
+                                    HISTORY_MANAGER.KEYS[1] = Object.keys(HISTORY_MANAGER.PAGES);
+                                    HISTORY_MANAGER.KEYS[2] = Object.keys(HISTORY_MANAGER.DOMAINS);
+                                    HISTORY_MANAGER.LENGTH[0] = HISTORY_MANAGER.KEYS[0].length;
+                                    HISTORY_MANAGER.LENGTH[1] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length;
+                                    HISTORY_MANAGER.LENGTH[2] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length + HISTORY_MANAGER.KEYS[2].length;
+                                    
+                                    all_loaded = true;
+                                    all_loading = false;
+                                    
+                                    dataSearch(event);
+                                });
+                            } else {
+                                dataSearch(event);
+                            }
+                        }
+                    }
                 }
             },
             section_end: {
@@ -101,13 +130,34 @@ var Menu = {
 
                 button_vert: {
                     type: 'button',
-                    before: '<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="5.25" r="0.45"/><circle cx="12" cy="12" r="0.45"/><circle cx="12" cy="18.75" r="0.45"/></svg>'
+                    before: '<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="5.25" r="0.45"/><circle cx="12" cy="12" r="0.45"/><circle cx="12" cy="18.75" r="0.45"/></svg>',
+                    onclick: {
+                        type: 'dialog',
+                        class: 'satus-dialog--vertical-menu',
+                        
+                        compact_mode: {
+                            type: 'switch',
+                            label: 'compactMode',
+                            storage_key: 'compact_mode',
+                            onclick: function() {
+                                setTimeout(function() {
+                                    document.body.dataset.compactMode = satus.storage.get('compact_mode');
+                                    
+                                    setTimeout(function() {
+                                        window.dispatchEvent(new Event('resize'));
+                                    });
+                                });
+                            }
+                        }
+                    }
                 }
             }
         }
     };
 
-var Selected = {};
+var Selected = {},
+    all_loaded = false,
+    all_loading = false;
 
 window.addEventListener('click', function(event) {
     var target = event.target;
@@ -153,6 +203,8 @@ function checkToolbar() {
     } else {
         document.querySelector('#by-url').classList.remove('satus-table--selected');
     }
+    
+    window.dispatchEvent(new Event('resize'));
 }
 
 function star(target) {
@@ -164,14 +216,9 @@ function star(target) {
 
     updateTable2(true);
 
-    var DOMAINS = HISTORY_MANAGER.DOMAINS,
-        PAGES = HISTORY_MANAGER.PAGES,
-        PARAMS = HISTORY_MANAGER.PARAMS;
-
-    Satus.storage.set('HISTORY', {
-        DOMAINS,
-        PAGES,
-        PARAMS
+    satus.storage.set('_all', {
+        dimains: HISTORY_MANAGER.DOMAINS,
+        pages: HISTORY_MANAGER.PAGES
     });
 
     for (var key in Selected) {
@@ -225,48 +272,49 @@ Menu.main = {
                         var container = this.parentNode.parentNode;
 
                         if (!container.querySelector('.satus-dropdown-list')) {
-                            var list = document.createElement('div'),
+                            var self = this,
+                                list = document.createElement('div'),
                                 data = [],
                                 host = this.dataset.key;
 
                             list.className = 'satus-dropdown-list';
+                                
+                            satus.storage.import(host, function(items) {
+                                for (var key in items) {
+                                    var item = items[key];
 
-                            for (var key in HISTORY_MANAGER.DOMAINS[host].items) {
-                                var item = HISTORY_MANAGER.DOMAINS[host].items[key];
+                                    data.push([{
+                                            text: item.visitCount
+                                        },
+                                        {},
+                                        {
+                                            text: key,
+                                            html: '<a class="satus-link--domain" href="https://' + host + '/' + key + '" title="' + item.title + '">' + key + '</a>'
+                                        }
+                                    ]);
+                                }
 
-                                data.push([{
+                                Satus.render({
+                                    type: 'table',
+                                    paging: 100,
+                                    columns: [{
+                                        title: 'Visits',
+                                        sorting: 'desc'
+                                    }, {
+                                        title: ''
+                                    }, {
+                                        title: 'Title',
+                                        onrender: function() {
+                                            this.querySelector('a').innerText = this.querySelector('a').innerText;
+                                        }
+                                    }],
+                                    data: data
+                                }, list);
 
-                                    },
-                                    {
-                                        text: item.visitCount
-                                    },
-                                    {
-                                        text: key,
-                                        html: '<a class="satus-link--domain" href="https://' + host + '/' + key + '" title="' + item.title + '">' + key + '</a>'
-                                    }
-                                ]);
-                            }
+                                container.appendChild(list);
 
-                            Satus.render({
-                                type: 'table',
-                                paging: 100,
-                                columns: [{
-                                    title: ''
-                                }, {
-                                    title: 'Visits',
-                                    sorting: 'desc'
-                                }, {
-                                    title: 'Title',
-                                    onrender: function() {
-                                        this.querySelector('a').innerText = '/' + this.querySelector('a').innerText;
-                                    }
-                                }],
-                                data: data
-                            }, list);
-
-                            container.appendChild(list);
-
-                            this.classList.add('opened');
+                                self.classList.add('opened');
+                            });
                         } else {
                             container.querySelector('.satus-dropdown-list').remove();
 
@@ -276,7 +324,30 @@ Menu.main = {
                 }
             }, {
                 title: 'Domain'
-            }]
+            }],
+            beforeUpdate: function(item) {
+                if (all_loaded === false) {
+                    satus.storage.import('_all', function(item) {
+                        HISTORY_MANAGER.DOMAINS = item.domains;
+                        HISTORY_MANAGER.PAGES = item.pages;
+
+                        document.querySelector('#by-domain').data = updateTable1(true);
+                        document.querySelector('#by-url').data = updateTable2();
+                        document.querySelector('#by-params').data = updateTable3();
+
+                        HISTORY_MANAGER.KEYS[0] = Object.keys(HISTORY_MANAGER.DOMAINS);
+                        HISTORY_MANAGER.KEYS[1] = Object.keys(HISTORY_MANAGER.PAGES);
+                        HISTORY_MANAGER.KEYS[2] = Object.keys(HISTORY_MANAGER.DOMAINS);
+                        HISTORY_MANAGER.LENGTH[0] = HISTORY_MANAGER.KEYS[0].length;
+                        HISTORY_MANAGER.LENGTH[1] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length;
+                        HISTORY_MANAGER.LENGTH[2] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length + HISTORY_MANAGER.KEYS[2].length;
+                        
+                        all_loaded = true;
+                        
+                        document.querySelectorAll('.satus-table')[0].querySelector('.satus-scrollbar__wrapper').scrollTo(0, 0);
+                    });
+                }
+            }
         },
 
         table_02: {
@@ -442,6 +513,29 @@ Menu.main = {
                 }, toolbar);
 
                 this.appendChild(toolbar);
+            },
+            beforeUpdate: function(item) {
+                if (all_loaded === false) {
+                    satus.storage.import('_all', function(item) {
+                        HISTORY_MANAGER.DOMAINS = item.domains;
+                        HISTORY_MANAGER.PAGES = item.pages;
+
+                        document.querySelector('#by-domain').data = updateTable1();
+                        document.querySelector('#by-url').data = updateTable2(true);
+                        document.querySelector('#by-params').data = updateTable();
+
+                        HISTORY_MANAGER.KEYS[0] = Object.keys(HISTORY_MANAGER.DOMAINS);
+                        HISTORY_MANAGER.KEYS[1] = Object.keys(HISTORY_MANAGER.PAGES);
+                        HISTORY_MANAGER.KEYS[2] = Object.keys(HISTORY_MANAGER.DOMAINS);
+                        HISTORY_MANAGER.LENGTH[0] = HISTORY_MANAGER.KEYS[0].length;
+                        HISTORY_MANAGER.LENGTH[1] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length;
+                        HISTORY_MANAGER.LENGTH[2] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length + HISTORY_MANAGER.KEYS[2].length;
+                        
+                        all_loaded = true;
+                        
+                        document.querySelectorAll('.satus-table')[1].querySelector('.satus-scrollbar__wrapper').scrollTo(0, 0);
+                    });
+                }
             }
         },
 
@@ -453,8 +547,102 @@ Menu.main = {
                 title: 'Visits',
                 sorting: 'desc'
             }, {
+                title: '',
+                onrender: function() {
+                    this.querySelector('.satus-button--dropdown').addEventListener('click', function() {
+                        var container = this.parentNode.parentNode;
+
+                        if (!container.querySelector('.satus-dropdown-list')) {
+                            var self = this,
+                                list = document.createElement('div'),
+                                data = [],
+                                host = this.dataset.key;
+
+                            list.className = 'satus-dropdown-list';
+                                
+                            satus.storage.import(host, function(items) {
+                                for (var key in items) {
+                                    var q = key.match(/[?&]q=[^&]+/) || key.match(/[?&]search_query=[^&]+/);
+                                    
+                                    if (q) {
+                                        var item = items[key];
+                                        
+                                        try {
+                                            var qq = decodeURIComponent(q[0].substring(q[0].indexOf('=') + 1));
+                                        } catch(err) {
+                                            var qq = q[0].substring(q[0].indexOf('=') + 1);
+                                        }
+
+                                        data.push([{
+                                                text: item.visitCount
+                                            },
+                                            {},
+                                            {
+                                                text: key,
+                                                html: '<a class="satus-link--domain" href="https://' + host + '/' + key + '" title="' + q + '">' + qq + '</a>'
+                                            }
+                                        ]);
+                                    }
+                                }
+                                
+                                if (data.length === 0) {
+                                    return;
+                                }
+
+                                Satus.render({
+                                    type: 'table',
+                                    paging: 100,
+                                    columns: [{
+                                        title: 'Visits',
+                                        sorting: 'desc'
+                                    }, {
+                                        title: ''
+                                    }, {
+                                        title: 'Title',
+                                        onrender: function() {
+                                            this.querySelector('a').innerText = this.querySelector('a').innerText;
+                                        }
+                                    }],
+                                    data: data
+                                }, list);
+
+                                container.appendChild(list);
+
+                                self.classList.add('opened');
+                            });
+                        } else {
+                            container.querySelector('.satus-dropdown-list').remove();
+
+                            this.classList.remove('opened');
+                        }
+                    });
+                }
+            }, {
                 title: 'Domain'
-            }]
+            }],
+            beforeUpdate: function(item) {
+                if (all_loaded === false) {
+                    satus.storage.import('_all', function(item) {
+                        HISTORY_MANAGER.DOMAINS = item.domains;
+                        HISTORY_MANAGER.PAGES = item.pages;
+
+                        document.querySelector('#by-domain').data = updateTable1();
+                        document.querySelector('#by-url').data = updateTable2();
+                        document.querySelector('#by-params').data = updateTable3(true);
+
+                        HISTORY_MANAGER.KEYS[0] = Object.keys(HISTORY_MANAGER.DOMAINS);
+                        HISTORY_MANAGER.KEYS[1] = Object.keys(HISTORY_MANAGER.PAGES);
+                        HISTORY_MANAGER.KEYS[2] = Object.keys(HISTORY_MANAGER.DOMAINS);
+                        HISTORY_MANAGER.LENGTH[0] = HISTORY_MANAGER.KEYS[0].length;
+                        HISTORY_MANAGER.LENGTH[1] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length;
+                        HISTORY_MANAGER.LENGTH[2] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length + HISTORY_MANAGER.KEYS[2].length;
+                        
+                        all_loaded = true;
+                        
+                        document.querySelectorAll('.satus-table')[2].querySelector('.satus-scrollbar__wrapper').scrollTo(0, 0);
+                    });
+                }
+            }
         }
     }
 };
@@ -478,7 +666,7 @@ function updateTable1(force, d) {
     for (var key in data) {
         table.push([
             {
-                text: data[key].visitCount
+                text: data[key]
             },
             {
                 html: '<button class="satus-button satus-button--dropdown" data-key="' + key + '"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>'
@@ -495,6 +683,8 @@ function updateTable1(force, d) {
     if (force === true) {
         document.querySelector('#by-domain').update(table);
     }
+    
+    return table;
 }
 
 
@@ -515,7 +705,7 @@ function updateTable2(force, d) {
             text: item.visitCount
         },
         {
-            html: '<img src="chrome://favicon/' + key + '">' + item.title,
+            html: '<img src="chrome://favicon/https://' + key.split('/')[2] + '">' + item.title,
             text: item.title
         },
         {
@@ -538,6 +728,8 @@ function updateTable2(force, d) {
     if (force === true) {
         document.querySelector('#by-url').update(table);
     }
+    
+    return table;
 }
 
 
@@ -546,18 +738,19 @@ function updateTable2(force, d) {
 ---------------------------------------------------------------*/
 
 function updateTable3(force, d) {
-    var data = d || HISTORY_MANAGER.PARAMS,
+    var data = d || HISTORY_MANAGER.DOMAINS,
         table = [];
 
     for (var key in data) {
-        var item = data[key];
-        
         table.push([
         {
-            text: item.visitCount
+            text: data[key]
         },
         {
-            html: '<a href="' + key + '"><img src="chrome://favicon/' + key + '">' + key + '</a>',
+            html: '<button class="satus-button satus-button--dropdown" data-key="' + key + '"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>'
+        },
+        {
+            html: '<a href="' + key + '"><img src="chrome://favicon/https://' + key + '">' + key + '</a>',
             text: key
         }
         ]);
@@ -568,6 +761,8 @@ function updateTable3(force, d) {
     if (force === true) {
         document.querySelector('#by-params').update(table);
     }
+    
+    return table;
 }
 
 /*---------------------------------------------------------------
@@ -599,30 +794,32 @@ var HISTORY_MANAGER = {
 
 console.time();
 
-satus.storage.import(function() {
-    var object = satus.storage.get('HISTORY') || {};
-    
-    HISTORY_MANAGER.DOMAINS = object.DOMAINS;
-    HISTORY_MANAGER.PAGES = object.PAGES;
-    HISTORY_MANAGER.PARAMS = object.PARAMS;
+satus.locale.import('en', function() {
+    satus.storage.import('compact_mode', function(item) {
+        document.body.dataset.compactMode = satus.storage.get('compact_mode');
+    });
 
-    satus.locale.import('_locales/en/messages.json', function() {
+    satus.storage.import('_top', function(item) {
+        HISTORY_MANAGER.DOMAINS = item.domains;
+        HISTORY_MANAGER.PAGES = item.pages;
+
         updateTable1();
         updateTable2();
         updateTable3();
+        
+        Menu.main.section.table_01.pages = Math.ceil(satus.storage.data._top.length[0] / 100);
+        Menu.main.section.table_02.pages = Math.ceil(satus.storage.data._top.length[1] / 100);
+        Menu.main.section.table_03.pages = Math.ceil(satus.storage.data._top.length[0] / 100);
 
-        Satus.render(Menu);
+        HISTORY_MANAGER.KEYS[0] = Object.keys(HISTORY_MANAGER.DOMAINS);
+        HISTORY_MANAGER.KEYS[1] = Object.keys(HISTORY_MANAGER.PAGES);
+        HISTORY_MANAGER.KEYS[2] = Object.keys(HISTORY_MANAGER.DOMAINS);
+        HISTORY_MANAGER.LENGTH[0] = HISTORY_MANAGER.KEYS[0].length;
+        HISTORY_MANAGER.LENGTH[1] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length;
+        HISTORY_MANAGER.LENGTH[2] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length + HISTORY_MANAGER.KEYS[0].length;
+        
+        satus.render(Menu);
         
         console.timeEnd();
-        
-        setTimeout(function() {
-            HISTORY_MANAGER.KEYS[0] = Object.keys(HISTORY_MANAGER.DOMAINS);
-            HISTORY_MANAGER.KEYS[1] = Object.keys(HISTORY_MANAGER.PAGES);
-            HISTORY_MANAGER.KEYS[2] = Object.keys(HISTORY_MANAGER.PARAMS);
-            
-            HISTORY_MANAGER.LENGTH[0] = HISTORY_MANAGER.KEYS[0].length;
-            HISTORY_MANAGER.LENGTH[1] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length;
-            HISTORY_MANAGER.LENGTH[2] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length + HISTORY_MANAGER.KEYS[2].length;
-        }, 250);
     });
 });

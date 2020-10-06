@@ -10,6 +10,7 @@
         "src/css/basic.css",
         "src/css/header.css",
         "src/css/main.css",
+        "src/css/tables.css",
         "src/css/media.css"
     ]
 }
