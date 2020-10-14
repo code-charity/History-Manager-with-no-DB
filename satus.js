@@ -111,18 +111,24 @@ satus.aes.decrypt = async function(text, password) {
             name: 'AES-GCM',
             iv: new Uint8Array(iv)
         };
-            
-    return new TextDecoder().decode(await crypto.subtle.decrypt(
-        algorithm,
-        await crypto.subtle.importKey(
-            'raw',
-            await crypto.subtle.digest('SHA-256', new TextEncoder().encode(password)),
+        
+    try {
+       var data = new TextDecoder().decode(await crypto.subtle.decrypt(
             algorithm,
-            false,
-            ['decrypt']
-        ),
-        new Uint8Array(atob(text.slice(24)).match(/[\s\S]/g).map(ch => ch.charCodeAt(0)))
-    )); 
+            await crypto.subtle.importKey(
+                'raw',
+                await crypto.subtle.digest('SHA-256', new TextEncoder().encode(password)),
+                algorithm,
+                false,
+                ['decrypt']
+            ),
+            new Uint8Array(atob(text.slice(24)).match(/[\s\S]/g).map(ch => ch.charCodeAt(0)))
+        )); 
+    } catch (err) {
+        return false;
+    }
+    
+    return data;
 };
 
 /*--------------------------------------------------------------
@@ -820,8 +826,8 @@ satus.storage.import = function(name, callback) {
         chrome.storage.local.get(function(items) {
             satus.storage.data = items;
 
-            if (callback) {
-                callback(items);
+            if (name) {
+                name(items);
             }
         });
     } else {
@@ -1967,6 +1973,14 @@ Satus.components.dialog = function(element) {
 
     function keydown(event) {
         if (event.keyCode === 27) {
+            if (element.clickclose === false) {
+                return false;
+            }
+            
+            if (typeof element.onclickclose === 'function') {
+                element.onclickclose();
+            }
+        
             event.preventDefault();
             
             close();
@@ -1992,11 +2006,25 @@ Satus.components.dialog = function(element) {
         }
     }
 
-    component_scrim.addEventListener('click', close);
-    window.addEventListener('keydown', keydown);
+    component_scrim.addEventListener('click', function() {
+        if (element.clickclose === false) {
+            return false;
+        }
+        
+        if (typeof element.onclickclose === 'function') {
+            element.onclickclose();
+        }
+        
+        close();
+    });
+    window.addEventListener('keydown', function(event) {
+        keydown(event);
+    });
 
     component.appendChild(component_scrim);
     component.appendChild(component_surface);
+    
+    component.close = close;
 
     // OPTIONS
 

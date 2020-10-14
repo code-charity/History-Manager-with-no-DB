@@ -1,6 +1,6 @@
 <p align="center">
     <a href="https://github.com/victor-savinov/history-manager">
-        <img src="https://github.com/victor-savinov/history-manager/blob/master/assets/icons/128.png">
+        <img src="https://github.com/victor-savinov/icons/blob/master/history-manager/raised-128.png">
     </a>
 </p>
 

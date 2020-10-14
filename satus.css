@@ -169,6 +169,11 @@
 1.0 Default
 ---------------------------------------------------------------*/
 
+html, body
+{
+    margin: 0
+}
+
 html
 {
 	--satus-theme-primary: #f6b465;
@@ -535,11 +540,6 @@ body[data-appearance='home'] .satus-text--title
     margin: 0 0 0 8px;
 }
 
-.satus-select__label
-{
-    flex: 1
-}
-
 .satus-select__value
 {
     font-size: 12px;
@@ -664,7 +664,6 @@ body[data-appearance='home'] .satus-text--title
 .satus-switch__label
 {
     padding: 0 16px 0 0;
-    flex: 1;
 }
 
 
@@ -1144,8 +1143,6 @@ body[data-appearance='home'] .satus-text--title
 .satus-scrollbar__content
 {
     display: inline-block;
-    
-    min-height: 100%;
 }
 
 .satus-scrollbar__thumb
@@ -1286,7 +1283,7 @@ body[data-appearance='home'] .satus-text--title
 
 .satus-dialog .satus-button
 {
-    justify-content: flex-start
+    justify-content: flex-start;
 }
 
 /*---------------------------------------------------------------
