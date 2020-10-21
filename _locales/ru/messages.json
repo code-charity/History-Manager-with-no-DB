@@ -1,0 +1,23 @@
+{
+    "compactMode": {
+        "message": "Компактный режим"
+    },
+    "domain": {
+        "message": "Домен"
+    },
+    "language": {
+        "message": "Язык"
+    },
+    "tags": {
+        "message": "Теги"
+    },
+    "title": {
+        "message": "Заголовок"
+    },
+    "url": {
+        "message": "URL"
+    },
+    "visits": {
+        "message": "Посещения"
+    }
+}

@@ -61,7 +61,8 @@ function star(target) {
 
     satus.storage.set('_all', {
         dimains: HISTORY_MANAGER.DOMAINS,
-        pages: HISTORY_MANAGER.PAGES
+        pages: HISTORY_MANAGER.PAGES,
+        params: HISTORY_MANAGER.PAGES
     });
 
     for (var key in Selected) {
@@ -78,7 +79,7 @@ function tags() {
         PAGES = HISTORY_MANAGER.PAGES,
         PARAMS = HISTORY_MANAGER.PARAMS;
 
-    Satus.storage.set('HISTORY', {
+    satus.storage.set('HISTORY', {
         DOMAINS,
         PAGES,
         PARAMS
@@ -91,6 +92,83 @@ function tags() {
     }
 
     checkToolbar();
+}
+
+function loadAll(item) {
+    if (all_loaded === false) {
+        console.time('loading-all');
+        
+        document.body.classList.add('loading');
+        
+        satus.storage.import('_all', function(_all) {
+            var _new = satus.storage.get('_new'),
+                _top = satus.storage.get('_top');
+            
+            updateData(_new, _all);
+            
+            HISTORY_MANAGER.NEW.domains = {};
+            HISTORY_MANAGER.NEW.pages = {};
+            HISTORY_MANAGER.NEW.params = {};
+                
+            satus.storage.set('_new', HISTORY_MANAGER.NEW);
+            satus.storage.set('_all', _all);
+                
+            HISTORY_MANAGER.DOMAINS = _all.domains;
+            HISTORY_MANAGER.PAGES = _all.pages;
+            HISTORY_MANAGER.PARAMS = _all.params;
+
+            document.querySelector('#by-domain').data = updateTable1(true);
+            document.querySelector('#by-url').data = updateTable2(true);
+            document.querySelector('#by-params').data = updateTable3(true);
+
+            HISTORY_MANAGER.KEYS[0] = Object.keys(HISTORY_MANAGER.DOMAINS);
+            HISTORY_MANAGER.KEYS[1] = Object.keys(HISTORY_MANAGER.PAGES);
+            HISTORY_MANAGER.KEYS[2] = Object.keys(HISTORY_MANAGER.PARAMS);
+            HISTORY_MANAGER.LENGTH[0] = HISTORY_MANAGER.KEYS[0].length;
+            HISTORY_MANAGER.LENGTH[1] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length;
+            HISTORY_MANAGER.LENGTH[2] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length + HISTORY_MANAGER.KEYS[2].length;
+            
+            all_loaded = true;
+            
+            document.querySelectorAll('.satus-table')[0].querySelector('.satus-scrollbar__wrapper').scrollTo(0, 0);
+            
+            document.body.classList.remove('loading');
+            
+            console.timeEnd('loading-all');
+            
+            var domains = Object.keys(_all.domains).map((key) => [key, _all.domains[key]]).sort(function(a, b) {
+                    return b[1] - a[1];
+                }),
+                pages = Object.keys(_all.pages).map((key) => [key, _all.pages[key]]).sort(function(a, b) {
+                    return b[1].visitCount - a[1].visitCount;
+                });
+                
+            for (var i = 0; i < Math.min(100, domains.length); i++) {
+                _top.domains[domains[i][0]] = domains[i][1];
+            }
+                
+            for (var i = 0; i < Math.min(100, pages.length); i++) {
+                _top.pages[pages[i][0]] = pages[i][1];
+            }
+            
+            _top.length[0] = Object.keys(_all.domains).length;
+            _top.length[1] = Object.keys(_all.pages).length;
+            
+            satus.storage.set('_top', _top);
+        });
+        
+        return false;
+    }
+    
+    var items = document.querySelectorAll('#by-url a');
+    
+    for (var i = 0, l = items.length; i < l; i++) {
+        for (var key in Selected) {
+            if (items[i].href === key) {
+                items[i].parentNode.parentNode.classList.add('selected');
+            }
+        }
+    }
 }
 
 Menu.main = {
@@ -106,7 +184,7 @@ Menu.main = {
             id: 'by-domain',
             paging: 100,
             columns: [{
-                title: 'Visits',
+                title: 'visits',
                 sorting: 'desc'
             }, {
                 title: '',
@@ -137,7 +215,7 @@ Menu.main = {
                                     ]);
                                 }
 
-                                Satus.render({
+                                satus.render({
                                     type: 'table',
                                     paging: 100,
                                     columns: [{
@@ -166,31 +244,9 @@ Menu.main = {
                     });
                 }
             }, {
-                title: 'Domain'
+                title: 'domain'
             }],
-            beforeUpdate: function(item) {
-                if (all_loaded === false) {
-                    satus.storage.import('_all', function(item) {
-                        HISTORY_MANAGER.DOMAINS = item.domains;
-                        HISTORY_MANAGER.PAGES = item.pages;
-
-                        document.querySelector('#by-domain').data = updateTable1(true);
-                        document.querySelector('#by-url').data = updateTable2();
-                        document.querySelector('#by-params').data = updateTable3();
-
-                        HISTORY_MANAGER.KEYS[0] = Object.keys(HISTORY_MANAGER.DOMAINS);
-                        HISTORY_MANAGER.KEYS[1] = Object.keys(HISTORY_MANAGER.PAGES);
-                        HISTORY_MANAGER.KEYS[2] = Object.keys(HISTORY_MANAGER.DOMAINS);
-                        HISTORY_MANAGER.LENGTH[0] = HISTORY_MANAGER.KEYS[0].length;
-                        HISTORY_MANAGER.LENGTH[1] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length;
-                        HISTORY_MANAGER.LENGTH[2] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length + HISTORY_MANAGER.KEYS[2].length;
-                        
-                        all_loaded = true;
-                        
-                        document.querySelectorAll('.satus-table')[0].querySelector('.satus-scrollbar__wrapper').scrollTo(0, 0);
-                    });
-                }
-            }
+            beforeUpdate: loadAll
         },
 
         table_02: {
@@ -198,16 +254,16 @@ Menu.main = {
             id: 'by-url',
             paging: 100,
             columns: [{
-                title: 'Visits',
+                title: 'visits',
                 sorting: 'desc'
             }, {
-                title: 'Title'
+                title: 'title'
             }, {
                 title: 'URL'
             }, {
                 title: '★'
             }, {
-                title: 'Tags',
+                title: 'tags',
                 onrender: function() {
                     this.querySelector('.satus-input--tags').onblur = tags;
                 }
@@ -217,7 +273,7 @@ Menu.main = {
 
                 toolbar.className = 'satus-table--toolbar';
 
-                Satus.render({
+                satus.render({
                     undo: {
                         type: 'button',
                         label: 'Undo',
@@ -253,7 +309,7 @@ Menu.main = {
                                 PAGES = HISTORY_MANAGER.PAGES,
                                 PARAMS = HISTORY_MANAGER.PARAMS;
 
-                            Satus.storage.set('HISTORY', {
+                            satus.storage.set('HISTORY', {
                                 DOMAINS,
                                 PAGES,
                                 PARAMS
@@ -284,7 +340,7 @@ Menu.main = {
                                 PAGES = HISTORY_MANAGER.PAGES,
                                 PARAMS = HISTORY_MANAGER.PARAMS;
 
-                            Satus.storage.set('HISTORY', {
+                            satus.storage.set('HISTORY', {
                                 DOMAINS,
                                 PAGES,
                                 PARAMS
@@ -314,7 +370,7 @@ Menu.main = {
                                 PAGES = HISTORY_MANAGER.PAGES,
                                 PARAMS = HISTORY_MANAGER.PARAMS;
 
-                            Satus.storage.set('HISTORY', {
+                            satus.storage.set('HISTORY', {
                                 DOMAINS,
                                 PAGES,
                                 PARAMS
@@ -345,7 +401,7 @@ Menu.main = {
                                     PAGES = HISTORY_MANAGER.PAGES,
                                     PARAMS = HISTORY_MANAGER.PARAMS;
 
-                                Satus.storage.set('HISTORY', {
+                                satus.storage.set('HISTORY', {
                                     DOMAINS,
                                     PAGES,
                                     PARAMS
@@ -357,29 +413,7 @@ Menu.main = {
 
                 this.appendChild(toolbar);
             },
-            beforeUpdate: function(item) {
-                if (all_loaded === false) {
-                    satus.storage.import('_all', function(item) {
-                        HISTORY_MANAGER.DOMAINS = item.domains;
-                        HISTORY_MANAGER.PAGES = item.pages;
-
-                        document.querySelector('#by-domain').data = updateTable1();
-                        document.querySelector('#by-url').data = updateTable2(true);
-                        document.querySelector('#by-params').data = updateTable();
-
-                        HISTORY_MANAGER.KEYS[0] = Object.keys(HISTORY_MANAGER.DOMAINS);
-                        HISTORY_MANAGER.KEYS[1] = Object.keys(HISTORY_MANAGER.PAGES);
-                        HISTORY_MANAGER.KEYS[2] = Object.keys(HISTORY_MANAGER.DOMAINS);
-                        HISTORY_MANAGER.LENGTH[0] = HISTORY_MANAGER.KEYS[0].length;
-                        HISTORY_MANAGER.LENGTH[1] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length;
-                        HISTORY_MANAGER.LENGTH[2] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length + HISTORY_MANAGER.KEYS[2].length;
-                        
-                        all_loaded = true;
-                        
-                        document.querySelectorAll('.satus-table')[1].querySelector('.satus-scrollbar__wrapper').scrollTo(0, 0);
-                    });
-                }
-            }
+            beforeUpdate: loadAll
         },
 
         table_03: {
@@ -387,7 +421,7 @@ Menu.main = {
             id: 'by-params',
             paging: 100,
             columns: [{
-                title: 'Visits',
+                title: 'visits',
                 sorting: 'desc'
             }, {
                 title: '',
@@ -432,7 +466,7 @@ Menu.main = {
                                     return;
                                 }
 
-                                Satus.render({
+                                satus.render({
                                     type: 'table',
                                     paging: 100,
                                     columns: [{
@@ -461,31 +495,9 @@ Menu.main = {
                     });
                 }
             }, {
-                title: 'Domain'
+                title: 'domain'
             }],
-            beforeUpdate: function(item) {
-                if (all_loaded === false) {
-                    satus.storage.import('_all', function(item) {
-                        HISTORY_MANAGER.DOMAINS = item.domains;
-                        HISTORY_MANAGER.PAGES = item.pages;
-
-                        document.querySelector('#by-domain').data = updateTable1();
-                        document.querySelector('#by-url').data = updateTable2();
-                        document.querySelector('#by-params').data = updateTable3(true);
-
-                        HISTORY_MANAGER.KEYS[0] = Object.keys(HISTORY_MANAGER.DOMAINS);
-                        HISTORY_MANAGER.KEYS[1] = Object.keys(HISTORY_MANAGER.PAGES);
-                        HISTORY_MANAGER.KEYS[2] = Object.keys(HISTORY_MANAGER.DOMAINS);
-                        HISTORY_MANAGER.LENGTH[0] = HISTORY_MANAGER.KEYS[0].length;
-                        HISTORY_MANAGER.LENGTH[1] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length;
-                        HISTORY_MANAGER.LENGTH[2] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length + HISTORY_MANAGER.KEYS[2].length;
-                        
-                        all_loaded = true;
-                        
-                        document.querySelectorAll('.satus-table')[2].querySelector('.satus-scrollbar__wrapper').scrollTo(0, 0);
-                    });
-                }
-            }
+            beforeUpdate: loadAll
         }
     }
 };

@@ -1,20 +1,23 @@
 {
-	"domain": {
-		"message": "Domain"
-	},
-	"visitCount": {
-		"message": "Visit count"
-	},
-	"title": {
-		"message": "Title"
-	},
-	"url": {
-		"message": "URL"
-	},
-	"tags": {
-		"message": "Tags"
-	},
-	"compactMode": {
-		"message": "Compact mode"
-	}
+    "compactMode": {
+        "message": "Compact mode"
+    },
+    "domain": {
+        "message": "Domain"
+    },
+    "language": {
+        "message": "Language"
+    },
+    "tags": {
+        "message": "Tags"
+    },
+    "title": {
+        "message": "Title"
+    },
+    "url": {
+        "message": "URL"
+    },
+    "visits": {
+        "message": "Visits"
+    }
 }

@@ -79,6 +79,13 @@
         text-overflow: unset;
 }
 
+.satus-table--toolbar .satus-button {
+    padding: 0 8px;
+    width: auto;
+    margin: 0 8px 0 0;
+    font-weight: 700;
+}
+
 
 
 
@@ -289,4 +296,36 @@
 {
     background-color: #f6b465;
     box-shadow: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+body.loading::after {
+    content: '...';
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    font-size: 64px;
+    color: rgba(255,255,255,.8);
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,.8);
+    z-index: 9999;
 }

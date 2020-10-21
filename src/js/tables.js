@@ -49,7 +49,7 @@ function updateTable2(force, d) {
 
     for (var key in data) {
         var item = data[key],
-            url = /*decodeURI*/(key.replace(/^.*\/\/[^\/]+:?[0-9]?\//g, ''));
+            url = key.replace(/^.*\/\/[^\/]+:?[0-9]?\//g, '');
         
         table.push([
         {
@@ -89,7 +89,7 @@ function updateTable2(force, d) {
 ---------------------------------------------------------------*/
 
 function updateTable3(force, d) {
-    var data = d || HISTORY_MANAGER.DOMAINS,
+    var data = d || HISTORY_MANAGER.PARAMS,
         table = [];
 
     for (var key in data) {

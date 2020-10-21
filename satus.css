@@ -286,18 +286,16 @@ html
 
 .satus-table__head > div > span
 {
-    position: relative;
+    overflow: hidden;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    flex: 1;
 }
 
-.satus-table__head > div[data-sorting=asc] > span::after
+.satus-table__head > div[data-sorting=asc]::after
 {
-    position: absolute;
-    top: calc(50% - 2px);
-    right: -14px;
-
-    width: 0;
-    height: 0;
-
     content: '';
 
     border-right: 4px solid transparent;
@@ -305,15 +303,8 @@ html
     border-left: 4px solid transparent;
 }
 
-.satus-table__head > div[data-sorting=desc] > span::after
+.satus-table__head > div[data-sorting=desc]::after
 {
-    position: absolute;
-    top: calc(50% - 2px);
-    right: -13px;
-
-    width: 0;
-    height: 0;
-
     content: '';
 
     border-top: 5px solid currentColor;
@@ -1168,12 +1159,16 @@ body[data-appearance='home'] .satus-text--title
     height: 100%;
 
     content: '';
+    
+    transition: width .05s;
 
     background-color: var(--satus-theme-scrollbar);
 }
 
 .satus-scrollbar__thumb:hover::after
 {
+    width: 8px;
+    
     background-color: var(--satus-theme-scrollbar-focus);
 }
 

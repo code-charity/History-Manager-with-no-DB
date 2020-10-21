@@ -854,9 +854,9 @@ satus.storage.clear = function() {
     delete satus.storage.data;
 };
 
-/*--------------------------------------------------------------
+/*---------------------------------------------------------------
 >>> STORAGE KEYS
---------------------------------------------------------------*/
+---------------------------------------------------------------*/
 
 Satus.modules.updateStorageKeys = function(object, callback) {
     var threads = 0;
@@ -879,13 +879,14 @@ Satus.modules.updateStorageKeys = function(object, callback) {
 
         threads--;
 
-        if (threads === 0) {
+        if (threads === 0 && typeof callback === 'function') {
             callback();
         }
     }
 
     parse(object);
 };
+
 Satus.components.table = function(item) {
     var component = document.createElement('div'),
         component_head = document.createElement('div'),
@@ -1014,7 +1015,7 @@ Satus.components.table = function(item) {
                 item.beforeUpdate(item);
             }
         });
-        column.innerHTML = '<span>' + item.columns[i].title + '</span>';
+        column.innerHTML = '<span>' + satus.locale.getMessage(item.columns[i].title) + '</span>';
 
         component_head.appendChild(column);
     }
@@ -2045,6 +2046,10 @@ Satus.components.dialog = function(element) {
     }
 
     // END OPTIONS
+        
+    if (document.querySelector('.satus-dialog')) {
+        document.querySelector('.satus-dialog').close();
+    }
 
     return component;
 };
