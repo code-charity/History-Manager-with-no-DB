@@ -1,8 +1,8 @@
 /*--------------------------------------------------------------
 >>> MAIN
 ----------------------------------------------------------------
-# Table
 # Checkbox
+# Loader
 --------------------------------------------------------------*/
 
 .satus-main__container
@@ -10,208 +10,6 @@
     display: flex;
 
     justify-content: space-between;
-}
-
-
-/*--------------------------------------------------------------
-# TABLE
---------------------------------------------------------------*/
-
-.satus-section--tables
-{
-    width: 100vw;
-    align-items: flex-start;
-    background-color: transparent !important;
-}
-
-.satus-table
-{
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    height: calc(100vh - 62px);
-}
-
-.satus-table__head
-{
-    height: 39px;
-    border-bottom: 1px solid #ddd;
-    box-shadow: 0 2px 2px rgba(0, 0, 0, .1);
-}
-
-.satus-table__body
-{
-    background: #fafafa;
-}
-
-.satus-table a
-{
-    text-decoration: none;
-
-    color: currentColor;
-}
-
-.satus-table img
-{
-    width: 16px;
-    height: 16px;
-    margin: 0 8px -3px 0;
-}
-
-.satus-table .satus-button
-{
-    height: auto;
-    width: auto;
-    padding: 0
-}
-
-
-
-
-
-.satus-table--toolbar > *:nth-child(5){
-    width: 68px;
-}
-
-
-.satus-table--toolbar > *:nth-child(4)
-{
-    width: 28px;
-        text-overflow: unset;
-}
-
-.satus-table--toolbar .satus-button {
-    padding: 0 8px;
-    width: auto;
-    margin: 0 8px 0 0;
-    font-weight: 700;
-}
-
-
-
-
-
-
-
-
-
-.satus-button--dropdown
-{
-    width: 20px;
-    height: 20px;
-    padding: 2px;
-}
-
-.satus-button--star
-{
-    width: 20px;
-    height: 20px;
-    padding: 0;
-}
-
-.satus-button--dropdown svg:last-child
-{
-    display: none;
-}
-
-.satus-button--dropdown.opened svg:first-child
-{
-    display: none;
-}
-
-.satus-button--dropdown.opened svg:last-child
-{
-    display: block;
-}
-
-.satus-button--dropdown svg,
-.satus-button--star svg
-{
-    pointer-events: none;
-}
-
-.satus-button--star[data-value='0'] svg
-{
-    fill: transparent;
-}
-
-.satus-button--star[data-value='1'] svg
-{
-    fill: var(--satus-theme-primary);
-    stroke: var(--satus-theme-primary);
-}
-
-.satus-button--dropdown::before,
-.satus-button--star::before
-{
-    content: none;
-}
-
-
-
-.satus-input--tags
-{
-    box-sizing: border-box;
-    width: 100%;
-    height: calc(100% - 10px);
-    margin: 5px 0;
-    padding: 1px 2px;
-
-    border: 1px solid #d2d2d2;
-    border-radius: 4px;
-    outline: none;
-}
-
-
-
-
-
-.satus-dropdown-list
-{
-    width: 100%;
-}
-
-.satus-dropdown-list .satus-table__head
-{
-    display: none;
-}
-
-#by-domain .satus-dropdown-list .satus-table__cell:nth-child(2)
-{
-    width: 60px;
-}
-
-#by-domain .satus-dropdown-list .satus-table__cell:nth-child(3)
-{
-    width: calc(100% - 132px);
-}
-
-
-
-
-.satus-table__row.selected
-{
-    background-color: rgba(255, 255, 0, .3);
-}
-
-.satus-table--toolbar
-{
-    display: none;
-
-    height: 38px;
-    padding: 0 8px;
-
-    background: #fff;
-    box-shadow: 0 -2px 4px rgba(0, 0, 0, .1);
-}
-
-.satus-table--selected .satus-table--toolbar
-{
-    display: flex;
-}
-
-.satus-table--selected .satus-table__body
-{
-    height: calc(100% - 39px - 38px)
 }
 
 
@@ -299,33 +97,29 @@
 }
 
 
+/*--------------------------------------------------------------
+# LOADER
+--------------------------------------------------------------*/
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-body.loading::after {
-    content: '...';
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
+body.loading::after
+{
     font-size: 64px;
-    color: rgba(255,255,255,.8);
-    left: 0;
+
+    position: fixed;
+    z-index: 9999;
     top: 0;
+    left: 0;
+
+    display: flex;
+
     width: 100vw;
     height: 100vh;
+
+    content: '...';
+
+    color: rgba(255,255,255,.8);
     background: rgba(0,0,0,.8);
-    z-index: 9999;
+
+    justify-content: center;
+    align-items: center;
 }

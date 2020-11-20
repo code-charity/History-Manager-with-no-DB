@@ -7,6 +7,8 @@ window.addEventListener('click', function(event) {
 
     if (target.classList.contains('satus-button--star')) {
         star(target);
+    } else if (target.classList.contains('satus-button--pin')) {
+        pin(target);
     } else if (!target.classList.contains('satus-input--tags')) {
         var is_url_table = false;
 
@@ -32,6 +34,24 @@ window.addEventListener('click', function(event) {
     }
 });
 
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+    if (changeInfo.hasOwnProperty('pinned')) {
+        updateTable4(true);
+    }
+});
+
+chrome.bookmarks.onCreated.addListener(function() {
+    updateTable2(true);
+});
+
+chrome.bookmarks.onRemoved.addListener(function() {
+    updateTable2(true);
+});
+
+chrome.bookmarks.onChanged.addListener(function() {
+    updateTable2(true);
+});
+
 function checkToolbar() {
     var is_empty = true;
 
@@ -46,30 +66,57 @@ function checkToolbar() {
     } else {
         document.querySelector('#by-url').classList.remove('satus-table--selected');
     }
-    
+
     window.dispatchEvent(new Event('resize'));
 }
 
-function star(target) {
-    var value = Number(target.dataset.value) === 0 ? 1 : 0;
+function parseBookmarks(items, callback) {
+    var bookmarks = {},
+        threads = 0;
 
-    target.dataset.value = value;
+    function parse(items) {
+        threads++;
 
-    HISTORY_MANAGER.PAGES[target.dataset.href].star = value;
+        for (var i = 0, l = items.length; i < l; i++) {
+            var item = items[i];
 
-    updateTable2(true);
 
-    satus.storage.set('_all', {
-        dimains: HISTORY_MANAGER.DOMAINS,
-        pages: HISTORY_MANAGER.PAGES,
-        params: HISTORY_MANAGER.PAGES
-    });
+            if (item.url) {
+                bookmarks[item.url] = item.id;
+            }
 
-    for (var key in Selected) {
-        Selected[key] = undefined;
+            if (item.children) {
+                parse(item.children);
+            }
+        }
+
+        threads--;
+
+        if (threads === 0) {
+            if (callback) {
+                callback(bookmarks);
+            }
+        }
     }
 
-    checkToolbar();
+    parse(items);
+}
+
+function star(target) {
+    if (target.dataset.value === 'false') {
+        chrome.bookmarks.create({
+            title: target.dataset.title,
+            url: target.dataset.href,
+            parentId: '1'
+        }, function(item) {
+            target.dataset.id = item.id;
+            target.dataset.value = 'true';
+        });
+    } else {
+        chrome.bookmarks.remove(target.dataset.id);
+
+        target.dataset.value = 'false';
+    }
 }
 
 function tags() {
@@ -94,25 +141,48 @@ function tags() {
     checkToolbar();
 }
 
+function pin(target) {
+    if (target.dataset.value === 'false') {
+        chrome.tabs.create({
+            url: target.dataset.href,
+            pinned: true
+        });
+
+        target.dataset.value = 'true';
+    } else {
+        chrome.tabs.query({}, function(tabs) {
+            for (var i = 0, l = tabs.length; i < l; i++) {
+                var tab = tabs[i];
+
+                if (tab.url === target.dataset.href) {
+                    chrome.tabs.remove(tab.id);
+
+                    target.dataset.value = 'false';
+                }
+            }
+        });
+    }
+}
+
 function loadAll(item) {
     if (all_loaded === false) {
         console.time('loading-all');
-        
+
         document.body.classList.add('loading');
-        
+
         satus.storage.import('_all', function(_all) {
             var _new = satus.storage.get('_new'),
                 _top = satus.storage.get('_top');
-            
+
             updateData(_new, _all);
-            
+
             HISTORY_MANAGER.NEW.domains = {};
             HISTORY_MANAGER.NEW.pages = {};
             HISTORY_MANAGER.NEW.params = {};
-                
+
             satus.storage.set('_new', HISTORY_MANAGER.NEW);
             satus.storage.set('_all', _all);
-                
+
             HISTORY_MANAGER.DOMAINS = _all.domains;
             HISTORY_MANAGER.PAGES = _all.pages;
             HISTORY_MANAGER.PARAMS = _all.params;
@@ -127,41 +197,41 @@ function loadAll(item) {
             HISTORY_MANAGER.LENGTH[0] = HISTORY_MANAGER.KEYS[0].length;
             HISTORY_MANAGER.LENGTH[1] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length;
             HISTORY_MANAGER.LENGTH[2] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length + HISTORY_MANAGER.KEYS[2].length;
-            
+
             all_loaded = true;
-            
+
             document.querySelectorAll('.satus-table')[0].querySelector('.satus-scrollbar__wrapper').scrollTo(0, 0);
-            
+
             document.body.classList.remove('loading');
-            
+
             console.timeEnd('loading-all');
-            
+
             var domains = Object.keys(_all.domains).map((key) => [key, _all.domains[key]]).sort(function(a, b) {
                     return b[1] - a[1];
                 }),
                 pages = Object.keys(_all.pages).map((key) => [key, _all.pages[key]]).sort(function(a, b) {
                     return b[1].visitCount - a[1].visitCount;
                 });
-                
+
             for (var i = 0; i < Math.min(100, domains.length); i++) {
                 _top.domains[domains[i][0]] = domains[i][1];
             }
-                
+
             for (var i = 0; i < Math.min(100, pages.length); i++) {
                 _top.pages[pages[i][0]] = pages[i][1];
             }
-            
+
             _top.length[0] = Object.keys(_all.domains).length;
             _top.length[1] = Object.keys(_all.pages).length;
-            
+
             satus.storage.set('_top', _top);
         });
-        
+
         return false;
     }
-    
+
     var items = document.querySelectorAll('#by-url a');
-    
+
     for (var i = 0, l = items.length; i < l; i++) {
         for (var key in Selected) {
             if (items[i].href === key) {
@@ -178,7 +248,7 @@ Menu.main = {
     section: {
         type: 'section',
         class: 'satus-section--tables',
-        
+
         table_01: {
             type: 'table',
             id: 'by-domain',
@@ -199,7 +269,7 @@ Menu.main = {
                                 host = this.dataset.key;
 
                             list.className = 'satus-dropdown-list';
-                                
+
                             satus.storage.import(host, function(items) {
                                 for (var key in items) {
                                     var item = items[key];
@@ -436,17 +506,17 @@ Menu.main = {
                                 host = this.dataset.key;
 
                             list.className = 'satus-dropdown-list';
-                                
+
                             satus.storage.import(host, function(items) {
                                 for (var key in items) {
                                     var q = key.match(/[?&]q=[^&]+/) || key.match(/[?&]search_query=[^&]+/);
-                                    
+
                                     if (q) {
                                         var item = items[key];
-                                        
+
                                         try {
                                             var qq = decodeURIComponent(q[0].substring(q[0].indexOf('=') + 1));
-                                        } catch(err) {
+                                        } catch (err) {
                                             var qq = q[0].substring(q[0].indexOf('=') + 1);
                                         }
 
@@ -461,7 +531,7 @@ Menu.main = {
                                         ]);
                                     }
                                 }
-                                
+
                                 if (data.length === 0) {
                                     return;
                                 }
@@ -498,6 +568,18 @@ Menu.main = {
                 title: 'domain'
             }],
             beforeUpdate: loadAll
+        },
+
+        table_04: {
+            type: 'table',
+            id: 'pinned',
+            paging: 100,
+            columns: [{
+                title: ''
+            }, {
+                title: 'domain',
+                sorting: 'desc'
+            }]
         }
     }
 };

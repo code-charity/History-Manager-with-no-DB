@@ -1,14 +1,54 @@
 /*---------------------------------------------------------------
 >>> TABLES
 -----------------------------------------------------------------
-1.0 By domain
-2.0 By URL
-3.0 By params
-4.0 Compact mode
+# Global
+# By domain
+# By URL
+# By params
+# Pinned tabs
+# Compact mode
+
+# Inner elements
+# Toolbar
 ---------------------------------------------------------------*/
 
 /*---------------------------------------------------------------
-1.0 BY DOMAIN
+# GLOBAL
+---------------------------------------------------------------*/
+
+.satus-section--tables
+{
+    width: 100vw;
+
+    background-color: transparent !important;
+
+    align-items: flex-start;
+}
+
+.satus-table
+{
+    height: calc(100vh - 62px);
+
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.satus-table__head
+{
+    height: 39px;
+
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, .1);
+}
+
+.satus-table__body
+{
+    background: #fafafa;
+}
+
+
+/*---------------------------------------------------------------
+# BY DOMAIN
 ---------------------------------------------------------------*/
 
 #by-domain
@@ -45,7 +85,7 @@
 
 
 /*---------------------------------------------------------------
-2.0 BY URL
+# BY URL
 ---------------------------------------------------------------*/
 
 #by-url
@@ -102,9 +142,20 @@
     padding-bottom: 0;
 }
 
+.satus-button--star[data-value='false'] svg
+{
+    fill: transparent;
+}
+
+.satus-button--star[data-value='true'] svg
+{
+    fill: var(--satus-theme-primary);
+    stroke: var(--satus-theme-primary);
+}
+
 
 /*---------------------------------------------------------------
-3.0 BY PARAMS
+# BY PARAMS
 ---------------------------------------------------------------*/
 
 #by-params
@@ -141,25 +192,231 @@
 
 
 /*---------------------------------------------------------------
-4.0 COMPACT MODE
+# PINNED TABS
 ---------------------------------------------------------------*/
 
-body[data-compact-mode="true"] .satus-table
+#pinned
 {
-    height: calc(100vh - 38px);
-    border-radius: 0;
-    border: none;
+    margin: 0 8px 8px 0;
+
+    flex: 1;
 }
 
-body[data-compact-mode="true"] #by-domain,
-body[data-compact-mode="true"] #by-url,
-body[data-compact-mode="true"] #by-params
+#pinned .satus-table__head > div:nth-child(1),
+#pinned .satus-table__cell:nth-child(1)
+{
+    width: 28px;
+}
+
+#pinned .satus-table__cell:nth-child(1)
+{
+    padding: 0 8px 0 0;
+
+    text-overflow: unset;
+
+    opacity: .5;
+}
+
+#pinned .satus-table__cell:nth-child(1):hover
+{
+    opacity: 1;
+}
+
+.satus-button--pin[data-value=true]
+{
+    color: #00f;
+}
+
+#pinned .satus-table__head > div:nth-child(2),
+#pinned .satus-table__cell:nth-child(2)
+{
+    width: calc(100% - 36px);
+}
+
+
+/*---------------------------------------------------------------
+# COMPACT MODE
+---------------------------------------------------------------*/
+
+body[data-compact-mode='true'] .satus-table
+{
+    height: calc(100vh - 38px);
+
+    border: none;
+    border-radius: 0;
+}
+
+body[data-compact-mode='true'] #by-domain,
+body[data-compact-mode='true'] #by-url,
+body[data-compact-mode='true'] #by-params,
+body[data-compact-mode='true'] #pinned
 {
     margin: 0;
 }
 
-body[data-compact-mode="true"] #by-domain,
-body[data-compact-mode="true"] #by-url
+body[data-compact-mode='true'] #by-domain,
+body[data-compact-mode='true'] #by-url,
+body[data-compact-mode='true'] #by-params
 {
     border-right: 1px solid #ddd;
+}
+
+
+/*---------------------------------------------------------------
+# INNER ELEMENTS
+---------------------------------------------------------------*/
+
+.satus-table a
+{
+    text-decoration: none;
+
+    color: currentColor;
+}
+
+.satus-table img
+{
+    width: 16px;
+    height: 16px;
+    margin: 0 8px -3px 0;
+}
+
+.satus-table .satus-button
+{
+    width: auto;
+    height: auto;
+    padding: 0;
+}
+
+.satus-button--dropdown
+{
+    width: 20px;
+    height: 20px;
+    padding: 2px;
+}
+
+.satus-button--star
+{
+    width: 20px;
+    height: 20px;
+    padding: 0;
+}
+
+.satus-button--dropdown svg:last-child
+{
+    display: none;
+}
+
+.satus-button--dropdown.opened svg:first-child
+{
+    display: none;
+}
+
+.satus-button--dropdown.opened svg:last-child
+{
+    display: block;
+}
+
+.satus-button--dropdown svg,
+.satus-button--star svg,
+.satus-button--pin svg
+{
+    pointer-events: none;
+}
+
+.satus-button--dropdown::before,
+.satus-button--star::before
+{
+    content: none;
+}
+
+
+
+.satus-input--tags
+{
+    box-sizing: border-box;
+    width: 100%;
+    height: calc(100% - 10px);
+    margin: 5px 0;
+    padding: 1px 2px;
+
+    border: 1px solid #d2d2d2;
+    border-radius: 4px;
+    outline: none;
+}
+
+
+
+
+
+.satus-dropdown-list
+{
+    width: 100%;
+}
+
+.satus-dropdown-list .satus-table__head
+{
+    display: none;
+}
+
+#by-domain .satus-dropdown-list .satus-table__cell:nth-child(2)
+{
+    width: 60px;
+}
+
+#by-domain .satus-dropdown-list .satus-table__cell:nth-child(3)
+{
+    width: calc(100% - 132px);
+}
+
+.satus-table__row.selected
+{
+    background-color: rgba(255, 255, 0, .3);
+}
+
+
+/*---------------------------------------------------------------
+# TOOLBAR
+---------------------------------------------------------------*/
+
+.satus-table--toolbar
+{
+    display: none;
+
+    height: 38px;
+    padding: 0 8px;
+
+    background: #fff;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, .1);
+}
+
+.satus-table--selected .satus-table--toolbar
+{
+    display: flex;
+}
+
+.satus-table--selected .satus-table__body
+{
+    height: calc(100% - 39px - 38px);
+}
+
+.satus-table--toolbar > *:nth-child(5)
+{
+    width: 68px;
+}
+
+
+.satus-table--toolbar > *:nth-child(4)
+{
+    width: 28px;
+
+    text-overflow: unset;
+}
+
+.satus-table--toolbar .satus-button
+{
+    font-weight: 700;
+
+    width: auto;
+    margin: 0 8px 0 0;
+    padding: 0 8px;
 }

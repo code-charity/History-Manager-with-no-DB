@@ -1,13 +1,16 @@
 /*---------------------------------------------------------------
 >>> BACKGROUND
 -----------------------------------------------------------------
-1.0 Parse history
-2.0 Extension installed
-3.0 History updated
+# Parse history
+# Extension installed
+  # History
+  # Pinned tabs
+# History updated
+# Tabs updated
 ---------------------------------------------------------------*/
 
 /*---------------------------------------------------------------
-1.0 PARSE HISTORY
+# PARSE HISTORY
 ---------------------------------------------------------------*/
 
 function parseHistory(item, result) {
@@ -49,10 +52,15 @@ function parseHistory(item, result) {
 
 
 /*---------------------------------------------------------------
-2.0 EXTENSION INSTALLED
+# EXTENSION INSTALLED
 ---------------------------------------------------------------*/
 
 chrome.runtime.onInstalled.addListener(function() {
+
+    /*-----------------------------------------------------------
+    # HISTORY
+    -----------------------------------------------------------*/
+
     chrome.history.search({
         text: '',
         startTime: 0,
@@ -69,7 +77,9 @@ chrome.runtime.onInstalled.addListener(function() {
                 pages: {},
                 params: {},
                 length: [0, 0, 0]
-            }
+            },
+            pinned: {},
+            bookmarks: {}
         };
 
         for (var i = 0, l = items.length; i < l; i++) {
@@ -105,7 +115,7 @@ chrome.runtime.onInstalled.addListener(function() {
                 star: 0,
                 tags: ''
             };
-            
+
             // PARAMS
             if (q && q[0] && !storage._all.params[domain]) {
                 storage._all.params[domain] = visit_count;
@@ -144,13 +154,50 @@ chrome.runtime.onInstalled.addListener(function() {
         storage._top.length[1] = Object.keys(storage._all.pages).length;
         storage._top.length[2] = Object.keys(storage._all.params).length;
 
-        chrome.storage.local.set(storage);
+
+        /*-------------------------------------------------------
+        # PINNED TABS
+        -------------------------------------------------------*/
+
+        chrome.tabs.query({}, function(tabs) {
+            for (var i = 0, l = tabs.length; i < l; i++) {
+                var tab = tabs[i];
+
+                if (tab.pinned === true) {
+                    var title = tab.title,
+                        visit_count = tab.visitCount,
+                        url = tab.url,
+                        domain = url.split('/')[2],
+                        path = url.match(/\w(\/.*)/)[1];
+
+                    if (!storage.pinned[url]) {
+                        storage.pinned[url] = {
+                            title: title,
+                            visit_count: 1
+                        };
+                    } else {
+                        storage.pinned[url].visit_count++;
+                    }
+                }
+            }
+
+            var pinned = Object.keys(storage.pinned).map((key) => [key, storage.pinned[key]]).sort(function(a, b) {
+                return b[1].visitCount - a[1].visitCount;
+            });
+
+            for (var i = 0; i < Math.min(100, pinned.length); i++) {
+                storage.pinned[pinned[i][0]] = pinned[i][1];
+            }
+
+            chrome.storage.local.set(storage);
+        });
     });
+
 });
 
 
 /*---------------------------------------------------------------
-3.0 HISTORY UPDATED
+# HISTORY UPDATED
 ---------------------------------------------------------------*/
 
 chrome.history.onVisited.addListener(function(item) {
@@ -184,7 +231,7 @@ chrome.history.onVisited.addListener(function(item) {
                 tags: ''
             };
         }
-            
+
         // PARAMS
         if (url.indexOf(/[?&]+q=/)) {
             if (storage.params[domain]) {
@@ -198,4 +245,42 @@ chrome.history.onVisited.addListener(function(item) {
             _new: storage
         });
     });
+});
+
+
+/*---------------------------------------------------------------
+# TABS UPDATED
+---------------------------------------------------------------*/
+
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+    if (changeInfo.pinned === true) {
+        chrome.storage.local.get('pinned', function(items) {
+            var title = tab.title,
+                visit_count = tab.visitCount,
+                url = tab.url,
+                domain = url.split('/')[2],
+                path = url.match(/\w(\/.*)/)[1];
+
+            if (!items.pinned[url]) {
+                items.pinned[url] = {
+                    title: title,
+                    visit_count: 1
+                };
+            } else {
+                items[url].visit_count++;
+            }
+
+            var pinned = Object.keys(items.pinned).map((key) => [key, items.pinned[key]]).sort(function(a, b) {
+                return b[1].visitCount - a[1].visitCount;
+            });
+
+            for (var i = 0; i < Math.min(100, pinned.length); i++) {
+                items.pinned[pinned[i][0]] = pinned[i][1];
+            }
+
+            chrome.storage.local.set({
+                pinned: items.pinned
+            });
+        });
+    }
 });

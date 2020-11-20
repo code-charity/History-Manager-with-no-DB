@@ -118,7 +118,7 @@ body[data-compact-mode="true"] .satus-header__text-field
 }
 
 .satus-dialog--vertical-menu .satus-button,
-.satus-dialog--vertical-menu .satus-folder
+.satus-dialog--vertical-menu .satus-button
 {
     width: 100%;
     height: 36px;
@@ -127,7 +127,7 @@ body[data-compact-mode="true"] .satus-header__text-field
     text-align: left;
 }
 
-.satus-dialog--vertical-menu .satus-folder svg,
+.satus-dialog--vertical-menu .satus-button svg,
 .satus-dialog--vertical-menu .satus-button svg
 {
     width: 20px;
