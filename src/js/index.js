@@ -61,63 +61,73 @@ function updateData(new_items, current_items) {
 
 console.time('start');
 
-satus.storage.import('language', function(language) {
-    satus.updateStorageKeys(Menu);
+function init() {
+    if (location.href.indexOf('?loaded') === -1) {
+        location.replace(location.href + '?loaded');
 
-    satus.locale.import(language || 'en', function() {
-        satus.storage.import('compact_mode', function(compact_mode) {
-            document.body.dataset.compactMode = compact_mode;
-        });
+        return false;
+    }
 
-        satus.storage.import('_new', function(_new) {
-            var _new = _new || {
-                domains: {},
-                pages: {},
-                params: {}
-            };
+    satus.storage.import('language', function(language) {
+        satus.updateStorageKeys(Menu);
 
-            satus.storage.import('_top', function(_top) {
-                var _top = _top || {
+        satus.locale.import(language || 'en', function() {
+            satus.storage.import('compact_mode', function(compact_mode) {
+                document.body.dataset.compactMode = compact_mode;
+            });
+
+            satus.storage.import('_new', function(_new) {
+                var _new = _new || {
                     domains: {},
                     pages: {},
                     params: {}
                 };
 
-                updateData(_new, _top);
+                satus.storage.import('_top', function(_top) {
+                    var _top = _top || {
+                        domains: {},
+                        pages: {},
+                        params: {}
+                    };
 
-                HISTORY_MANAGER.NEW = _new;
+                    updateData(_new, _top);
 
-                HISTORY_MANAGER.DOMAINS = _top.domains;
-                HISTORY_MANAGER.PAGES = _top.pages;
-                HISTORY_MANAGER.PARAMS = _top.params;
+                    HISTORY_MANAGER.NEW = _new;
 
-                updateTable1();
-                updateTable3();
+                    HISTORY_MANAGER.DOMAINS = _top.domains;
+                    HISTORY_MANAGER.PAGES = _top.pages;
+                    HISTORY_MANAGER.PARAMS = _top.params;
 
-                Menu.main.section.table_01.pages = Math.ceil(satus.storage.data._top.length[0] / 100);
-                Menu.main.section.table_02.pages = Math.ceil(satus.storage.data._top.length[1] / 100);
-                Menu.main.section.table_03.pages = Math.ceil(satus.storage.data._top.length[2] / 100);
+                    updateTable1();
+                    updateTable3();
 
-                HISTORY_MANAGER.KEYS[0] = Object.keys(HISTORY_MANAGER.DOMAINS);
-                HISTORY_MANAGER.KEYS[1] = Object.keys(HISTORY_MANAGER.PAGES);
-                HISTORY_MANAGER.KEYS[2] = Object.keys(HISTORY_MANAGER.PARAMS);
+                    Menu.main.section.table_01.pages = Math.ceil(satus.storage.data._top.length[0] / 100);
+                    Menu.main.section.table_02.pages = Math.ceil(satus.storage.data._top.length[1] / 100);
+                    Menu.main.section.table_03.pages = Math.ceil(satus.storage.data._top.length[2] / 100);
 
-                HISTORY_MANAGER.LENGTH[0] = HISTORY_MANAGER.KEYS[0].length;
-                HISTORY_MANAGER.LENGTH[1] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length;
-                HISTORY_MANAGER.LENGTH[2] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length + HISTORY_MANAGER.KEYS[2].length;
+                    HISTORY_MANAGER.KEYS[0] = Object.keys(HISTORY_MANAGER.DOMAINS);
+                    HISTORY_MANAGER.KEYS[1] = Object.keys(HISTORY_MANAGER.PAGES);
+                    HISTORY_MANAGER.KEYS[2] = Object.keys(HISTORY_MANAGER.PARAMS);
 
-                satus.render(Menu, document.body);
+                    HISTORY_MANAGER.LENGTH[0] = HISTORY_MANAGER.KEYS[0].length;
+                    HISTORY_MANAGER.LENGTH[1] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length;
+                    HISTORY_MANAGER.LENGTH[2] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length + HISTORY_MANAGER.KEYS[2].length;
 
-                updateTable2(true);
+                    satus.render(Menu, document.body);
 
-                console.timeEnd('start');
+                    updateTable2(true);
 
-                satus.storage.import('pinned', function(pinned) {
-                    HISTORY_MANAGER.PINNED = pinned;
+                    console.timeEnd('start');
 
-                    updateTable4();
+                    satus.storage.import('pinned', function(pinned) {
+                        HISTORY_MANAGER.PINNED = pinned;
+
+                        updateTable4();
+                    });
                 });
             });
         });
     });
-});
+}
+
+init();

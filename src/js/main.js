@@ -142,26 +142,21 @@ function tags() {
 }
 
 function pin(target) {
-    if (target.dataset.value === 'false') {
-        chrome.tabs.create({
-            url: target.dataset.href,
-            pinned: true
-        });
+    var value = target.dataset.value == 'false' ? true : false;
 
-        target.dataset.value = 'true';
-    } else {
-        chrome.tabs.query({}, function(tabs) {
-            for (var i = 0, l = tabs.length; i < l; i++) {
-                var tab = tabs[i];
+    chrome.tabs.query({}, function(tabs) {
+        for (var i = 0, l = tabs.length; i < l; i++) {
+            var tab = tabs[i];
 
-                if (tab.url === target.dataset.href) {
-                    chrome.tabs.remove(tab.id);
+            if (tab.url === target.dataset.href) {
+                chrome.tabs.update(tab.id, {
+                    pinned: value
+                });
 
-                    target.dataset.value = 'false';
-                }
+                target.dataset.value = value;
             }
-        });
-    }
+        }
+    });
 }
 
 function loadAll(item) {
@@ -275,14 +270,11 @@ Menu.main = {
                                     var item = items[key];
 
                                     data.push([{
-                                            text: item.visitCount
-                                        },
-                                        {},
-                                        {
-                                            text: key,
-                                            html: '<a class="satus-link--domain" href="https://' + host + '/' + key + '" title="' + item.title + '">' + key + '</a>'
-                                        }
-                                    ]);
+                                        text: item.visitCount
+                                    }, {}, {
+                                        text: key,
+                                        html: '<a class="satus-link--domain" href="https://' + host + '/' + key + '" title="' + item.title + '">' + key + '</a>'
+                                    }]);
                                 }
 
                                 satus.render({
@@ -521,14 +513,11 @@ Menu.main = {
                                         }
 
                                         data.push([{
-                                                text: item.visitCount
-                                            },
-                                            {},
-                                            {
-                                                text: key,
-                                                html: '<a class="satus-link--domain" href="https://' + host + '/' + key + '" title="' + q + '">' + qq + '</a>'
-                                            }
-                                        ]);
+                                            text: item.visitCount
+                                        }, {}, {
+                                            text: key,
+                                            html: '<a class="satus-link--domain" href="https://' + host + '/' + key + '" title="' + q + '">' + qq + '</a>'
+                                        }]);
                                     }
                                 }
 
@@ -577,8 +566,7 @@ Menu.main = {
             columns: [{
                 title: ''
             }, {
-                title: 'domain',
-                sorting: 'desc'
+                title: 'domain'
             }]
         }
     }

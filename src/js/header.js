@@ -53,19 +53,19 @@ function dataSearch(event) {
 
         if (HISTORY_MANAGER.SEARCH.INDEX === HISTORY_MANAGER.LENGTH[0]) {
             document.querySelector('#by-domain').pagingIndex = 0;
-            
+
             updateTable1(true, HISTORY_MANAGER.SEARCH.DOMAINS);
 
             HISTORY_MANAGER.SEARCH.DOMAINS = {};
         } else if (HISTORY_MANAGER.SEARCH.INDEX === HISTORY_MANAGER.LENGTH[1]) {
             document.querySelector('#by-url').pagingIndex = 0;
-            
+
             updateTable2(true, HISTORY_MANAGER.SEARCH.PAGES);
 
             HISTORY_MANAGER.SEARCH.PAGES = {};
         } else if (HISTORY_MANAGER.SEARCH.INDEX === HISTORY_MANAGER.LENGTH[2]) {
             document.querySelector('#by-params').pagingIndex = 0;
-            
+
             updateTable3(true, HISTORY_MANAGER.SEARCH.PARAMS);
 
             HISTORY_MANAGER.SEARCH.PARAMS = {};
@@ -84,11 +84,14 @@ var Menu = {
             type: 'section',
             class: 'satus-section--align-start',
 
-            search_icon: {
+            /*search_engines: {
                 type: 'button',
-                class: 'satus-header__search-button',
-                before: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>'
-            },
+                class: 'satus-header__search-engines',
+                before: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>',
+                click: {
+                    type: 'dialog'
+                }
+            },*/
             text_field: {
                 type: 'text-field',
                 rows: 1,
@@ -123,8 +126,30 @@ var Menu = {
                             dataSearch(event);
                         }
                     }
+
+                    if (this.value.length > 0) {
+                        this.classList.add('satus-header__text-field--show-results');
+                    } else {
+                        this.classList.remove('satus-header__text-field--show-results');
+                    }
+                },
+                onrender: function() {
+                    var self = this;
+
+                    setTimeout(function() {
+                        self.focus();
+                    }, 500);
                 }
-            }
+            },
+            search_icon: {
+                type: 'button',
+                class: 'satus-header__search-button',
+                before: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>'
+            }/*,
+            dropdown_menu: {
+                type: 'div',
+                class: 'satus-search-results'
+            }*/
         },
         section_end: {
             type: 'section',
@@ -140,16 +165,13 @@ var Menu = {
                     language: {
                         type: 'select',
                         label: 'language',
-                        options: [
-                            {
-                                label: 'English',
-                                value: 'en'
-                            },
-                            {
-                                label: 'Русский',
-                                value: 'ru'
-                            }
-                        ]
+                        options: [{
+                            label: 'English',
+                            value: 'en'
+                        }, {
+                            label: 'Русский',
+                            value: 'ru'
+                        }]
                     },
                     compact_mode: {
                         type: 'switch',

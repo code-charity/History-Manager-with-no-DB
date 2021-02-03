@@ -1,4 +1,4 @@
-
+
 /*---------------------------------------------------------------
 >>> HEADER
 ---------------------------------------------------------------*/
@@ -54,19 +54,19 @@ function dataSearch(event) {
 
         if (HISTORY_MANAGER.SEARCH.INDEX === HISTORY_MANAGER.LENGTH[0]) {
             document.querySelector('#by-domain').pagingIndex = 0;
-            
+
             updateTable1(true, HISTORY_MANAGER.SEARCH.DOMAINS);
 
             HISTORY_MANAGER.SEARCH.DOMAINS = {};
         } else if (HISTORY_MANAGER.SEARCH.INDEX === HISTORY_MANAGER.LENGTH[1]) {
             document.querySelector('#by-url').pagingIndex = 0;
-            
+
             updateTable2(true, HISTORY_MANAGER.SEARCH.PAGES);
 
             HISTORY_MANAGER.SEARCH.PAGES = {};
         } else if (HISTORY_MANAGER.SEARCH.INDEX === HISTORY_MANAGER.LENGTH[2]) {
             document.querySelector('#by-params').pagingIndex = 0;
-            
+
             updateTable3(true, HISTORY_MANAGER.SEARCH.PARAMS);
 
             HISTORY_MANAGER.SEARCH.PARAMS = {};
@@ -85,11 +85,14 @@ var Menu = {
             type: 'section',
             class: 'satus-section--align-start',
 
-            search_icon: {
+            /*search_engines: {
                 type: 'button',
-                class: 'satus-header__search-button',
-                before: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>'
-            },
+                class: 'satus-header__search-engines',
+                before: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>',
+                click: {
+                    type: 'dialog'
+                }
+            },*/
             text_field: {
                 type: 'text-field',
                 rows: 1,
@@ -124,8 +127,30 @@ var Menu = {
                             dataSearch(event);
                         }
                     }
+
+                    if (this.value.length > 0) {
+                        this.classList.add('satus-header__text-field--show-results');
+                    } else {
+                        this.classList.remove('satus-header__text-field--show-results');
+                    }
+                },
+                onrender: function() {
+                    var self = this;
+
+                    setTimeout(function() {
+                        self.focus();
+                    }, 500);
                 }
-            }
+            },
+            search_icon: {
+                type: 'button',
+                class: 'satus-header__search-button',
+                before: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>'
+            }/*,
+            dropdown_menu: {
+                type: 'div',
+                class: 'satus-search-results'
+            }*/
         },
         section_end: {
             type: 'section',
@@ -141,16 +166,13 @@ var Menu = {
                     language: {
                         type: 'select',
                         label: 'language',
-                        options: [
-                            {
-                                label: 'English',
-                                value: 'en'
-                            },
-                            {
-                                label: 'Русский',
-                                value: 'ru'
-                            }
-                        ]
+                        options: [{
+                            label: 'English',
+                            value: 'en'
+                        }, {
+                            label: 'Русский',
+                            value: 'ru'
+                        }]
                     },
                     compact_mode: {
                         type: 'switch',
@@ -171,7 +193,6 @@ var Menu = {
         }
     }
 };
-
 var Selected = {},
     all_loaded = false,
     all_loading = false;
@@ -316,26 +337,21 @@ function tags() {
 }
 
 function pin(target) {
-    if (target.dataset.value === 'false') {
-        chrome.tabs.create({
-            url: target.dataset.href,
-            pinned: true
-        });
+    var value = target.dataset.value == 'false' ? true : false;
 
-        target.dataset.value = 'true';
-    } else {
-        chrome.tabs.query({}, function(tabs) {
-            for (var i = 0, l = tabs.length; i < l; i++) {
-                var tab = tabs[i];
+    chrome.tabs.query({}, function(tabs) {
+        for (var i = 0, l = tabs.length; i < l; i++) {
+            var tab = tabs[i];
 
-                if (tab.url === target.dataset.href) {
-                    chrome.tabs.remove(tab.id);
+            if (tab.url === target.dataset.href) {
+                chrome.tabs.update(tab.id, {
+                    pinned: value
+                });
 
-                    target.dataset.value = 'false';
-                }
+                target.dataset.value = value;
             }
-        });
-    }
+        }
+    });
 }
 
 function loadAll(item) {
@@ -449,14 +465,11 @@ Menu.main = {
                                     var item = items[key];
 
                                     data.push([{
-                                            text: item.visitCount
-                                        },
-                                        {},
-                                        {
-                                            text: key,
-                                            html: '<a class="satus-link--domain" href="https://' + host + '/' + key + '" title="' + item.title + '">' + key + '</a>'
-                                        }
-                                    ]);
+                                        text: item.visitCount
+                                    }, {}, {
+                                        text: key,
+                                        html: '<a class="satus-link--domain" href="https://' + host + '/' + key + '" title="' + item.title + '">' + key + '</a>'
+                                    }]);
                                 }
 
                                 satus.render({
@@ -695,14 +708,11 @@ Menu.main = {
                                         }
 
                                         data.push([{
-                                                text: item.visitCount
-                                            },
-                                            {},
-                                            {
-                                                text: key,
-                                                html: '<a class="satus-link--domain" href="https://' + host + '/' + key + '" title="' + q + '">' + qq + '</a>'
-                                            }
-                                        ]);
+                                            text: item.visitCount
+                                        }, {}, {
+                                            text: key,
+                                            html: '<a class="satus-link--domain" href="https://' + host + '/' + key + '" title="' + q + '">' + qq + '</a>'
+                                        }]);
                                     }
                                 }
 
@@ -751,12 +761,11 @@ Menu.main = {
             columns: [{
                 title: ''
             }, {
-                title: 'domain',
-                sorting: 'desc'
+                title: 'domain'
             }]
         }
     }
-};
+};
 /*---------------------------------------------------------------
 >>> TABLES
 -----------------------------------------------------------------
@@ -776,16 +785,13 @@ function updateTable1(force, d) {
 
     for (var key in data) {
         table.push([{
-                text: data[key]
-            },
-            {
-                html: '<button class="satus-button satus-button--dropdown" data-key="' + key + '"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>'
-            },
-            {
-                text: key,
-                html: '<a class="satus-link--domain" href="' + key + '"><img src="chrome://favicon/https://' + key + '">' + key + '</a>'
-            }
-        ]);
+            text: data[key]
+        }, {
+            html: '<button class="satus-button satus-button--dropdown" data-key="' + key + '"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>'
+        }, {
+            text: key,
+            html: '<a class="satus-link--domain" href="' + key + '"><img src="chrome://favicon/https://' + key + '">' + key + '</a>'
+        }]);
     }
 
     Menu.main.section.table_01.data = table;
@@ -813,25 +819,20 @@ function updateTable2(force, d) {
                     url = key.replace(/^.*\/\/[^\/]+:?[0-9]?\//g, '');
 
                 table.push([{
-                        text: item.visitCount
-                    },
-                    {
-                        html: '<img src="chrome://favicon/https://' + key.split('/')[2] + '">' + item.title,
-                        text: item.title
-                    },
-                    {
-                        html: '<a href="' + key + '">/' + url + '</a>',
-                        text: url
-                    },
-                    {
-                        html: '<button class="satus-button satus-button--star" data-title="' + item.title + '" data-id="' + bookmarks[key] + '" data-href="' + key + '" data-value="' + (bookmarks[key] ? true : false) + '"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>',
-                        text: item.star
-                    },
-                    {
-                        html: '<input class="satus-input--tags" type="text" data-href="' + key + '" value="' + item.tags + '">',
-                        text: item.tags
-                    }
-                ]);
+                    text: item.visitCount
+                }, {
+                    html: '<img src="chrome://favicon/https://' + key.split('/')[2] + '">' + item.title,
+                    text: item.title
+                }, {
+                    html: '<a href="' + key + '">/' + url + '</a>',
+                    text: url
+                }, {
+                    html: '<button class="satus-button satus-button--star" data-title="' + item.title + '" data-id="' + bookmarks[key] + '" data-href="' + key + '" data-value="' + (bookmarks[key] ? true : false) + '"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>',
+                    text: item.star
+                }, {
+                    html: '<input class="satus-input--tags" type="text" data-href="' + key + '" value="' + item.tags + '">',
+                    text: item.tags
+                }]);
             }
 
             Menu.main.section.table_02.data = table;
@@ -854,16 +855,13 @@ function updateTable3(force, d) {
 
     for (var key in data) {
         table.push([{
-                text: data[key]
-            },
-            {
-                html: '<button class="satus-button satus-button--dropdown" data-key="' + key + '"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>'
-            },
-            {
-                html: '<a href="' + key + '"><img src="chrome://favicon/https://' + key + '">' + key + '</a>',
-                text: key
-            }
-        ]);
+            text: data[key]
+        }, {
+            html: '<button class="satus-button satus-button--dropdown" data-key="' + key + '"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>'
+        }, {
+            html: '<a href="' + key + '"><img src="chrome://favicon/https://' + key + '">' + key + '</a>',
+            text: key
+        }]);
     }
 
     Menu.main.section.table_03.data = table;
@@ -889,20 +887,12 @@ function updateTable4() {
         for (var i = 0, l = tabs.length; i < l; i++) {
             var tab = tabs[i];
 
-            if (tab.pinned === true) {
-                pinned_tabs[tab.url] = true;
-            }
-        }
-
-        for (var key in data) {
             table.push([{
-                    html: '<button class="satus-button satus-button--pin" data-href="' + key + '" data-value="' + (pinned_tabs[key] ? true : false) + '"><svg fill="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path d="M4 10h5c1.12 0 2.16-.37 3-1v6c-.86-.65-1.9-1-3-1H4v-4M2 7v10c0 .55.45 1 1 1s1-.45 1-1v-1h5c1.66 0 3 1.34 3 3h2v-5.97h7l1-1-1-1h-7V5h-2c0 1.66-1.34 3-3 3H4V7c0-.55-.45-1-1-1s-1 .45-1 1z"/></svg></button>'
-                },
-                {
-                    html: '<a href="' + key + '"><img src="chrome://favicon/' + key + '">' + data[key].title + '</a>',
-                    text: key
-                }
-            ]);
+                html: '<button class="satus-button satus-button--pin" data-href="' + tab.url + '" data-value="' + tab.pinned + '"><svg fill="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path d="M4 10h5c1.12 0 2.16-.37 3-1v6c-.86-.65-1.9-1-3-1H4v-4M2 7v10c0 .55.45 1 1 1s1-.45 1-1v-1h5c1.66 0 3 1.34 3 3h2v-5.97h7l1-1-1-1h-7V5h-2c0 1.66-1.34 3-3 3H4V7c0-.55-.45-1-1-1s-1 .45-1 1z"/></svg></button>'
+            }, {
+                html: '<a href="' + tab.url + '"><img src="chrome://favicon/' + tab.url + '">' + tab.title + '</a>',
+                text: tab.url
+            }]);
         }
 
         if (table.length > 0) {
@@ -911,7 +901,7 @@ function updateTable4() {
             document.querySelector('#pinned').update(table);
         }
     });
-}
+}
 /*---------------------------------------------------------------
 >>> INDEX
 ---------------------------------------------------------------*/
@@ -975,63 +965,73 @@ function updateData(new_items, current_items) {
 
 console.time('start');
 
-satus.storage.import('language', function(language) {
-    satus.updateStorageKeys(Menu);
+function init() {
+    if (location.href.indexOf('?loaded') === -1) {
+        location.replace(location.href + '?loaded');
 
-    satus.locale.import(language || 'en', function() {
-        satus.storage.import('compact_mode', function(compact_mode) {
-            document.body.dataset.compactMode = compact_mode;
-        });
+        return false;
+    }
 
-        satus.storage.import('_new', function(_new) {
-            var _new = _new || {
-                domains: {},
-                pages: {},
-                params: {}
-            };
+    satus.storage.import('language', function(language) {
+        satus.updateStorageKeys(Menu);
 
-            satus.storage.import('_top', function(_top) {
-                var _top = _top || {
+        satus.locale.import(language || 'en', function() {
+            satus.storage.import('compact_mode', function(compact_mode) {
+                document.body.dataset.compactMode = compact_mode;
+            });
+
+            satus.storage.import('_new', function(_new) {
+                var _new = _new || {
                     domains: {},
                     pages: {},
                     params: {}
                 };
 
-                updateData(_new, _top);
+                satus.storage.import('_top', function(_top) {
+                    var _top = _top || {
+                        domains: {},
+                        pages: {},
+                        params: {}
+                    };
 
-                HISTORY_MANAGER.NEW = _new;
+                    updateData(_new, _top);
 
-                HISTORY_MANAGER.DOMAINS = _top.domains;
-                HISTORY_MANAGER.PAGES = _top.pages;
-                HISTORY_MANAGER.PARAMS = _top.params;
+                    HISTORY_MANAGER.NEW = _new;
 
-                updateTable1();
-                updateTable3();
+                    HISTORY_MANAGER.DOMAINS = _top.domains;
+                    HISTORY_MANAGER.PAGES = _top.pages;
+                    HISTORY_MANAGER.PARAMS = _top.params;
 
-                Menu.main.section.table_01.pages = Math.ceil(satus.storage.data._top.length[0] / 100);
-                Menu.main.section.table_02.pages = Math.ceil(satus.storage.data._top.length[1] / 100);
-                Menu.main.section.table_03.pages = Math.ceil(satus.storage.data._top.length[2] / 100);
+                    updateTable1();
+                    updateTable3();
 
-                HISTORY_MANAGER.KEYS[0] = Object.keys(HISTORY_MANAGER.DOMAINS);
-                HISTORY_MANAGER.KEYS[1] = Object.keys(HISTORY_MANAGER.PAGES);
-                HISTORY_MANAGER.KEYS[2] = Object.keys(HISTORY_MANAGER.PARAMS);
+                    Menu.main.section.table_01.pages = Math.ceil(satus.storage.data._top.length[0] / 100);
+                    Menu.main.section.table_02.pages = Math.ceil(satus.storage.data._top.length[1] / 100);
+                    Menu.main.section.table_03.pages = Math.ceil(satus.storage.data._top.length[2] / 100);
 
-                HISTORY_MANAGER.LENGTH[0] = HISTORY_MANAGER.KEYS[0].length;
-                HISTORY_MANAGER.LENGTH[1] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length;
-                HISTORY_MANAGER.LENGTH[2] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length + HISTORY_MANAGER.KEYS[2].length;
+                    HISTORY_MANAGER.KEYS[0] = Object.keys(HISTORY_MANAGER.DOMAINS);
+                    HISTORY_MANAGER.KEYS[1] = Object.keys(HISTORY_MANAGER.PAGES);
+                    HISTORY_MANAGER.KEYS[2] = Object.keys(HISTORY_MANAGER.PARAMS);
 
-                satus.render(Menu, document.body);
+                    HISTORY_MANAGER.LENGTH[0] = HISTORY_MANAGER.KEYS[0].length;
+                    HISTORY_MANAGER.LENGTH[1] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length;
+                    HISTORY_MANAGER.LENGTH[2] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length + HISTORY_MANAGER.KEYS[2].length;
 
-                updateTable2(true);
+                    satus.render(Menu, document.body);
 
-                console.timeEnd('start');
+                    updateTable2(true);
 
-                satus.storage.import('pinned', function(pinned) {
-                    HISTORY_MANAGER.PINNED = pinned;
+                    console.timeEnd('start');
 
-                    updateTable4();
+                    satus.storage.import('pinned', function(pinned) {
+                        HISTORY_MANAGER.PINNED = pinned;
+
+                        updateTable4();
+                    });
                 });
             });
         });
     });
-});
+}
+
+init();

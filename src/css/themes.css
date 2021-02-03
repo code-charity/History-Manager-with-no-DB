@@ -12,10 +12,10 @@
 html {
     --satus-theme-primary: #f6b465;
     
-    --satus-theme-header: transparent;
-    /*--satus-theme-header-text: #f6b465;*/
+    --satus-theme-header: #2684ff;
+    --satus-theme-header-text: #fff;
     
-    --satus-theme-main: #eaeeef;
+    --satus-theme-main: #f7fafc;
 }
 
 

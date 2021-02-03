@@ -5,6 +5,11 @@
 # Loader
 --------------------------------------------------------------*/
 
+.satus-main
+{
+    margin: 8px 0;
+}
+
 .satus-main__container
 {
     display: flex;

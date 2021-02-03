@@ -27,23 +27,36 @@
 
 .satus-table
 {
-    height: calc(100vh - 62px);
+    height: calc(100vh - 80px);
 
-    border: 1px solid #ddd;
+    border: 1px solid #e1e4eb;
     border-radius: 4px;
+}
+
+.satus-dropdown-list .satus-table
+{
+    height: auto;
+    max-height: calc(50vh - 80px);
 }
 
 .satus-table__head
 {
     height: 39px;
 
-    border-bottom: 1px solid #ddd;
-    box-shadow: 0 2px 2px rgba(0, 0, 0, .1);
+    color: #6e7d91;
+    border-bottom: 1px solid #d5d5dd;
+    background: #f1f1f4;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 10%);
 }
 
 .satus-table__body
 {
-    background: #fafafa;
+    background: #fff;
+}
+
+.satus-table__row:nth-child(2n)
+{
+    background: transparent;
 }
 
 
