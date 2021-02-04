@@ -7,6 +7,7 @@
   # Pinned tabs
 # History updated
 # Tabs updated
+# Message listener
 ---------------------------------------------------------------*/
 
 /*---------------------------------------------------------------
@@ -281,6 +282,30 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
             chrome.storage.local.set({
                 pinned: items.pinned
             });
+        });
+    }
+});
+
+
+/*---------------------------------------------------------------
+# MESSAGE LISTENER
+---------------------------------------------------------------*/
+
+chrome.runtime.onMessage.addListener(async function(message, sender) {
+    if (typeof message !== 'object') {
+        return false;
+    }
+
+    if (message.action === 'history-manager--fetch') {
+        var response = await (await fetch(message.url, {
+            cache: 'force-cache',
+            credentials: 'omit'
+        })).text();
+
+        chrome.tabs.sendMessage(sender.tab.id, {
+            action: 'history-manager--fetch-response',
+            response: response,
+            callback: message.callback
         });
     }
 });

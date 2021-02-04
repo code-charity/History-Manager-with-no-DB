@@ -385,7 +385,7 @@ satus.components.dialog = function(element) {
     var component = document.createElement('div'),
         component_scrim = document.createElement('div'),
         component_surface = document.createElement('div'),
-        component_scrollbar = satus.components.scrollbar(component_surface),
+        component_scrollbar = element.scrollbar !== false ? satus.components.scrollbar(component_surface) : component_surface,
         options = element.options || {};
 
     component_scrim.className = 'satus-dialog__scrim';

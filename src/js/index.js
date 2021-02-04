@@ -90,6 +90,8 @@ function init() {
                         params: {}
                     };
 
+                    //backgroundFetch('https://www.google.com/favicon.ico', 'updateSearchEngineIcon');
+
                     updateData(_new, _top);
 
                     HISTORY_MANAGER.NEW = _new;
@@ -115,6 +117,8 @@ function init() {
 
                     satus.render(Menu, document.body);
 
+                    search_results_element = document.querySelector('.satus-search-results');
+
                     updateTable2(true);
 
                     console.timeEnd('start');
@@ -131,3 +135,24 @@ function init() {
 }
 
 init();
+
+
+chrome.runtime.onMessage.addListener(async function(message, sender) {
+    if (typeof message !== 'object') {
+        return false;
+    }
+
+    if (message.action === 'history-manager--fetch-response') {
+        if (window[message.callback]) {
+            window[message.callback](message.response);
+        }
+    }
+});
+
+function backgroundFetch(url, callback) {
+    chrome.runtime.sendMessage({
+        action: 'history-manager--fetch',
+        url: url,
+        callback: callback
+    });
+}

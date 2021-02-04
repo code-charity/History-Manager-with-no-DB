@@ -1,7 +1,4 @@
 
-/*---------------------------------------------------------------
->>> HEADER
----------------------------------------------------------------*/
 function dataSearch(event) {
     var value = event.target.value;
 
@@ -77,6 +74,53 @@ function dataSearch(event) {
     }, 100);
 }
 
+function updateSearchResults(search_field) {
+    if (search_field.value.length > 0) {
+        search_results_element.innerHTML = '';
+
+        search_results_element.innerHTML += '<a href="' + searchEngine.url + search_field.value + '" class=focused>' + search_field.value + ' <span>' + searchEngine.title + ' Search</span></a>';
+
+        search_field.classList.add('satus-header__text-field--show-results');
+    } else {
+        search_field.classList.remove('satus-header__text-field--show-results');
+    }
+}
+
+function chooseSearchEngine(event) {
+    searchEngine = {
+        title: this.innerText,
+        url: this.dataset.url,
+        icon: this.dataset.icon
+    };
+
+    document.querySelector('.satus-header__search-engine').style.backgroundImage = 'url(chrome://favicon/' + searchEngine.icon + ')';
+
+    document.querySelector('.satus-dialog__scrim').click();
+}
+
+
+
+
+
+
+
+
+/*--------------------------------------------------------------
+>>> TABLE OF CONTENTS:
+----------------------------------------------------------------
+# Skeleton
+--------------------------------------------------------------*/
+
+/*--------------------------------------------------------------
+# SKELETON
+--------------------------------------------------------------*/
+
+var searchEngine = {
+    title: 'Google',
+    icon: 'https://www.google.com/',
+    url: 'https://www.google.com/search?q=%s'
+};
+
 var Menu = {
     header: {
         type: 'header',
@@ -85,53 +129,106 @@ var Menu = {
             type: 'section',
             class: 'satus-section--align-start',
 
-            /*search_engines: {
+            search_engine_back: {
                 type: 'button',
-                class: 'satus-header__search-engines',
-                before: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>',
-                click: {
-                    type: 'dialog'
+                class: 'satus-header__search-engine__back'
+            },
+            search_engine: {
+                type: 'button',
+                class: 'satus-header__search-engine',
+                dataset: {
+                    icon: 'https://www.google.com/search',
+                    url: 'https://www.google.com/?q=%s'
+                },
+                style: {
+                    backgroundImage: 'url(chrome://favicon/https://www.google.com/)'
+                },
+                onclick: {
+                    type: 'dialog',
+                    class: 'satus-dialog--search-engine',
+                    scrollbar: false,
+
+                    google: {
+                        type: 'button',
+                        label: 'Google',
+                        dataset: {
+                            icon: 'https://www.google.com/',
+                            url: 'https://www.google.com/search?q=%s'
+                        },
+                        onclick: chooseSearchEngine
+                    },
+                    youtube: {
+                        type: 'button',
+                        label: 'YouTube',
+                        dataset: {
+                            icon: 'https://www.youtube.com/',
+                            url: 'https://www.youtube.com/results?search_query=%s'
+                        },
+                        onclick: chooseSearchEngine
+                    },
+                    duckduckgo: {
+                        type: 'button',
+                        label: 'DuckDuckGo',
+                        dataset: {
+                            icon: 'https://www.google.com/',
+                            url: 'https://www.google.com/search?q=%s'
+                        },
+                        onclick: chooseSearchEngine
+                    },
+                    history: {
+                        type: 'button',
+                        label: 'History',
+                        onclick: chooseSearchEngine
+                    }
                 }
-            },*/
-            text_field: {
+            },
+            search_field: {
                 type: 'text-field',
-                rows: 1,
                 class: 'satus-header__text-field',
                 placeholder: 'Search',
-                oninput: function(event) {
-                    if (all_loading === false) {
-                        if (all_loaded === false) {
-                            all_loading = true;
+                onkeypress: function(event) {
+                    if (event.keyCode === 13) {
+                        setTimeout(function() {
+                            var focused = document.querySelector('.satus-search-results a.focused');
 
-                            satus.storage.import('_all', function(item) {
-                                HISTORY_MANAGER.DOMAINS = item.domains;
-                                HISTORY_MANAGER.PAGES = item.pages;
-
-                                document.querySelector('#by-domain').data = updateTable1();
-                                document.querySelector('#by-url').data = updateTable2();
-                                document.querySelector('#by-params').data = updateTable3();
-
-                                HISTORY_MANAGER.KEYS[0] = Object.keys(HISTORY_MANAGER.DOMAINS);
-                                HISTORY_MANAGER.KEYS[1] = Object.keys(HISTORY_MANAGER.PAGES);
-                                HISTORY_MANAGER.KEYS[2] = Object.keys(HISTORY_MANAGER.PARAMS);
-                                HISTORY_MANAGER.LENGTH[0] = HISTORY_MANAGER.KEYS[0].length;
-                                HISTORY_MANAGER.LENGTH[1] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length;
-                                HISTORY_MANAGER.LENGTH[2] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length + HISTORY_MANAGER.KEYS[2].length;
-
-                                all_loaded = true;
-                                all_loading = false;
-
-                                dataSearch(event);
-                            });
-                        } else {
-                            dataSearch(event);
-                        }
+                            if (focused) {
+                                window.open(focused.href, '_self')
+                            }
+                        });
                     }
+                },
+                oninput: function(event) {
+                    if (searchEngine.title === 'History') {
+                        if (all_loading === false) {
+                            if (all_loaded === false) {
+                                all_loading = true;
 
-                    if (this.value.length > 0) {
-                        this.classList.add('satus-header__text-field--show-results');
+                                satus.storage.import('_all', function(item) {
+                                    HISTORY_MANAGER.DOMAINS = item.domains;
+                                    HISTORY_MANAGER.PAGES = item.pages;
+
+                                    document.querySelector('#by-domain').data = updateTable1();
+                                    document.querySelector('#by-url').data = updateTable2();
+                                    document.querySelector('#by-params').data = updateTable3();
+
+                                    HISTORY_MANAGER.KEYS[0] = Object.keys(HISTORY_MANAGER.DOMAINS);
+                                    HISTORY_MANAGER.KEYS[1] = Object.keys(HISTORY_MANAGER.PAGES);
+                                    HISTORY_MANAGER.KEYS[2] = Object.keys(HISTORY_MANAGER.PARAMS);
+                                    HISTORY_MANAGER.LENGTH[0] = HISTORY_MANAGER.KEYS[0].length;
+                                    HISTORY_MANAGER.LENGTH[1] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length;
+                                    HISTORY_MANAGER.LENGTH[2] = HISTORY_MANAGER.KEYS[0].length + HISTORY_MANAGER.KEYS[1].length + HISTORY_MANAGER.KEYS[2].length;
+
+                                    all_loaded = true;
+                                    all_loading = false;
+
+                                    dataSearch(event);
+                                });
+                            } else {
+                                dataSearch(event);
+                            }
+                        }
                     } else {
-                        this.classList.remove('satus-header__text-field--show-results');
+                        updateSearchResults(this);
                     }
                 },
                 onrender: function() {
@@ -142,23 +239,24 @@ var Menu = {
                     }, 500);
                 }
             },
+            dropdown_menu: {
+                type: 'div',
+                class: 'satus-search-results'
+            },
             search_icon: {
                 type: 'button',
                 class: 'satus-header__search-button',
                 before: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>'
-            }/*,
-            dropdown_menu: {
-                type: 'div',
-                class: 'satus-search-results'
-            }*/
+            }
         },
         section_end: {
             type: 'section',
             class: 'satus-section--align-end',
 
-            button_vert: {
+            button: {
                 type: 'button',
                 before: '<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="5.25" r="0.45"/><circle cx="12" cy="12" r="0.45"/><circle cx="12" cy="18.75" r="0.45"/></svg>',
+
                 onclick: {
                     type: 'dialog',
                     class: 'satus-dialog--vertical-menu',
@@ -193,6 +291,10 @@ var Menu = {
         }
     }
 };
+
+function updateSearchEngineIcon(data) {
+    document.querySelector('.satus-header__search-engine').src = 'chrome://favicon/' + data;
+}
 var Selected = {},
     all_loaded = false,
     all_loading = false;
@@ -994,6 +1096,8 @@ function init() {
                         params: {}
                     };
 
+                    //backgroundFetch('https://www.google.com/favicon.ico', 'updateSearchEngineIcon');
+
                     updateData(_new, _top);
 
                     HISTORY_MANAGER.NEW = _new;
@@ -1019,6 +1123,8 @@ function init() {
 
                     satus.render(Menu, document.body);
 
+                    search_results_element = document.querySelector('.satus-search-results');
+
                     updateTable2(true);
 
                     console.timeEnd('start');
@@ -1035,3 +1141,24 @@ function init() {
 }
 
 init();
+
+
+chrome.runtime.onMessage.addListener(async function(message, sender) {
+    if (typeof message !== 'object') {
+        return false;
+    }
+
+    if (message.action === 'history-manager--fetch-response') {
+        if (window[message.callback]) {
+            window[message.callback](message.response);
+        }
+    }
+});
+
+function backgroundFetch(url, callback) {
+    chrome.runtime.sendMessage({
+        action: 'history-manager--fetch',
+        url: url,
+        callback: callback
+    });
+}
