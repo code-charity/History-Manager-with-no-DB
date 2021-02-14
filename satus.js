@@ -762,6 +762,8 @@ satus.components.scrollbar = function(parent, enabled) {
         }
     }
 
+    component.resize = resize;
+
     window.addEventListener('resize', resize);
 
     new MutationObserver(resize).observe(component_content, {

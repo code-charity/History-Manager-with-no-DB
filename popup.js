@@ -96,6 +96,8 @@ function chooseSearchEngine(event) {
     document.querySelector('.satus-header__search-engine').style.backgroundImage = 'url(chrome://favicon/' + searchEngine.icon + ')';
 
     document.querySelector('.satus-dialog__scrim').click();
+
+    satus.storage.set('searchEngine', searchEngine);
 }
 
 
@@ -118,7 +120,7 @@ function chooseSearchEngine(event) {
 var searchEngine = {
     title: 'Google',
     icon: 'https://www.google.com/',
-    url: 'https://www.google.com/search?q=%s'
+    url: 'https://www.google.com/search?q='
 };
 
 var Menu = {
@@ -138,7 +140,7 @@ var Menu = {
                 class: 'satus-header__search-engine',
                 dataset: {
                     icon: 'https://www.google.com/search',
-                    url: 'https://www.google.com/?q=%s'
+                    url: 'https://www.google.com/?q='
                 },
                 style: {
                     backgroundImage: 'url(chrome://favicon/https://www.google.com/)'
@@ -153,7 +155,7 @@ var Menu = {
                         label: 'Google',
                         dataset: {
                             icon: 'https://www.google.com/',
-                            url: 'https://www.google.com/search?q=%s'
+                            url: 'https://www.google.com/search?q='
                         },
                         onclick: chooseSearchEngine
                     },
@@ -162,7 +164,7 @@ var Menu = {
                         label: 'YouTube',
                         dataset: {
                             icon: 'https://www.youtube.com/',
-                            url: 'https://www.youtube.com/results?search_query=%s'
+                            url: 'https://www.youtube.com/results?search_query='
                         },
                         onclick: chooseSearchEngine
                     },
@@ -170,8 +172,35 @@ var Menu = {
                         type: 'button',
                         label: 'DuckDuckGo',
                         dataset: {
-                            icon: 'https://www.google.com/',
-                            url: 'https://www.google.com/search?q=%s'
+                            icon: 'https://duckduckgo.com/',
+                            url: 'https://duckduckgo.com/?q='
+                        },
+                        onclick: chooseSearchEngine
+                    },
+                    bing: {
+                        type: 'button',
+                        label: 'Bing',
+                        dataset: {
+                            icon: 'https://bing.com/',
+                            url: 'https://bing.com/search?q='
+                        },
+                        onclick: chooseSearchEngine
+                    },
+                    yahoo: {
+                        type: 'button',
+                        label: 'Yahoo!',
+                        dataset: {
+                            icon: 'https://search.yahoo.com/',
+                            url: 'https://search.yahoo.com/search?p='
+                        },
+                        onclick: chooseSearchEngine
+                    },
+                    ecosia: {
+                        type: 'button',
+                        label: 'Ecosia',
+                        dataset: {
+                            icon: 'https://www.ecosia.org/',
+                            url: 'https://www.ecosia.org/search?q='
                         },
                         onclick: chooseSearchEngine
                     },
@@ -291,10 +320,6 @@ var Menu = {
         }
     }
 };
-
-function updateSearchEngineIcon(data) {
-    document.querySelector('.satus-header__search-engine').src = 'chrome://favicon/' + data;
-}
 var Selected = {},
     all_loaded = false,
     all_loading = false;
@@ -574,22 +599,30 @@ Menu.main = {
                                     }]);
                                 }
 
-                                satus.render({
-                                    type: 'table',
-                                    paging: 100,
-                                    columns: [{
-                                        title: 'Visits',
-                                        sorting: 'desc'
-                                    }, {
-                                        title: ''
-                                    }, {
-                                        title: 'Title',
-                                        onrender: function() {
-                                            this.querySelector('a').innerText = this.querySelector('a').innerText;
-                                        }
-                                    }],
-                                    data: data
-                                }, list);
+                                setTimeout(function() {
+                                    satus.render({
+                                        type: 'table',
+                                        paging: 100,
+                                        columns: [{
+                                            title: 'Visits',
+                                            sorting: 'desc'
+                                        }, {
+                                            title: ''
+                                        }, {
+                                            title: 'Title',
+                                            onrender: function() {
+                                                this.querySelector('a').innerText = this.querySelector('a').innerText;
+                                            }
+                                        }],
+                                        data: data
+                                    }, list);
+
+                                    setTimeout(function() {
+                                        list.querySelector('.satus-table__body').style.height = list.querySelector('.satus-table').offsetHeight - 39 + 'px';
+
+                                        list.querySelector('.satus-scrollbar').resize();
+                                    });
+                                });
 
                                 container.appendChild(list);
 
@@ -1133,6 +1166,14 @@ function init() {
                         HISTORY_MANAGER.PINNED = pinned;
 
                         updateTable4();
+
+                        satus.storage.import('searchEngine', function(item) {
+                            if (item) {
+                                searchEngine = item;
+
+                                document.querySelector('.satus-header__search-engine').style.backgroundImage = 'url(chrome://favicon/' + searchEngine.icon + ')';
+                            }
+                        });
                     });
                 });
             });

@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "History Manager",
     "version": "1.0",
-    "version_name": "1.0-alpha.5",
+    "version_name": "1.0-alpha.6",
 
     "default_locale": "en",
 
@@ -12,7 +12,7 @@
         "48": "assets/icons/48.png",
         "128": "assets/icons/128.png"
     },
-    
+
     "background": {
         "persistent": false,
         "scripts": [

@@ -364,11 +364,12 @@ body[data-compact-mode='true'] #by-params
 .satus-dropdown-list
 {
     width: 100%;
+    margin: 0 0 8px 0;
 }
 
-.satus-dropdown-list .satus-table__head
+.satus-dropdown-list a
 {
-    display: none;
+    color: #1e6fdb;
 }
 
 #by-domain .satus-dropdown-list .satus-table__cell:nth-child(2)

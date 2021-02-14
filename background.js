@@ -87,43 +87,54 @@ chrome.runtime.onInstalled.addListener(function() {
             var item = items[i],
                 title = item.title,
                 visit_count = item.visitCount,
-                url = item.url,
-                domain = url.split('/')[2],
-                path = url.match(/\w(\/.*)/)[1],
-                q = url.match(/[?&]q=[^&]+/) || [];
+                url = item.url;
 
-            // DOMAINS
-            if (!storage[domain]) {
-                storage[domain] = {};
-            }
+            var domain = url.split('/');
 
-            storage[domain][path] = {
-                title: title,
-                visitCount: visit_count,
-                params: q[0]
-            };
+            if (domain) {
+                domain = domain[2];
 
-            if (storage._all.domains[domain]) {
-                storage._all.domains[domain] += visit_count;
-            } else {
-                storage._all.domains[domain] = visit_count;
-            }
+                var path = url.match(/\w(\/.*)/);
 
-            // PAGES
-            storage._all.pages[url] = {
-                title: title,
-                visitCount: visit_count,
-                star: 0,
-                tags: ''
-            };
+                if (path) {
+                    path = path[1];
 
-            // PARAMS
-            if (q && q[0] && !storage._all.params[domain]) {
-                storage._all.params[domain] = visit_count;
-            }
+                    var q = url.match(/[?&]q=[^&]+/) || [];
 
-            if (storage._all.params[domain]) {
-                storage._all.params[domain] += visit_count;
+                    // DOMAINS
+                    if (!storage[domain]) {
+                        storage[domain] = {};
+                    }
+
+                    storage[domain][path] = {
+                        title: title,
+                        visitCount: visit_count,
+                        params: q[0]
+                    };
+
+                    if (storage._all.domains[domain]) {
+                        storage._all.domains[domain] += visit_count;
+                    } else {
+                        storage._all.domains[domain] = visit_count;
+                    }
+
+                    // PAGES
+                    storage._all.pages[url] = {
+                        title: title,
+                        visitCount: visit_count,
+                        star: 0,
+                        tags: ''
+                    };
+
+                    // PARAMS
+                    if (q && q[0] && !storage._all.params[domain]) {
+                        storage._all.params[domain] = visit_count;
+                    }
+
+                    if (storage._all.params[domain]) {
+                        storage._all.params[domain] += visit_count;
+                    }
+                }
             }
         }
 
@@ -193,7 +204,6 @@ chrome.runtime.onInstalled.addListener(function() {
             chrome.storage.local.set(storage);
         });
     });
-
 });
 
 

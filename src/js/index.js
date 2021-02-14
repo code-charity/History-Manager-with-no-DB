@@ -127,6 +127,14 @@ function init() {
                         HISTORY_MANAGER.PINNED = pinned;
 
                         updateTable4();
+
+                        satus.storage.import('searchEngine', function(item) {
+                            if (item) {
+                                searchEngine = item;
+
+                                document.querySelector('.satus-header__search-engine').style.backgroundImage = 'url(chrome://favicon/' + searchEngine.icon + ')';
+                            }
+                        });
                     });
                 });
             });

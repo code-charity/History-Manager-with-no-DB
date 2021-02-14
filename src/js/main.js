@@ -277,22 +277,30 @@ Menu.main = {
                                     }]);
                                 }
 
-                                satus.render({
-                                    type: 'table',
-                                    paging: 100,
-                                    columns: [{
-                                        title: 'Visits',
-                                        sorting: 'desc'
-                                    }, {
-                                        title: ''
-                                    }, {
-                                        title: 'Title',
-                                        onrender: function() {
-                                            this.querySelector('a').innerText = this.querySelector('a').innerText;
-                                        }
-                                    }],
-                                    data: data
-                                }, list);
+                                setTimeout(function() {
+                                    satus.render({
+                                        type: 'table',
+                                        paging: 100,
+                                        columns: [{
+                                            title: 'Visits',
+                                            sorting: 'desc'
+                                        }, {
+                                            title: ''
+                                        }, {
+                                            title: 'Title',
+                                            onrender: function() {
+                                                this.querySelector('a').innerText = this.querySelector('a').innerText;
+                                            }
+                                        }],
+                                        data: data
+                                    }, list);
+
+                                    setTimeout(function() {
+                                        list.querySelector('.satus-table__body').style.height = list.querySelector('.satus-table').offsetHeight - 39 + 'px';
+
+                                        list.querySelector('.satus-scrollbar').resize();
+                                    });
+                                });
 
                                 container.appendChild(list);
 
