@@ -75,12 +75,39 @@ function dataSearch(event) {
 }
 
 function updateSearchResults(search_field) {
-    if (search_field.value.length > 0) {
+    var value = search_field.value;
+
+    if (value.length > 0 && value.match(/[^ ]/)) {
+        var sorted = Object.keys(HISTORY_MANAGER.DOMAINS).map((key) => [key, HISTORY_MANAGER.DOMAINS[key]]).sort(function(a, b) {
+            return b[1] - a[1];
+        });
+
         search_results_element.innerHTML = '';
 
-        search_results_element.innerHTML += '<a href="' + searchEngine.url + search_field.value + '" class=focused>' + search_field.value + ' <span>' + searchEngine.title + ' Search</span></a>';
+        for (var i = 0, l = sorted.length; i < l; i++) {
+            var key = sorted[i][0],
+                s = key.indexOf(value);
+
+            if (s === 0) {
+                search_results_element.innerHTML += '<a href="https://' + key + '"><img src="chrome://favicon/https://' + key + '"><span >' + key + '</span></a>';
+            } else if (key.indexOf('www.') === 0 && s === 4) {
+                var url = key.replace('www.', '');
+
+                search_results_element.innerHTML += '<a href="https://' + url + '"><img src="chrome://favicon/https://' + key + '"><span >' + url + '</span></a>';
+            }
+        }
+
+        search_results_element.innerHTML += '<a href="' + searchEngine.url + search_field.value + '">' + search_field.value + ' <span>' + searchEngine.title + ' Search</span></a>';
 
         search_field.classList.add('satus-header__text-field--show-results');
+
+        setTimeout(function() {
+            var element = document.querySelector('.satus-search-results a');
+
+            if (element) {
+                element.classList.add('focused');
+            }
+        });
     } else {
         search_field.classList.remove('satus-header__text-field--show-results');
     }
@@ -215,7 +242,7 @@ var Menu = {
                 type: 'text-field',
                 class: 'satus-header__text-field',
                 placeholder: 'Search',
-                onkeypress: function(event) {
+                onkeydown: function(event) {
                     if (event.keyCode === 13) {
                         setTimeout(function() {
                             var focused = document.querySelector('.satus-search-results a.focused');
@@ -224,6 +251,20 @@ var Menu = {
                                 window.open(focused.href, '_self')
                             }
                         });
+                    } else if (event.keyCode === 38) {
+                        var focused = document.querySelector('.satus-search-results a.focused'),
+                            prev = focused.previousElementSibling || focused.parentNode.lastElementChild;
+
+                        focused.classList.remove('focused');
+
+                        prev.classList.add('focused');
+                    } else if (event.keyCode === 40) {
+                        var focused = document.querySelector('.satus-search-results a.focused'),
+                            next = focused.nextElementSibling || focused.parentNode.firstElementChild;
+
+                        focused.classList.remove('focused');
+
+                        next.classList.add('focused');
                     }
                 },
                 oninput: function(event) {
