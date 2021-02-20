@@ -1,0 +1,23 @@
+{
+    "compactMode": {
+        "message": "Compacte modus"
+    },
+    "domain": {
+        "message": "Domein"
+    },
+    "language": {
+        "message": "Taal"
+    },
+    "tags": {
+        "message": "Labels"
+    },
+    "title": {
+        "message": "Naam"
+    },
+    "url": {
+        "message": "URL"
+    },
+    "visits": {
+        "message": "Aantal keer bezocht"
+    }
+}
