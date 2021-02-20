@@ -166,43 +166,7 @@ chrome.runtime.onInstalled.addListener(function() {
         storage._top.length[1] = Object.keys(storage._all.pages).length;
         storage._top.length[2] = Object.keys(storage._all.params).length;
 
-
-        /*-------------------------------------------------------
-        # PINNED TABS
-        -------------------------------------------------------*/
-
-        chrome.tabs.query({}, function(tabs) {
-            for (var i = 0, l = tabs.length; i < l; i++) {
-                var tab = tabs[i];
-
-                if (tab.pinned === true) {
-                    var title = tab.title,
-                        visit_count = tab.visitCount,
-                        url = tab.url,
-                        domain = url.split('/')[2],
-                        path = url.match(/\w(\/.*)/)[1];
-
-                    if (!storage.pinned[url]) {
-                        storage.pinned[url] = {
-                            title: title,
-                            visit_count: 1
-                        };
-                    } else {
-                        storage.pinned[url].visit_count++;
-                    }
-                }
-            }
-
-            var pinned = Object.keys(storage.pinned).map((key) => [key, storage.pinned[key]]).sort(function(a, b) {
-                return b[1].visitCount - a[1].visitCount;
-            });
-
-            for (var i = 0; i < Math.min(100, pinned.length); i++) {
-                storage.pinned[pinned[i][0]] = pinned[i][1];
-            }
-
-            chrome.storage.local.set(storage);
-        });
+        chrome.storage.local.set(storage);
     });
 });
 
