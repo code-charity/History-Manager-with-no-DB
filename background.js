@@ -224,44 +224,6 @@ chrome.history.onVisited.addListener(function(item) {
 
 
 /*---------------------------------------------------------------
-# TABS UPDATED
----------------------------------------------------------------*/
-
-chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-    if (changeInfo.pinned === true) {
-        chrome.storage.local.get('pinned', function(items) {
-            var title = tab.title,
-                visit_count = tab.visitCount,
-                url = tab.url,
-                domain = url.split('/')[2],
-                path = url.match(/\w(\/.*)/)[1];
-
-            if (!items.pinned[url]) {
-                items.pinned[url] = {
-                    title: title,
-                    visit_count: 1
-                };
-            } else {
-                items[url].visit_count++;
-            }
-
-            var pinned = Object.keys(items.pinned).map((key) => [key, items.pinned[key]]).sort(function(a, b) {
-                return b[1].visitCount - a[1].visitCount;
-            });
-
-            for (var i = 0; i < Math.min(100, pinned.length); i++) {
-                items.pinned[pinned[i][0]] = pinned[i][1];
-            }
-
-            chrome.storage.local.set({
-                pinned: items.pinned
-            });
-        });
-    }
-});
-
-
-/*---------------------------------------------------------------
 # MESSAGE LISTENER
 ---------------------------------------------------------------*/
 
