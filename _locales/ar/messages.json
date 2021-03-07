@@ -1,0 +1,23 @@
+{
+    "compactMode": {
+        "message": "الوضع المُدْمج"
+    },
+    "domain": {
+        "message": "النطاق"
+    },
+    "language": {
+        "message": "اللغة"
+    },
+    "tags": {
+        "message": "العلامات"
+    },
+    "title": {
+        "message": "العنوان"
+    },
+    "URL": {
+        "message": "الرابط"
+    },
+    "visits": {
+        "message": "الزيارات"
+    }
+}
