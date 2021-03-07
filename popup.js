@@ -340,6 +340,9 @@ var Menu = {
                         }, {
                             label: 'Русский',
                             value: 'ru'
+                        }, {
+                            label: 'العربية',
+                            value: 'ar'
                         }]
                     },
                     compact_mode: {
