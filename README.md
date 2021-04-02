@@ -9,5 +9,5 @@
 <p align="center">
     Manage your browser history.
     <br>
-    <a href="https://github.com/victor-savinov/history-manager">Get Started »</a>
+    <a href="https://github.com/code4charity/History-Manager/wiki/Developer-Notes">Developer Notes »</a>
 </p>
