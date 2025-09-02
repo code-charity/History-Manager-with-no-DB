@@ -1,0 +1,23 @@
+{
+    "compactMode": {
+        "message": "Kompakter Modus"
+    },
+    "domain": {
+        "message": "Domain"
+    },
+    "language": {
+        "message": "Sprache"
+    },
+    "tags": {
+        "message": "Markierungen"
+    },
+    "title": {
+        "message": "Titel"
+    },
+    "url": {
+        "message": "URL"
+    },
+    "visits": {
+        "message": "Aufrufe"
+    }
+}
